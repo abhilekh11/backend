@@ -17,13 +17,13 @@ const agentSchema= new mongoose.Schema({
     },   
     agent_mobile:{             
         type:String,       
-        //required:[true,"Please Enter Agent Mobile"],     
+        required:[true,"Please Enter Agent Mobile"],     
         unique:true,  
        // validate:[validator.isMobilePhone,"plz enter a valid Mobile"]  
     },
     agent_password:{ 
         type:String,
-      //  required:[true,"Please Enter Your password"],
+       required:[true,"Please Enter Your password"],
         minLength:[6,"minimum 6 charactor take of pass"],
         select:false    
       } 
