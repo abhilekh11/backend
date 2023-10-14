@@ -1,6 +1,7 @@
 const Agent = require("../models/agentModel");
 const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors= require('../middleware/catchAsyncErrors');
+const sendToken = require("../utils/jwtToken");
 
 // creat agent  -- admin
 exports.createAgent = catchAsyncErrors(async (req, res, next) => {
@@ -12,6 +13,8 @@ exports.createAgent = catchAsyncErrors(async (req, res, next) => {
     success: true,
     agent,
   });
+
+  sendToken(agent,201,res);
 });
 
 // Delete Agent --admin
@@ -54,3 +57,25 @@ exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
     agent,
   });
 });
+
+// login Agent
+
+exports.loginAgent=catchAsyncErrors(async (req,res,next)=>{
+  const {agent_email, agent_password} =req.body;
+    
+     if(!agent_email || !agent_password){
+      return next(new ErrorHander("Plz Enter Email And Password",400));
+     }
+      const agent= await Agent.findOne({agent_email:agent_email}).select("+agent_password");
+      if(!agent){
+        return next(new ErrorHander("Invalid email Or password",400));
+       }
+       const isPasswordMatched=await user.comparePassword(agent_password);
+       if(!isPasswordMatched){ 
+        return next(new ErrorHander("Invalid email Or password",400)); 
+    }
+    const token =agent.getJWTToken();  
+    console.log(token)
+    sendToken(agent,200,res); 
+     
+})
