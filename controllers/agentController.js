@@ -61,9 +61,10 @@ exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
 // login Agent
 
 exports.loginAgent=catchAsyncErrors(async (req,res,next)=>{
-  const {agent_email, agent_password} =req.body;
+  // const {agent_email, agent_password} =req.body;
+  const { email, password } = req.body;
     
-     if(!agent_email || !agent_password){
+     if(!email || !password){
       return next(new ErrorHander("Plz Enter Email And Password",400));
      }
       const agent= await Agent.findOne({agent_email:agent_email}).select("+agent_password");
