@@ -67,13 +67,13 @@ exports.loginAgent=catchAsyncErrors(async (req,res,next)=>{
      if(!email || !password){
       return next(new ErrorHander("Plz Enter Email And Password",400));
      }
-      const agent= await Agent.findOne({agent_email:agent_email}).select("+agent_password");
+      const agent= await Agent.findOne({agent_email:email}).select("+agent_password");
       if(!agent){
         return next(new ErrorHander("Invalid email Or password",400));
        }
      
 
-       const isPasswordMatched=await agent.comparePassword(agent_password);
+       const isPasswordMatched=await agent.comparePassword(password);
        if(!isPasswordMatched){ 
         return next(new ErrorHander("Invalid email Or password",400)); 
     }
