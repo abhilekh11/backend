@@ -14,7 +14,7 @@ exports.createAgent = catchAsyncErrors(async (req, res, next) => {
     agent,
   });
 
-  sendToken(agent,201,res);
+  //sendToken(agent,201,res);
 });
 
 // Delete Agent --admin
@@ -70,12 +70,14 @@ exports.loginAgent=catchAsyncErrors(async (req,res,next)=>{
       if(!agent){
         return next(new ErrorHander("Invalid email Or password",400));
        }
-       const isPasswordMatched=await user.comparePassword(agent_password);
+     
+
+       const isPasswordMatched=await agent.comparePassword(agent_password);
        if(!isPasswordMatched){ 
         return next(new ErrorHander("Invalid email Or password",400)); 
     }
     const token =agent.getJWTToken();  
     console.log(token)
-    sendToken(agent,200,res); 
+    sendToken(agent,200,res);  
      
 })

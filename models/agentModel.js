@@ -2,8 +2,8 @@ const mongoose=require('mongoose');
 const validater=require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const JWT_SECRET='griguirghkjfndfkmgnjfhgjfh';
-const JWT_EXPIRE='5d';
+// const JWT_SECRET='griguirghkjfndfkmgnjfhgjfh';
+// const JWT_EXPIRE='5d';
 const crypto=require("crypto");
 
 const agentSchema= new mongoose.Schema({
@@ -54,6 +54,7 @@ const agentSchema= new mongoose.Schema({
 // JWT Token 
 
 agentSchema.methods.getJWTToken= function(){ 
+   
       return jwt.sign({id:this._id},process.env.JWT_SECRET,{
         expiresIn:process.env.JWT_EXPIRE, 
       })
