@@ -78,7 +78,7 @@ exports.loginAgent=catchAsyncErrors(async (req,res,next)=>{
         return next(new ErrorHander("Invalid email Or password",400)); 
     }
     const token =agent.getJWTToken();  
-   
+      
     sendToken(agent,200,res);  
      
 })
