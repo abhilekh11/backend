@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require("cookie-parser");
 
 const app = express();
+var cors = require('cors');
 const errorMiddleware=require("./middleware/error");
 
 app.use(express.json());
@@ -10,7 +11,7 @@ app.use(express.json());
 app.use(cookieParser());  
 
 const agent =require('./routes/agentRoute');
-
+app.use(cors());
 app.use("/api/v1/",agent);
 
 app.get('/', function (req, res) {
