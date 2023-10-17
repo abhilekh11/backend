@@ -13,10 +13,10 @@
     };
 
    //console.log(options)
-    res.status(statusCode).cookie('token',token,options).json({
+    res.status(statusCode).cookie('token',token,options).json({ 
         success:true,
      
-        token,
+        token, 
     });
 };
 
