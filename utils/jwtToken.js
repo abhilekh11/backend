@@ -20,4 +20,4 @@
     });
 };
 
-module.exports= sendToken;
+module.exports= sendToken;  
