@@ -15,7 +15,7 @@
    //console.log(options)
     res.status(statusCode).cookie('token',token,options).json({
         success:true,
-        agent,
+     
         token,
     });
 };
