@@ -15,9 +15,9 @@
    //console.log(options)
     res.status(statusCode).cookie('token',token,options).json({ 
         success:true,
-     
-        token, 
+        agent,
+         token, 
     });
 };
 
-module.exports= sendToken;  
+module.exports= sendToken;   
