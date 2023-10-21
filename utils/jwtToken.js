@@ -15,7 +15,7 @@
    //console.log(options)
     res.status(statusCode).cookie('token',token,options).json({ 
         success:true,
-        message:"Login Successfully",
+        message:"Login Successfully",     
          agent,
          token,  
     });
