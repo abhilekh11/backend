@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
 
-productserviceSchema=new mongooseSchema({
+ const productserviceSchema=new mongoose.Schema({
         
     product_service_name:{
           type:String,
@@ -18,28 +18,28 @@ productserviceSchema=new mongooseSchema({
         trim:true
 },
 recurring:{
-       type:Number,
+       type:Number,  
         default:0,
         trim:true
-},  
+},    
 billing_cycle:{
     type:String,
-    //required:[true,"Please Enter product_service_name"],
+    required:[true,"Please Enter product_service_name"],
     trim:true
-},
+}, 
 product_service_status:{
     type:Number,
      default:1,
-     trim:true
+     trim:true 
 },
 product_service_index:{
-    type:Number,
+    type:Number, 
      default:0,
      trim:true
 },
 product_plan_id:{
     type:String,
-     trim:true
+     trim:true   
 },
 product_subs_id:{
     type:String,

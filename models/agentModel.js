@@ -8,9 +8,9 @@ const crypto=require("crypto");
 
 const agentSchema= new mongoose.Schema({
          
-    agent_name:{
+    agent_name:{  
         type:String,
-        required:[true,"Please Enter Agent Name"],
+        required:[true,"Please Enter Agent Name"],  
         trim:true
     },  
     agent_email:{
