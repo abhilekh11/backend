@@ -49,7 +49,7 @@ exports.Add_LeadSource = catchAsyncErrors(async (req, res, next) => {
           })
    });
 
-   ///// update lead Source
+   ///// update lead Source   
    exports.updateLeadSource=catchAsyncErrors(async (req,res,next)=>{
          const leadSource=await Lead_Source.findById(req.params.id);
          if(!leadSource){
@@ -57,7 +57,7 @@ exports.Add_LeadSource = catchAsyncErrors(async (req, res, next) => {
          }
 
          leadSource=await Lead_Source.findByIdAndUpdate(req.params.id,req.body,{   
-              new:true,
+              new:true,    
               runValidators:true,    
               useFindAndModify:false,
          })

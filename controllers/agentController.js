@@ -55,8 +55,8 @@ exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
   res.status(201).json({
     success: true,
     agent,
-  });
-});
+  }); 
+});  
 
 // login Agent
 
