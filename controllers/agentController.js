@@ -49,7 +49,7 @@ exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
 exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
   const agent = await Agent.findById(req.params.id);
   if (!agent) {
-    return next(new ErrorHander("Agent Not Found", 404));
+    return next(new ErrorHander("Agent Not Found", 404));    
   }
 
   res.status(201).json({

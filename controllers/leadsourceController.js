@@ -45,7 +45,7 @@ exports.Add_LeadSource = catchAsyncErrors(async (req, res, next) => {
           const leadSource= await Lead_Source.find();
           res.status(200).json({
             success:true,  
-            leadSource
+            leadSource   
           })
    });
 
