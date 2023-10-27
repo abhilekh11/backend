@@ -13,11 +13,56 @@ exports.addLeadStatus=catchAsyncErrors(async (req,res,next)=>{
            res.status(201).json({
             success: true,
             leadstatus,
-          });
+          });  
 })
 
 // Delete lead status
 
 exports.deleteLeadStatus=catchAsyncErrors(async (req,res,next)=>{
+
+    const leadstatus=await Status.findById(req.params.id);
+
+    if(!leadstatus){
+      return next(new ErrorHander("Lead status is not found",404));
+    }
+
+    await leadstatus.deleteOne();   
+
+    res.status(201).json({
+      success:true,
+      message:"Deleated Successfully",
+    }) 
     
-})  
+}) 
+
+// get All Lead Status 
+exports.getAllLeadStatus=catchAsyncErrors(async(req,res,next)=>{
+          const leadstatus=await Status.find();
+
+          res.status(200).json({
+            success:true,
+            leadstatus
+          })
+})
+
+////  
+ 
+exports.updateLeadStatus=catchAsyncErrors(async (req,res,next)=>{
+      
+      const leadstatus=await Status.findById(req.params.id);  
+
+      if(!leadstatus){
+        return next(new ErrorHander("Status is not found",404));
+      }
+
+     const  leadstatus1=await Status.findByIdAndUpdate(req.params.id,req.body,{
+         new:true,
+         runValidators:true,
+         useFindAndModify:false,
+      })
+
+      res.status(200).json({
+         success:true,
+         leadstatus1
+      })
+})
