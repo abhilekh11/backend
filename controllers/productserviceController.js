@@ -31,7 +31,8 @@
               await product_service.deleteOne();
               res.status(200).json({
                success:true,
-               message:"Product & Service  Has Been Delete Successfully"
+               message:"Product & Service  Has Been Delete Successfully",
+               product_service,
               })
   }); 
 
