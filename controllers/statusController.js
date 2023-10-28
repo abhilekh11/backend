@@ -31,6 +31,7 @@ exports.deleteLeadStatus=catchAsyncErrors(async (req,res,next)=>{
     res.status(201).json({
       success:true,
       message:"Deleated Successfully",
+      leadstatus,
     }) 
     
 }) 
