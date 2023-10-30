@@ -39,9 +39,11 @@ const agentSchema= new mongoose.Schema({
          resetPasswordToken:String,
          resetPasswordExpire:Date,
       
-
-     
-})
+},
+{
+  timestamps: true
+}
+)
 
   // convert pass in bcrypt hash then save
   agentSchema.pre("save",async function(next){

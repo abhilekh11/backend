@@ -41,12 +41,10 @@
 
    exports.getAllProductService=catchAsyncErrors(async(req,res,next)=>{
            const product_service=await Product_Service.find();
-
            res.status(201).json({
             success: true,
-            product_service,
-          });
-
+            product_service, 
+           });      
    });
 
    /// edit product & service

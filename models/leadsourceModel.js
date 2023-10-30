@@ -15,9 +15,14 @@ const mongoose=require('mongoose');
         type:Number,
         default:1,  
         trim:true 
-    }  
+    } 
+    
 
-
-  });
-
+  },
+  {
+    timestamps: true
+}
+);
+  
+   
   module.exports=mongoose.model("crm_lead_source",leadsourceSchema);
