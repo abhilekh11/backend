@@ -15,6 +15,7 @@ const product_service=require('./routes/productserviceRoute');
 const lead_source=require('./routes/leadsourceRoute');
 const lead_status=require('./routes/statusRoute');
 const lead=require('./routes/leadRoute');
+const countries_state=require('./routes/country_stateRoute');
  
 app.use(cors());
 app.use("/api/v1/",agent);
@@ -22,6 +23,7 @@ app.use("/api/v1/",product_service);
 app.use("/api/v1/",lead_source); 
 app.use("/api/v1/",lead_status);
 app.use("/api/v1/",lead);
+app.use("/api/v1/",countries_state);
 
 app.get('/', function (req, res) {
     try {
