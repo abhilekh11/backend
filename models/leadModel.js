@@ -13,7 +13,7 @@ const leadSchema = new mongoose.Schema({
   },
   email_id: {
     type: String,
-    required: true,
+    // required: true,
     trim: true,
   },
   contact_no: {
