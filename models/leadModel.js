@@ -108,7 +108,7 @@ const leadSchema = new mongoose.Schema({
     type: Date,
   },
   client_id: {
-    type: Number,
+    type: String,
     trim: true,
   },
   followup_date: {

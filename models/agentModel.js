@@ -32,10 +32,34 @@ const agentSchema= new mongoose.Schema({
         minLength:[6,"minimum 6 charactor take of pass"],
         select:false     
       },
+      
       role:{
         type:String, 
         default:"user"     
        },
+       agent_roll:{
+        type:String, 
+        required:true,
+        default:"sales", 
+       },
+       profile_image:{
+        type:String, 
+       },
+       pimg:{
+        type:String, 
+       },
+       agent_index:{
+        type:Number,
+       },
+       agent_status:{
+        type:Number,
+        default:1,
+       },
+       client_access:{
+        type:String,
+        default:"no",
+       },
+
          resetPasswordToken:String,
          resetPasswordExpire:Date,
       

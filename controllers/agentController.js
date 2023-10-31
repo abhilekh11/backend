@@ -44,6 +44,7 @@ exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+
 // get Agent  details
 
 exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
@@ -81,3 +82,6 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
 
   sendToken(agent, 200, res);
 });
+
+
+
