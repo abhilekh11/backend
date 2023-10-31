@@ -26,7 +26,7 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   company_name: {
-    type: Number,
+    type: String,
     trim: true,
   },
   position: {
