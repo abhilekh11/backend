@@ -5,8 +5,8 @@ const leadSchema = new mongoose.Schema({
     type: Number,
     default: 1,
     trim: true,
-  },
-  full_name: {
+  },  
+  full_name: { 
     type: String,
     required: true,
     trim: true,
@@ -47,7 +47,7 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   lead_source: {
-    type: Number,
+    type: String,
     //required:true,
     trim: true,
   },
@@ -76,7 +76,7 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   status: {
-    type: Number,
+    type: String,
     trim: true,
   },
   logistics_status: {

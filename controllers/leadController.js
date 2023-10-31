@@ -23,7 +23,7 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   exports.getAllLead=catchAsyncErrors(async (req,res,next)=>{
     const lead= await Lead.find();
     res.status(200).json({
-      success:true,  
+      success:true,    
       lead   
     })
 });
