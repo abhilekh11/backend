@@ -1,4 +1,5 @@
 const Lead=require('../models/leadModel');
+const agent=require('../models/agentModel');
 
 const catchAsyncErrors=require('../middleware/catchAsyncErrors');
 const ErrorHander = require("../utils/errorhander");
@@ -22,6 +23,7 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
 
   exports.getAllLead=catchAsyncErrors(async (req,res,next)=>{
     const lead= await Lead.find();
+
     res.status(200).json({
       success:true,    
       lead   
