@@ -5,14 +5,27 @@ const sendToken = require("../utils/jwtToken");
 
 // creat agent  -- admin
 exports.createAgent = catchAsyncErrors(async (req, res, next) => {
-  //const {agent_name,agent_email} =req.body;
+  //const {agent_mobile,agent_email} =req.body;
 
-  const agent = await Agent.create(req.body);
+  //console.log(agent_email);
+  // const agent=await Agent.find({agent_mobile});
+  
+  // if(!agent){
+const agent = await Agent.create(req.body);
 
-  res.status(201).json({
-    success: true,
-    agent,
-  });
+res.status(201).json({
+  success: true,
+  agent,
+  message:"Agent Added Successfully...."
+});  
+  // }else{
+  //   res.status(202).json({
+  //     success: false,
+  //     message:"Email Or Mobile Already Exit..."
+  //   });
+  // }
+
+  
 
   //sendToken(agent,201,res);
 });
@@ -36,7 +49,7 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 // get all agent --admin
 
 exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
-  const agent = await Agent.find();
+  const agent = await Agent.find({role:"user"});
 
   res.status(201).json({
     success: true,
@@ -82,6 +95,35 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
 
   sendToken(agent, 200, res);
 });
+/// update Client Access
+exports.updateClientAccess=catchAsyncErrors(async(req,res,next)=>{
+    ///const  {client_access}=req.body;
+  const agent = await Agent.findById(req.params.id);
+  if(!agent){   
+    return next(new ErrorHander("Invalid email Or password", 400));
+  }
+   
+   
+  const agent_access=await agent.client_access;
+ 
+  if(agent_access==='yes'){
+   const agent=await Agent.updateOne({_id:req.params.id},{$set: {client_access:"no"}});
+  }
+  if(agent_access==='no'){
+    const agent=await Agent.updateOne({_id:req.params.id},{$set: {client_access: "yes"}});
+    
+  }
+  res.status(201).json({
+    success: true,
+    agent, 
+  });
+  
+
+ 
+     
+       
+          
+})
 
 
 
