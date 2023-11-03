@@ -89,6 +89,28 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
                 },
                   },
 
+                  {
+                    $lookup: {
+                      from: "crm_lead_sources",
+                      let: { lead_sourceString: "$lead_source" },
+                      pipeline: [
+                        {
+                          $match: { 
+                            $expr: {
+                              $eq: [ "$_id", { $toObjectId: "$$lead_sourceString" } ]
+                            }
+                          }
+                        },  
+                        {
+                          $project: {
+                            lead_source_name: 1, 
+                          }
+                        }
+                      ],
+                      as: "lead_source_details"
+                    },
+                      },
+
     ]);
     
     res.status(200).json({
