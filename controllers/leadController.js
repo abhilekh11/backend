@@ -34,6 +34,11 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
                   $eq: [ "$_id", { $toObjectId: "$$assign_to_agentString" } ]
                 }
               }
+            },
+            {
+              $project: {
+                agent_name: 1, 
+              }
             }
           ],
           as: "agent_details"
@@ -50,6 +55,11 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
                     $expr: {
                       $eq: [ "$_id", { $toObjectId: "$$serviceString" } ]
                     }
+                  }
+                },
+                {
+                  $project: {
+                    product_service_name: 1, 
                   }
                 }
               ],
