@@ -22,18 +22,6 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   //// get All Lead  
 
   exports.getAllLead=catchAsyncErrors(async (req,res,next)=>{
-   // const lead= await Lead.find();
-
-
-    //    const lead=await Lead.aggregate([{$lookup: 
-    //     {
-    //       from: 'crm_agents',
-    //       localField: '_id',
-    //       foreignField: 'assign_to_agent',
-    //       as: 'agent_name',  
-    //     },   
-    // }])
-
     const lead=await Lead.aggregate([
       {
         $lookup: {
@@ -48,9 +36,27 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
               }
             }
           ],
-          as: "category"
-        }
-      },
+          as: "agent_details"
+        },
+          },
+
+          {
+            $lookup: {
+              from: "crm_product_services",
+              let: { serviceString: "$service" },
+              pipeline: [
+                {
+                  $match: { 
+                    $expr: {
+                      $eq: [ "$_id", { $toObjectId: "$$serviceString" } ]
+                    }
+                  }
+                }
+              ],
+              as: "service"
+            },
+              },
+
     ]);
     
     res.status(200).json({
