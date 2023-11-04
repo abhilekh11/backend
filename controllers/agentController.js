@@ -43,6 +43,7 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Agent Delete Successfully",
+    agent,
   });
 });
 
