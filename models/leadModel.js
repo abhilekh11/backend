@@ -39,7 +39,7 @@ const leadSchema = new mongoose.Schema({
   },
   service: {
     type: String,
-    required: true,
+    //required: true,
     trim: true,
   },
   lead_cost: {
