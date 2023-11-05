@@ -28,7 +28,7 @@ app.use("/api/v1/",countries_state);
 app.get('/', function (req, res) {
     
   // res.end(`The client's IP Address is: ${req.socket.remoteAddress}`);
-    try {
+    try { 
         res.status(200).send(
           {
           "success":true, 
