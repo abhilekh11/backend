@@ -110,6 +110,7 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+   
     lead,
   });
 });
@@ -226,3 +227,17 @@ exports.getLeadById = catchAsyncErrors(async (req, res, next) => {
     });
   }
 });
+
+
+/// delete all lead 
+
+exports.deleteAllLead=catchAsyncErrors(async(req,res,next)=>{
+ await Lead.deleteMany();
+  res.status(200).json({
+    success: true,
+    message:"Delete All Lead Successfully",
+  });
+   
+
+})
+
