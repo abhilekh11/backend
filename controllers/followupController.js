@@ -26,8 +26,7 @@ exports.getFollowupById=catchAsyncErrors(async(req,res,next)=>{
        
        if(!followuplead1){
         return next(new ErrorHander("followuplead not found!...",404));
-
-        
+    
        }else{
         const followuplead = await FollowupLead.aggregate([ 
           {
@@ -59,6 +58,30 @@ exports.getFollowupById=catchAsyncErrors(async(req,res,next)=>{
               as: "comment_by",
             },
           },
+           
+          {
+            $lookup: {
+              from: "crm_statuses",
+              let: { followup_status_idString: "$followup_status_id" },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ["$_id", { $toObjectId: "$$followup_status_idString" }],
+                    },
+                  },
+                },
+                {
+                  $project: {
+                    status_name: 1,
+                  },
+                },
+              ],
+              as: "status_details",
+            },
+          },
+
+
        ]); 
        
        res.status(201).json({  
