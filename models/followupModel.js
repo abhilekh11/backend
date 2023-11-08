@@ -28,7 +28,7 @@ const followupSchema = new mongoose.Schema({
     type: Date, 
     trim: true,
   },
-  followup_desc: {
+  followup_desc: {   
     type: String,
     trim: true,
   },
@@ -61,7 +61,7 @@ const followupSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  deleted: {
+  deleted: {  
     type: Date,
   }
 });

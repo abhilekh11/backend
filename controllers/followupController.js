@@ -9,7 +9,7 @@ const ErrorHander = require("../utils/errorhander");
 /// creat followup Lead
 exports.Add_Followup_Lead=catchAsyncErrors(async (req,res,next)=>{
     const followuplead = await FollowupLead.create(req.body); 
-    res.status(201).json({  
+    res.status(201).json({    
       success: true,  
       message:"lead  Has Been Added Successfully",
       followuplead,  
