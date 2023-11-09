@@ -108,12 +108,10 @@ exports.getFollowupById=catchAsyncErrors(async(req,res,next)=>{
 })
 
 
-/// get follow lead by for a perticuler sele user and admin 
+///
 
 exports.getAllfollowbyidstatus=catchAsyncErrors(async (req,res,next)=>{ 
-    
-
-
+      
      
         
          
