@@ -9,7 +9,10 @@ const { param } = require('../app');
 
 /// creat followup Lead
 exports.Add_Followup_Lead=catchAsyncErrors(async (req,res,next)=>{
-    const followuplead = await FollowupLead.create(req.body); 
+    const followuplead = await FollowupLead.create(req.body);
+      
+    
+    
     res.status(201).json({    
       success: true,  
       message:"lead  Has Been Added Successfully",
@@ -23,11 +26,9 @@ exports.Add_Followup_Lead=catchAsyncErrors(async (req,res,next)=>{
 exports.getFollowupById=catchAsyncErrors(async(req,res,next)=>{
         
        const followuplead1=await FollowupLead.find({lead_id:req.params.id}); 
-       
-       if(!followuplead1){
+     if(!followuplead1){
         return next(new ErrorHander("followuplead not found!...",404));
-    
-       }else{
+        }else{
         const followuplead = await FollowupLead.aggregate([ 
           {
             $match: {
@@ -83,7 +84,19 @@ exports.getFollowupById=catchAsyncErrors(async(req,res,next)=>{
 
 
        ]); 
-       
+           if(followuplead){ 
+        const lead = await Lead.findById(req.params.id);
+        const updatedData = {assign_to_agent:lead.assign_to_agent};
+
+        const leads=await Lead.findByIdAndUpdate(req.params.id,updatedData,{   
+          new:true,    
+          runValidators:true,    
+          useFindAndModify:false,
+          })
+           
+  
+       }
+
        res.status(201).json({  
         success: true,
         followuplead, 
@@ -92,6 +105,20 @@ exports.getFollowupById=catchAsyncErrors(async(req,res,next)=>{
        }
        
              
+})
+
+
+/// get follow lead by for a perticuler sele user and admin 
+
+exports.getAllfollowbyidstatus=catchAsyncErrors(async (req,res,next)=>{ 
+    
+
+
+     
+        
+         
+        
+           
 })
 
 
