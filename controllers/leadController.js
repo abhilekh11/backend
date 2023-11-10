@@ -118,16 +118,12 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
 /// get  lead by by agent id for user
 
 exports.getLeadbyagentidandstatus=catchAsyncErrors(async (req,res,next)=>{
-    
-  const {assign_to_agent} =req.body; 
-
-
-    if(!assign_to_agent){
+   const {assign_to_agent} =req.body; 
+  if(!assign_to_agent){
       return next(new ErrorHander("assign_to_agent is required..!",404)); 
    }
-
-    const lead = await Lead.aggregate([
-      {
+   const lead = await Lead.aggregate([
+      { 
         $match: {
           $expr: {
             $eq: ["$assign_to_agent",  assign_to_agent ],

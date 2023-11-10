@@ -92,7 +92,7 @@ exports.getFollowupById=catchAsyncErrors(async(req,res,next)=>{
           new:true,    
           runValidators:true,    
           useFindAndModify:false,
-          })
+          })   
            
   
        }
