@@ -2,7 +2,8 @@ const Agent = require("../models/agentModel");
 const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
-
+//const LoginHistory=require("../models/LoginHistory");
+const useragent = require('useragent');
 // creat agent  -- admin
 exports.createAgent = catchAsyncErrors(async (req, res, next) => {
   //const {agent_mobile,agent_email} =req.body;
@@ -50,23 +51,27 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 // get all agent --admin
 
 exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
+  const agentsfdsfds = useragent.parse(req.headers['user-agent']);
   const agent = await Agent.find({role:"user"});
 
   res.status(201).json({
     success: true,
-    agent,
+    agent, 
+    agentsfdsfds,
   });
-});
+});   
 
 
 // get Agent  details
 
 exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
+  
   const agent = await Agent.findById(req.params.id);
+
   if (!agent) {
     return next(new ErrorHander("Agent Not Found", 404));    
   }
-
+  
   res.status(201).json({
     success: true,
     agent,
@@ -77,6 +82,7 @@ exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
 
 exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
   // const {agent_email, agent_password} =req.body;
+  
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -117,6 +123,7 @@ exports.updateClientAccess=catchAsyncErrors(async(req,res,next)=>{
   res.status(201).json({
     success: true,
     agent, 
+    
   });
   
 
