@@ -9,15 +9,73 @@ const { param } = require('../app');
 
 /// creat followup Lead
 exports.Add_Followup_Lead=catchAsyncErrors(async (req,res,next)=>{
-    const followuplead = await FollowupLead.create(req.body);
-      
-    
-    
-    res.status(201).json({    
+    const followuplead1 = await FollowupLead.create(req.body);
+    const lastInsertedId = followuplead1._id;
+   
+   
+    const followuplead = await FollowupLead.aggregate([ 
+      {
+        $match: {
+          $expr: {
+            $eq: ["$_id", lastInsertedId ],
+          },
+        },
+      },
+  
+      {
+        $lookup: {
+          from: "crm_agents",
+          let: { assign_to_agentString: "$assign_to_agent" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                agent_name: 1,
+              },
+            },
+          ],
+          as: "comment_by",
+        },
+      },
+       
+      {
+        $lookup: {
+          from: "crm_statuses",
+          let: { followup_status_idString: "$followup_status_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$followup_status_idString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                status_name: 1,
+              },
+            },
+          ],
+          as: "status_details",
+        },
+      },
+
+
+   ]); 
+
+
+    res.status(201).json({       
       success: true,  
       message:"lead  Has Been Added Successfully",
-      followuplead,  
-    });    
+      followuplead,   
+       
+    });     
 })
 
 
