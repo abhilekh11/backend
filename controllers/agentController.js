@@ -52,13 +52,14 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 // get all agent --admin
 
 exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
-  const agentsfdsfds = useragent.parse(req.headers['user-agent']);
+  
   const agent = await Agent.find({role:"user"});
+  const agentsfdsfds = useragent.parse(req.headers['user-agent']);
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   const geo = geoip.lookup(ip);
 
-  const loginInfo = {
+  const loginInfo = {        
     ip,
     browser: agentsfdsfds.toString(),
     system: agentsfdsfds.os.toString(),
