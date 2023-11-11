@@ -4,6 +4,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
 //const LoginHistory=require("../models/LoginHistory");
 const useragent = require('useragent');
+const geoip = require('geoip-lite');
 // creat agent  -- admin
 exports.createAgent = catchAsyncErrors(async (req, res, next) => {
   //const {agent_mobile,agent_email} =req.body;
@@ -53,13 +54,23 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
   const agentsfdsfds = useragent.parse(req.headers['user-agent']);
   const agent = await Agent.find({role:"user"});
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  const geo = geoip.lookup(ip);
+
+  const loginInfo = {
+    ip,
+    browser: agentsfdsfds.toString(),
+    system: agentsfdsfds.os.toString(),
+    location: geo ? `${geo.city}, ${geo.region}, ${geo.country}` : 'Unknown',
+  };
 
   res.status(201).json({
     success: true,
     agent, 
-    agentsfdsfds,
+    loginInfo,
   });
-});   
+});     
 
 
 // get Agent  details
