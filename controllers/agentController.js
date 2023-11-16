@@ -107,17 +107,17 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHander("Invalid email Or password", 400));
   }
 
-  // const loginHistory1 ={
-  //   userId: 'kjioj',
-  //   ip,
-  //   browser: agentsfdsfds.toString(),
-  //   system: agentsfdsfds.os.toString(),
-  //   location: geo ? `${geo.city}, ${geo.region}, ${geo.country}` : 'Unknown',
-  // }; 
-
+  const loginHistory1 ={
+    userId: 'kjioj',
+    ip,
+    browser: agentsfdsfds.toString(),
+    system: agentsfdsfds.os.toString(),
+    location: geo ? `${geo.city}, ${geo.region}, ${geo.country}` : 'Unknown',
+  }; 
+ 
   //  await loginHistory.create(loginHistory1);  
-  // loginHistory.save()
-  ///console.log(agentsfdsfds.toString())
+  // loginHistory.save()   
+  console.log(agentsfdsfds.toString())
   const token = agent.getJWTToken();
  
   sendToken(agent, 200, res);
