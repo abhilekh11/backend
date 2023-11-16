@@ -3,11 +3,11 @@
 const mongoose = require('mongoose');
 
 const loginHistorySchema = new mongoose.Schema({
-  userId: { type: String, required: true },
-  ipAddress: { type: String, required: true },
-  browser: { type: String, required: true },
-  system: { type: String, required: true },
-  location: { type: String, required: true },
+  userId: { type: String,  },
+  ipAddress: { type: String, },
+  browser: { type: String,  },
+  system: { type: String,  },
+  location: { type: String, },
   loginTime: { type: Date, default: Date.now },
 });
 
