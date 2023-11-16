@@ -117,10 +117,11 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
  
   //  await loginHistory.create(loginHistory1);  
   // loginHistory.save()   
-  console.log(agentsfdsfds.toString())
+  ///console.log(agentsfdsfds.toString())
   const token = agent.getJWTToken();
  
   sendToken(agent, 200, res);
+
 });
 /// update Client Access
 exports.updateClientAccess=catchAsyncErrors(async(req,res,next)=>{

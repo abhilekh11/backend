@@ -3,7 +3,8 @@ const agent = require("../models/agentModel");
 
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
-
+const useragent = require('useragent');
+const geoip = require('geoip-lite');
 /// creat Lead
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.create(req.body);
@@ -107,10 +108,24 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
     },
   ]);
 
+  const agentsfdsfds = useragent.parse(req.headers['user-agent']);
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  const geo = geoip.lookup(ip);
+
+  const loginHistory1 ={
+    userId: 'kjioj',
+    ip,
+    browser: agentsfdsfds.toString(),
+    system: agentsfdsfds.os.toString(),
+    location: geo ? `${geo.city}, ${geo.region}, ${geo.country}` : 'Unknown',
+  }; 
+
   res.status(200).json({
     success: true,
    
     lead,
+    loginHistory1,  
   });
 });
 
