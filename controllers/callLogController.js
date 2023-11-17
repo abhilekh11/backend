@@ -19,7 +19,7 @@ exports.Add_CallLog = catchAsyncErrors(async (req, res, next) => {
       success: true,
       message: "CallLog Has Been Added Successfully",
       calllog,
-    });
+    }); 
    }else{
     res.status(201).json({
       success: true,
@@ -28,8 +28,9 @@ exports.Add_CallLog = catchAsyncErrors(async (req, res, next) => {
     });
    }
    
-   
-
-
-   
   });
+
+
+  // exports.getCallLogById=catchAsyncErrors(async (req,res,next)=>{
+
+  // })
