@@ -3,8 +3,9 @@ const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
 const LoginHistory=require("../models/LoginHistory");
-const useragent = require('useragent');
-const geoip = require('geoip-lite');
+// const useragent = require('useragent');
+// const geoip = require('geoip-lite');
+const useragent = require('express-useragent');
 // creat agent  -- admin
 exports.createAgent = catchAsyncErrors(async (req, res, next) => {
   //const {agent_mobile,agent_email} =req.body;
@@ -84,10 +85,10 @@ exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
 
 exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
   // const {agent_email, agent_password} =req.body;
-  const agentsfdsfds = useragent.parse(req.headers['user-agent']);
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  // const agentsfdsfds = useragent.parse(req.headers['user-agent']);
+  // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-  const geo = geoip.lookup(ip);
+  // const geo = geoip.lookup(ip);
 
  
   
@@ -106,22 +107,31 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
   if (!isPasswordMatched) {
     return next(new ErrorHander("Invalid email Or password", 400));
   }
+  const userAgent = req.useragent;
+  // const loginHistory1 ={
+  //   "userId": userAgent.source,
+  //   "ipAddress":req.ip,
+  //   "browser": userAgent.browser,
+  //   "system": userAgent.os,
+  
+  // }; 
 
-  const loginHistory1 ={
-    userId: 'kjioj',
-    ip,
-    browser: agentsfdsfds.toString(),
-    system: agentsfdsfds.os.toString(),
-    location: geo ? `${geo.city}, ${geo.region}, ${geo.country}` : 'Unknown',
-  }; 
+ // loginHistory11=await LoginHistory.create({loginHistory1});
+
+ console.log('User Agent:', userAgent.source);  
+ console.log('Browser:', userAgent.browser);
+ console.log('Operating System:', userAgent.os);
  
-  //  await loginHistory.create(loginHistory1);  
-  // loginHistory.save()   
-  ///console.log(agentsfdsfds.toString())
+ 
   const token = agent.getJWTToken();
  
   sendToken(agent, 200, res);
-
+  // res.status(201).json({
+  //   success: true,
+  //   loginHistory11, 
+      
+  // });
+  
 });
 /// update Client Access
 exports.updateClientAccess=catchAsyncErrors(async(req,res,next)=>{

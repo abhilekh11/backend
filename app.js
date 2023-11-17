@@ -1,12 +1,12 @@
 const express = require('express');
 const cookieParser = require("cookie-parser");
-
+const useragent = require('express-useragent');
 const app = express();
 var cors = require('cors');
 const errorMiddleware=require("./middleware/error");
 
-app.use(express.json());
 
+app.use(useragent.express());
 app.use(express.json());
 app.use(cookieParser());  
 
@@ -17,6 +17,7 @@ const lead_status=require('./routes/statusRoute');
 const lead=require('./routes/leadRoute');
 const countries_state=require('./routes/country_stateRoute');
 const followup=require('./routes/followupRoute');
+const calllog=require('./routes/calllogRoute');
  
 app.use(cors());
 app.use("/api/v1/",agent);
@@ -26,7 +27,7 @@ app.use("/api/v1/",lead_status);
 app.use("/api/v1/",lead);
 app.use("/api/v1/",countries_state);
 app.use("/api/v1/",followup);
-
+app.use("/api/v1/",calllog);
 app.get('/', function (req, res) {
     
   // res.end(`The client's IP Address is: ${req.socket.remoteAddress}`);
