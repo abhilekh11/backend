@@ -9,7 +9,7 @@ exports.Add_CallLog = catchAsyncErrors(async (req, res, next) => {
 
    const {datetime,user_id}=req.body;
     
-   const call_log=await CallLog.find({datetime,user_id});
+   const call_log=await CallLog.find({datetime});
    
       
    if(call_log.length === 0){
