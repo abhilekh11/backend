@@ -31,6 +31,19 @@ exports.Add_CallLog = catchAsyncErrors(async (req, res, next) => {
   });
 
 
-  // exports.getCallLogById=catchAsyncErrors(async (req,res,next)=>{
+  exports.getCallLogById=catchAsyncErrors(async (req,res,next)=>{
 
-  // })
+    const call_log = await CallLog.find({user_id:req.params.id});
+
+  if (!call_log) {
+    return next(new ErrorHander("This id is Not Found", 404));    
+  }
+ //const  length=call_log.length
+  res.status(201).json({
+    success: true,
+    call_log,
+
+  }); 
+
+
+  })
