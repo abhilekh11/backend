@@ -49,14 +49,13 @@ exports.getCallLogById = catchAsyncErrors(async (req, res, next) => {
 exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
   const { user_id, start_date, end_date } = req.body;
  
-  const startDate = new Date(`${start_date}`);
-  const endDate = new Date(`${end_date}T23:59:59.999Z`);
+  
   console.log(startDate);
   const call_log = await CallLog.find({  
     user_id: user_id,
     datetime: {
-      $gte: startDate,
-      $lte: endDate,
+      $gte: start_date,
+      $lte: end_date,
     },
   }).maxTimeMS(30000);
 
