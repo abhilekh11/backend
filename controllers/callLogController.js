@@ -110,7 +110,7 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
     tohours + "h " + tominutes + "m " + toremainingSeconds + "s";
    ////  Total Day And Average Duration
    const timeDifference = (new Date(end_date) - new Date(start_date));
-   const TotalDays = timeDifference / (1000 * 60 * 60 * 24);
+   const TotalDays = timeDifference / (1000 * 60 * 60 * 24)-1;
     const avragedurationinsecond=totalDuration/TotalDays;
     const avragedurationinhoure = Math.floor(avragedurationinsecond / 3600);
     const avragedurationinminutes = Math.floor((avragedurationinsecond % 3600) / 60);
