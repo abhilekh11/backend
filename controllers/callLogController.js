@@ -120,7 +120,33 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
    //////Average Duration per Call
      const avrage_duration_per_call_in_second=totalDuration/totalCall;
      const avrage_duration_per_call=await SecondToHoure(avrage_duration_per_call_in_second);
+     /////Top Dialer  
      
+     const countMap = new Map();
+
+// Count occurrences of each value and store the corresponding objects
+call_log.forEach(obj => {
+  const value = obj.phone_number;
+  if (!countMap.has(value)) {
+    countMap.set(value, []);
+  }
+  countMap.get(value).push(obj);
+});
+
+// Find the most frequent value and its corresponding objects 
+let mostFrequentDialer;
+let mostFrequentDialerName ;
+let maxCountDial = 0;
+
+countMap.forEach((objects, value) => {
+  const count = objects.length;
+  if (count > maxCountDial) {
+    mostFrequentDialer = value;
+    mostFrequentDialerName = objects[0].name;
+    maxCountDial = count;
+  }
+});
+
  
  
 
@@ -138,6 +164,9 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
     TotalDays:TotalDays,
     avrage_duration_per_day:avrage_duration_per_day,
     avrage_duration_per_call:avrage_duration_per_call,
+    mostFrequentDialer:mostFrequentDialer,
+    mostFrequentDialerName:mostFrequentDialerName,
+    maxCountDial:maxCountDial,
     Longest_talk:maxObject
   });
 
