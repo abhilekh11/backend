@@ -3,6 +3,7 @@ const CallLog = require("../models/callLogModel");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
 const moment = require("moment");
+const SecondToHoure=require("../utils/secondtohoure")
 ///  add call log
 exports.Add_CallLog = catchAsyncErrors(async (req, res, next) => {
   const { datetime, user_id } = req.body;
@@ -86,7 +87,9 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
     if(call_logs.rawtype == 10){
       totalRejectedCall +=1;
     }
-  });
+  });  
+  /// Longest Duration T
+  const maxObject = call_log.reduce((max, current) => (current.duration > max.duration ? current : max), call_log[0]);
   /// for total duration
   const thours = Math.floor(totalDuration / 3600);
   const tminutes = Math.floor((totalDuration % 3600) / 60);
@@ -105,6 +108,23 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
   const toremainingSeconds = totalOutgoingDuration % 60;
   const tootal_duration =
     tohours + "h " + tominutes + "m " + toremainingSeconds + "s";
+   ////  Total Day And Average Duration
+   const timeDifference = (new Date(end_date) - new Date(start_date));
+   const TotalDays = timeDifference / (1000 * 60 * 60 * 24);
+    const avragedurationinsecond=totalDuration/TotalDays;
+    const avragedurationinhoure = Math.floor(avragedurationinsecond / 3600);
+    const avragedurationinminutes = Math.floor((avragedurationinsecond % 3600) / 60);
+    const avragedurationinSeconds = avragedurationinsecond % 60;
+    const avrage_duration_per_day =
+    avragedurationinhoure + "h " + avragedurationinminutes + "m " + avragedurationinSeconds + "s";
+   //////Average Duration per Call
+     const avrage_duration_per_call_in_second=totalDuration/totalCall;
+     const avrage_duration_per_call=await SecondToHoure(avrage_duration_per_call_in_second);
+     
+ 
+ 
+
+
 
   details.push({
     totalDuration: total_duration,
@@ -115,6 +135,10 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
     totalOutgoingCall:totalOutgoingCall,
     totalMissCall:totalMissCall,
     totalRejectedCall:totalRejectedCall,
+    TotalDays:TotalDays,
+    avrage_duration_per_day:avrage_duration_per_day,
+    avrage_duration_per_call:avrage_duration_per_call,
+    Longest_talk:maxObject
   });
 
   res.status(201).json({
