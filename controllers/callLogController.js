@@ -114,7 +114,7 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
     const avragedurationinsecond=totalDuration/TotalDays;
     const avragedurationinhoure = Math.floor(avragedurationinsecond / 3600);
     const avragedurationinminutes = Math.floor((avragedurationinsecond % 3600) / 60);
-    const avragedurationinSeconds = avragedurationinsecond % 60;
+    const avragedurationinSeconds = parseInt(avragedurationinsecond % 60);
     const avrage_duration_per_day =
     avragedurationinhoure + "h " + avragedurationinminutes + "m " + avragedurationinSeconds + "s";
    //////Average Duration per Call
