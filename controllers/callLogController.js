@@ -120,6 +120,14 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
    //////Average Duration per Call
      const avrage_duration_per_call_in_second=totalDuration/totalCall;
      const avrage_duration_per_call=await SecondToHoure(avrage_duration_per_call_in_second);
+
+    /////////total Working  houre Calculate 
+    const dailworkingtime=(parseInt(totalCall*30)+parseInt(totalDuration));
+    const totalworkinghoure=await SecondToHoure(dailworkingtime);
+   
+
+
+
      /////Top Dialer  
      
      const countMap = new Map();
@@ -154,6 +162,7 @@ countMap.forEach((objects, value) => {
 
   details.push({
     totalDuration: total_duration,
+    totalworkinghoure:totalworkinghoure,  
     totalIncommingDuration: tiotal_duration,
     totalOutgoingDuration: tootal_duration,
     totalCall: totalCall,
