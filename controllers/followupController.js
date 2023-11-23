@@ -25,12 +25,12 @@ exports.Add_Followup_Lead=catchAsyncErrors(async (req,res,next)=>{
       {
         $lookup: {
           from: "crm_agents",
-          let: { assign_to_agentString: "$assign_to_agent" },
+          let: { commented_byString: "$commented_by" },
           pipeline: [
             {
               $match: {
                 $expr: {
-                  $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+                  $eq: ["$_id", { $toObjectId: "$$commented_byString" }],
                 },
               },
             },
@@ -176,6 +176,11 @@ exports.getAllfollowbyidstatus=catchAsyncErrors(async (req,res,next)=>{
         
            
 })
+
+
+//// 
+
+
 
 
 

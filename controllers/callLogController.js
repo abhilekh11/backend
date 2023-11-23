@@ -124,10 +124,6 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
     /////////total Working  houre Calculate 
     const dailworkingtime=(parseInt(totalCall*30)+parseInt(totalDuration));
     const totalworkinghoure=await SecondToHoure(dailworkingtime);
-   
-
-
-
      /////Top Dialer  
      
      const countMap = new Map();
