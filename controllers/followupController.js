@@ -69,10 +69,12 @@ exports.Add_Followup_Lead = catchAsyncErrors(async (req, res, next) => {
   const assign_to_agent = followuplead1.assign_to_agent;
   const status_id = followuplead1.followup_status_id;
   const followup_date=followuplead1.followup_date;
+  const followup_won_amount=followuplead1.followuplead1;
 
   const condition = { _id: lead_id };
-  const update_data = { assign_to_agent: assign_to_agent, status: status_id,followup_date:followup_date };
-  const update_lead = await Lead.updateOne(condition, update_data);  
+  const update_data = { assign_to_agent: assign_to_agent, status: status_id,followup_date:followup_date,
+    followup_won_amount:followup_won_amount };  
+  const update_lead = await Lead.updateOne(condition, update_data);   
 
   res.status(201).json({
     success: true,

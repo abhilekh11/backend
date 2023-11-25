@@ -46,6 +46,10 @@ const leadSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  followup_won_amount: {
+    type: Number,
+    trim: true,
+  },
   lead_source: {
     type: String,
     //required:true,
