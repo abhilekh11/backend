@@ -11,4 +11,4 @@ router.route("/delete_all_lead").delete(deleteAllLead);
 router.route("/get_Leadby_agentid_status").post(getLeadbyagentidandstatus);
 router.route("/get_All_Lead_Followup").get(getAllLeadFollowup); 
 
-module.exports=router;      
+module.exports=router;        
