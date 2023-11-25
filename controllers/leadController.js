@@ -220,6 +220,12 @@ exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
         as: "lead_source_details",
       },
     },
+    /////for  loss status remove
+    {
+      $match: {
+        status: { $ne: "6540873b3bdc70798d3e9f4e" } // Exclude leads with status 'loss'
+      },
+    },
 
     {
       $sort: {
