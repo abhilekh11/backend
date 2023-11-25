@@ -156,13 +156,13 @@ exports.updateClientAccess=catchAsyncErrors(async(req,res,next)=>{
     agent, 
     
   });
-  
+ });
 
- 
-     
-       
-          
-})
+ exports.forgotPassword=catchAsyncErrors(async (req,res,next)=>{
+       //    const {email,new_password}=req.body;
+
+ });
+
 
 
 

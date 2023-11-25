@@ -19,7 +19,7 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
 
 //// get All Lead
 exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
-  const lead = await Lead.aggregate([
+  const lead = await Lead.aggregate([  
     {
       $lookup: {
         from: "crm_agents",
@@ -224,6 +224,12 @@ exports.getLeadbyagentidandstatus=catchAsyncErrors(async (req,res,next)=>{
             },
           ],
           as: "lead_source_details",
+        },
+      },
+
+      {
+        $sort: {
+          followup_date: 1, 
         },
       },
     ]);
