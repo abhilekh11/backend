@@ -223,9 +223,12 @@ exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
     /////for  loss status remove
     {
       $match: {
-        status: { $ne: "6540873b3bdc70798d3e9f4e" } // Exclude leads with status 'loss'
+         
+       // status: { $ne: "6540873b3bdc70798d3e9f4e" } // Exclude leads with status 'loss'
+       status: { $nin: ["6540873b3bdc70798d3e9f4e", "6539fa950b9756b61601287b"] }
       },
     },
+
 
     {
       $sort: {
