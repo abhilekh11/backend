@@ -107,6 +107,12 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         as: "lead_source_details",
       },
     },
+
+    {
+      $sort: {
+        followup_date: 1, // 1 for ascending order, -1 for descending order
+      },
+    },
   ]);
 
  
