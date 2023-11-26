@@ -50,6 +50,10 @@ const leadSchema = new mongoose.Schema({
     type: Number,
     trim: true,
   },
+  followup_lost_reason_id: {
+    type: String,
+    trim: true,
+  }, 
   lead_source: {
     type: String,
     //required:true,
