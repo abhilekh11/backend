@@ -19,6 +19,7 @@ const countries_state=require('./routes/country_stateRoute');
 const followup=require('./routes/followupRoute');
 const calllog=require('./routes/calllogRoute');
 const lostreason=require('./routes/lostreasonRoute');
+const YearlySaleApi=require('./routes/genralapiRoute');
  
 app.use(cors());
 app.use("/api/v1/",agent);
@@ -30,6 +31,7 @@ app.use("/api/v1/",countries_state);
 app.use("/api/v1/",followup);
 app.use("/api/v1/",calllog);
 app.use("/api/v1/",lostreason);
+app.use("/api/v1/",YearlySaleApi);
 app.get('/', function (req, res) { 
     
   // res.end(`The client's IP Address is: ${req.socket.remoteAddress}`);
