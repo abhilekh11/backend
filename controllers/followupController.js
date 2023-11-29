@@ -71,7 +71,7 @@ exports.Add_Followup_Lead = catchAsyncErrors(async (req, res, next) => {
   const followup_date=followuplead1.followup_date;
   const followup_won_amount=followuplead1.followup_won_amount;
   const followup_lost_reason_id=followuplead1.followup_lost_reason_id;
-  const add_to_calender=followuplead1.add_to_calender;
+  const add_to_calender=req.body.add_to_calender;
 
   const condition = { _id: lead_id };
   const update_data = { assign_to_agent: assign_to_agent, status: status_id,followup_date:followup_date,
