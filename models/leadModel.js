@@ -54,6 +54,11 @@ const leadSchema = new mongoose.Schema({
     type: String,
     trim: true,
   }, 
+  add_to_calender:{
+    type: String,
+    trim: true,
+    default:'no',
+  },
   lead_source: {
     type: String,
     //required:true,
