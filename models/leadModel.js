@@ -59,6 +59,11 @@ const leadSchema = new mongoose.Schema({
     trim: true,
     default:'no',
   },
+  massage_of_calander:{
+    type: String,
+    trim: true,
+   
+  },
   lead_source: {
     type: String,
     //required:true,

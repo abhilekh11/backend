@@ -72,13 +72,16 @@ exports.Add_Followup_Lead = catchAsyncErrors(async (req, res, next) => {
   const followup_won_amount=followuplead1.followup_won_amount;
   const followup_lost_reason_id=followuplead1.followup_lost_reason_id;
   const add_to_calender=req.body.add_to_calender;
+  const massage_of_calander=followuplead1.followup_desc;
 
   const condition = { _id: lead_id };
   const update_data = { assign_to_agent: assign_to_agent, status: status_id,followup_date:followup_date,
-    followup_won_amount:followup_won_amount,followup_lost_reason_id:followup_lost_reason_id,add_to_calender:add_to_calender };  
+    followup_won_amount:followup_won_amount,followup_lost_reason_id:followup_lost_reason_id,
+    add_to_calender:add_to_calender,
+    massage_of_calander:massage_of_calander };   
   const update_lead = await Lead.updateOne(condition, update_data);    
 
-  res.status(201).json({
+  res.status(201).json({ 
     success: true,
     message: "Followup lead  Has Been Added Successfully",
     followuplead,
