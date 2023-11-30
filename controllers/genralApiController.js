@@ -63,7 +63,7 @@ exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
 
 /////  Leads Source Overview  Api
 
-exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
+exports.LeadSourceOverviewApi1 = catchAsyncErrors(async (req, res, next) => {
   const Lead_source_id = [];
   const Lead_source_name = [];
 
@@ -78,13 +78,16 @@ exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
   await Promise.all(
     Lead_source_id.map(async (Lead_source_id1) => {
       const lead = await Lead.find({ lead_source: Lead_source_id1 });
-      const lead_length = lead.length;
+      if(lead){
+        const lead_length = await lead.length;
 
-      if (!lead) {
-        Lead_source_count.push(0);
-      } else {
-        Lead_source_count.push(lead_length);
+        if (!lead_length) {
+          Lead_source_count.push(0);
+        } else {
+          Lead_source_count.push(lead_length);
+        }
       }
+      
     })
   );
 
@@ -93,8 +96,50 @@ exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
     message: "Successfully Leads Source Overview",
     Lead_source_count,
     Lead_source_name,
+    Lead_source_id,
   });
 });
+
+
+
+
+////
+exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const lead_source = await leadsourceModel.find();
+    
+    const Lead_source_id = lead_source.map((lead_source1) => lead_source1._id);
+    const Lead_source_name = lead_source.map((lead_source1) => lead_source1.lead_source_name);
+
+    const Lead_source_countPromises = Lead_source_id.map(async (Lead_source_id1) => {
+      const lead = await Lead.find({ lead_source: Lead_source_id1 });
+      const lead_length = lead.length;
+
+      return lead_length;
+    });
+
+    const Lead_source_count = await Promise.all(Lead_source_countPromises);
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Leads Source Overview",
+      Lead_source_count,
+      Lead_source_name,
+      Lead_source_id,
+    });
+  } catch (error) {
+    // Handle errors appropriately
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+
+
+
 
 //// Income Graph Overview
 
