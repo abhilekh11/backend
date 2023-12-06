@@ -361,6 +361,10 @@ exports.getLeadbyagentidandstatus=catchAsyncErrors(async (req,res,next)=>{
         },
       },
     ]);
+
+    if(lead.length==0){
+      return next(new ErrorHander("Lead is not Avilable of This user",201)); 
+    }
   
     res.status(200).json({
       success: true,
