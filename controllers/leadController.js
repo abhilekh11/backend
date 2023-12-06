@@ -509,14 +509,14 @@ exports.deleteAllLead=catchAsyncErrors(async(req,res,next)=>{
 ///// Bulk Lead assigne Update  
 exports.BulkLeadUpdate=catchAsyncErrors(async (req,res,next)=>{
 
-          const {leads,agent,status}=req.body;
+          const {leads,Leadagent,LeadStatus}=req.body;
 
           if(leads.length==0){
             return next(new ErrorHander("Plz Select lead", 404));
           }
           leads.map(async (lead)=>{
            const condition ={_id:lead};
-           const update_data={ assign_to_agent: agent, status: status}
+           const update_data={ assign_to_agent: Leadagent, status: LeadStatus}
            const update_lead = await Lead.updateOne(condition, update_data);    
           }) 
 
