@@ -507,27 +507,6 @@ exports.deleteAllLead=catchAsyncErrors(async(req,res,next)=>{
 
 
 ///// Bulk Lead assigne Update  
-exports.BulkLeadUpdate1=catchAsyncErrors(async (req,res,next)=>{
-
-          const {leads,Leadagent,LeadStatus}=req.body;
-
-          if(leads.length==0){
-            return next(new ErrorHander("Plz Select lead", 404));
-          }
-          leads.map(async (lead)=>{
-           const condition ={_id:lead};
-           const update_data={ assign_to_agent: Leadagent, status: LeadStatus}
-           const update_lead = await Lead.updateOne(condition, update_data);    
-          }) 
-
-          res.status(201).json({ 
-            success: true,
-            message: "lead  Has Been Successfully Update",
-            
-          });
-});
-
-
 exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
   const { leads, Leadagent, LeadStatus } = req.body;
 
@@ -550,21 +529,22 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-
-
 /////// Advance Fillter sarch Api 
 exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
-
-
-  const { agent } = req.body;
+  const { agent,Status,startDate,endDate } = req.body;
 
   const matchConditions = {};
 
   if (agent) {
-    matchConditions.assign_to_agent = Lead({agent});
+    matchConditions.assign_to_agent = agent;
   }
 
-  
+  if (Status) {
+    matchConditions.status = Status;
+  }
+
+
+
    
   const lead = await Lead.aggregate([  
     {
