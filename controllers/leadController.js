@@ -507,7 +507,7 @@ exports.deleteAllLead=catchAsyncErrors(async(req,res,next)=>{
 
 
 ///// Bulk Lead assigne Update  
-exports.BulkLeadUpdate=catchAsyncErrors(async (req,res,next)=>{
+exports.BulkLeadUpdate1=catchAsyncErrors(async (req,res,next)=>{
 
           const {leads,Leadagent,LeadStatus}=req.body;
 
@@ -525,5 +525,159 @@ exports.BulkLeadUpdate=catchAsyncErrors(async (req,res,next)=>{
             message: "lead  Has Been Successfully Update",
             
           });
-})
+});
+
+
+exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
+  const { leads, Leadagent, LeadStatus } = req.body;
+
+  if (leads.length === 0) {
+    return next(new ErrorHander("Please select leads", 404));
+  }
+
+  const updatePromises = leads.map(async (lead) => {
+    const condition = { _id: lead };
+    const update_data = { assign_to_agent: Leadagent, status: LeadStatus };
+    return Lead.updateOne(condition, update_data);
+  });
+
+  // Wait for all updates to complete before sending the response
+  await Promise.all(updatePromises);
+
+  res.status(201).json({
+    success: true,
+    message: "Leads have been successfully updated",
+  });
+});
+
+
+
+/////// Advance Fillter sarch Api 
+exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
+
+
+  const { agent } = req.body;
+
+  const matchConditions = {};
+
+  if (agent) {
+    matchConditions.assign_to_agent = Lead({agent});
+  }
+
+  
+   
+  const lead = await Lead.aggregate([  
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_product_services",
+        let: { serviceString: "$service" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              product_service_name: 1,
+            },
+          },
+        ],
+        as: "service_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_statuses",
+        let: { statusString: "$status" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$statusString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              status_name: 1,
+            },
+          },
+        ],
+        as: "status_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_lead_sources",
+        let: { lead_sourceString: "$lead_source" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              lead_source_name: 1,
+            },
+          },
+        ],
+        as: "lead_source_details",
+      },
+    },
+   
+    {
+      $match: matchConditions,
+    },
+
+    {
+      $sort: {
+        followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
+      },
+    },
+  ]);
+
+ 
+
+ 
+  
+  
+  res.status(200).json({
+    success: true,
+    
+    lead,  
+      
+  });
+});
+
+
 
