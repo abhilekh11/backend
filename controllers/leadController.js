@@ -19,7 +19,7 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
 
 //// get All Lead
 exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
-  const lead = await Lead.aggregate([  
+  const lead = await Lead.aggregate([   
     {
       $lookup: {
         from: "crm_agents",
@@ -31,7 +31,24 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
                 $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
               },
             },
-          },
+          }, 
+
+          ///  this is for null get id *imp 
+          
+          // {
+          //   $project: { 
+          //     convertedField: {
+          //       $cond: {
+          //         if: { $ne: ['$assign_to_agent', ''] },
+          //         then: { $toObjectId: '$assign_to_agent' },
+          //         else: null, // or another default value
+          //       },
+          //     },
+          //   },
+          // },
+          ///  this is for null get id *imp 
+         
+
           {
             $project: {
               agent_name: 1,
