@@ -537,7 +537,7 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
 
   const updatePromises = leads.map(async (lead) => {
     const condition = { _id: lead };
-    const update_data = { assign_to_agent: Leadagent, status: LeadStatus };
+    const update_data = { assign_to_agent: Leadagent?.agent, status: LeadStatus?.status };
     return Lead.updateOne(condition, update_data);
   });
 
