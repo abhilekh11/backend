@@ -486,14 +486,7 @@ exports.getLeadbyagentidandwithstatus = catchAsyncErrors(async (req, res, next) 
         as: "lead_source_details",
       },
     },
-    /////for  loss and won status remove
-    {
-      $match: {
-        status: {
-          $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"],
-        },
-      },
-    },
+   
 
     {
       $sort: {
