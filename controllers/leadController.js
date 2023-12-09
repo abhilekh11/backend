@@ -4,7 +4,7 @@ const agent = require("../models/agentModel");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
 //const useragent = require('useragent');
-const useragent = require('express-useragent');
+const useragent = require("express-useragent");
 //const geoip = require('geoip-lite');
 /// creat Lead
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
@@ -19,7 +19,7 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
 
 //// get All Lead
 exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
-  const lead = await Lead.aggregate([   
+  const lead = await Lead.aggregate([
     {
       $lookup: {
         from: "crm_agents",
@@ -31,12 +31,12 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
                 $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
               },
             },
-          }, 
+          },
 
-          ///  this is for null get id *imp 
-          
+          ///  this is for null get id *imp
+
           // {
-          //   $project: { 
+          //   $project: {
           //     convertedField: {
           //       $cond: {
           //         if: { $ne: ['$assign_to_agent', ''] },
@@ -46,8 +46,7 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
           //     },
           //   },
           // },
-          ///  this is for null get id *imp 
-         
+          ///  this is for null get id *imp
 
           {
             $project: {
@@ -132,24 +131,16 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
     },
   ]);
 
- 
-
- 
-  
-  
   res.status(200).json({
     success: true,
-   
-    lead,  
-      
+
+    lead,
   });
 });
 
-
-
-////// get Alll lead For Followup 
+////// get Alll lead For Followup
 exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
-  const lead = await Lead.aggregate([  
+  const lead = await Lead.aggregate([
     {
       $lookup: {
         from: "crm_agents",
@@ -240,12 +231,12 @@ exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
     /////for  loss status remove
     {
       $match: {
-         
-       // status: { $ne: "6540873b3bdc70798d3e9f4e" } // Exclude leads with status 'loss'
-       status: { $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"] }
+        // status: { $ne: "6540873b3bdc70798d3e9f4e" } // Exclude leads with status 'loss'
+        status: {
+          $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"],
+        },
       },
     },
-
 
     {
       $sort: {
@@ -254,159 +245,273 @@ exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
     },
   ]);
 
- 
-
- 
-  
-  
   res.status(200).json({
     success: true,
-   
-    lead,  
-      
+
+    lead,
+  });
+});
+
+/// get  lead by by agent id for user without status loss and won 
+
+exports.getLeadbyagentidandwithoutstatus = catchAsyncErrors(async (req, res, next) => {
+  const { assign_to_agent } = req.body;
+  if (!assign_to_agent) {
+    return next(new ErrorHander("assign_to_agent is required..!", 404));
+  }
+  const lead = await Lead.aggregate([
+    {
+      $match: {
+        $expr: {
+          $eq: ["$assign_to_agent", assign_to_agent],
+        },
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_product_services",
+        let: { serviceString: "$service" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              product_service_name: 1,
+            },
+          },
+        ],
+        as: "service_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_statuses",
+        let: { statusString: "$status" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$statusString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              status_name: 1,
+            },
+          },
+        ],
+        as: "status_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_lead_sources",
+        let: { lead_sourceString: "$lead_source" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              lead_source_name: 1,
+            },
+          },
+        ],
+        as: "lead_source_details",
+      },
+    },
+    /////for  loss and won status remove
+    {
+      $match: {
+        status: {
+          $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"],
+        },
+      },
+    },
+
+    {
+      $sort: {
+        followup_date: 1,
+      },
+    },
+  ]);
+
+  if (lead.length == 0) {
+    return next(new ErrorHander("Lead is not Avilable of This user", 201));
+  }
+
+  res.status(200).json({
+    success: true,
+
+    lead,
   });
 });
 
 
-/// get  lead by by agent id for user
+/// get  lead by by agent id for user with status loss and won 
 
-exports.getLeadbyagentidandstatus=catchAsyncErrors(async (req,res,next)=>{
-   const {assign_to_agent} =req.body; 
-  if(!assign_to_agent){
-      return next(new ErrorHander("assign_to_agent is required..!",404)); 
-   }
-   const lead = await Lead.aggregate([
-      { 
-        $match: {
-          $expr: {
-            $eq: ["$assign_to_agent",  assign_to_agent ],
-          },
-        },
-      },
-
-      {
-        $lookup: {
-          from: "crm_agents",
-          let: { assign_to_agentString: "$assign_to_agent" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
-                },
-              },
-            },
-            {
-              $project: {
-                agent_name: 1,
-              },
-            },
-          ],
-          as: "agent_details",
-        },
-      },
-  
-      {
-        $lookup: {
-          from: "crm_product_services",
-          let: { serviceString: "$service" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$_id", { $toObjectId: "$$serviceString" }],
-                },
-              },
-            },
-            {
-              $project: {
-                product_service_name: 1,
-              },
-            },
-          ],
-          as: "service_details",
-        },
-      },
-  
-      {
-        $lookup: {
-          from: "crm_statuses",
-          let: { statusString: "$status" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$_id", { $toObjectId: "$$statusString" }],
-                },
-              },
-            },
-            {
-              $project: {
-                status_name: 1,
-              },
-            },
-          ],
-          as: "status_details",
-        },
-      },
-  
-      {
-        $lookup: {
-          from: "crm_lead_sources",
-          let: { lead_sourceString: "$lead_source" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
-                },
-              },
-            },
-            {
-              $project: {
-                lead_source_name: 1,
-              },
-            },
-          ],
-          as: "lead_source_details",
-        },
-      },
-
-      /////for  loss status remove
+exports.getLeadbyagentidandwithstatus = catchAsyncErrors(async (req, res, next) => {
+  const { assign_to_agent } = req.body;
+  if (!assign_to_agent) {
+    return next(new ErrorHander("assign_to_agent is required..!", 404));
+  }
+  const lead = await Lead.aggregate([
     {
       $match: {
-         
-       // status: { $ne: "6540873b3bdc70798d3e9f4e" } // Exclude leads with status 'loss'
-       status: { $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"] }
+        $expr: {
+          $eq: ["$assign_to_agent", assign_to_agent],
+        },
       },
     },
 
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
 
-   
+    {
+      $lookup: {
+        from: "crm_product_services",
+        let: { serviceString: "$service" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              product_service_name: 1,
+            },
+          },
+        ],
+        as: "service_details",
+      },
+    },
 
-      {
-        $sort: {
-          followup_date: 1, 
+    {
+      $lookup: {
+        from: "crm_statuses",
+        let: { statusString: "$status" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$statusString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              status_name: 1,
+            },
+          },
+        ],
+        as: "status_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_lead_sources",
+        let: { lead_sourceString: "$lead_source" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              lead_source_name: 1,
+            },
+          },
+        ],
+        as: "lead_source_details",
+      },
+    },
+    /////for  loss and won status remove
+    {
+      $match: {
+        status: {
+          $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"],
         },
       },
-    ]);
+    },
 
-    if(lead.length==0){
-      return next(new ErrorHander("Lead is not Avilable of This user",201)); 
-    }
-  
-    res.status(200).json({
-      success: true,
-     
-      lead,
-    });
- 
-    
+    {
+      $sort: {
+        followup_date: 1,
+      },
+    },
+  ]);
 
+  if (lead.length == 0) {
+    return next(new ErrorHander("Lead is not Avilable of This user", 201));
+  }
 
-})
+  res.status(200).json({
+    success: true,
 
-
+    lead,
+  });
+});
 
 //// get Lead By Id
 
@@ -416,7 +521,7 @@ exports.getLeadById = catchAsyncErrors(async (req, res, next) => {
   if (!lead) {
     return next(new ErrorHander("lead is not found"));
   } else {
-    const leads = await Lead.aggregate([ 
+    const leads = await Lead.aggregate([
       {
         $match: {
           $expr: {
@@ -424,7 +529,7 @@ exports.getLeadById = catchAsyncErrors(async (req, res, next) => {
           },
         },
       },
-  
+
       {
         $lookup: {
           from: "crm_agents",
@@ -521,21 +626,17 @@ exports.getLeadById = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+/// delete all lead
 
-/// delete all lead 
-
-exports.deleteAllLead=catchAsyncErrors(async(req,res,next)=>{
- await Lead.deleteMany();
+exports.deleteAllLead = catchAsyncErrors(async (req, res, next) => {
+  await Lead.deleteMany();
   res.status(200).json({
     success: true,
-    message:"Delete All Lead Successfully",
+    message: "Delete All Lead Successfully",
   });
-   
+});
 
-})
-
-
-///// Bulk Lead assigne Update  
+///// Bulk Lead assigne Update
 exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
   const { leads, Leadagent, LeadStatus } = req.body;
 
@@ -545,7 +646,10 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
 
   const updatePromises = leads.map(async (lead) => {
     const condition = { _id: lead };
-    const update_data = { assign_to_agent: Leadagent?.agent, status: LeadStatus?.status };
+    const update_data = {
+      assign_to_agent: Leadagent?.agent,
+      status: LeadStatus?.status,
+    };
     return Lead.updateOne(condition, update_data);
   });
 
@@ -558,9 +662,9 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-/////// Advance Fillter sarch Api 
+/////// Advance Fillter sarch Api
 exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
-  const { agent,Status,startDate,endDate } = req.body;
+  const { agent, Status, startDate, endDate } = req.body;
 
   const matchConditions = {};
 
@@ -572,10 +676,7 @@ exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
     matchConditions.status = Status;
   }
 
-
-
-   
-  const lead = await Lead.aggregate([  
+  const lead = await Lead.aggregate([
     {
       $lookup: {
         from: "crm_agents",
@@ -663,7 +764,7 @@ exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
         as: "lead_source_details",
       },
     },
-   
+
     {
       $match: matchConditions,
     },
@@ -675,18 +776,9 @@ exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
     },
   ]);
 
- 
-
- 
-  
-  
   res.status(200).json({
     success: true,
-    
-    lead,  
-      
+
+    lead,
   });
 });
-
-
-

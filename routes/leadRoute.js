@@ -1,6 +1,6 @@
 const express=require('express');
 const { Add_Lead, getAllLead ,getLeadById, deleteAllLead,
-     getLeadbyagentidandstatus,getAllLeadFollowup,
+      getLeadbyagentidandwithoutstatus,getAllLeadFollowup,getLeadbyagentidandwithstatus,
       BulkLeadUpdate, getAdvanceFillter} = require('../controllers/leadController');  
 
 
@@ -12,7 +12,9 @@ router.route("/getAdvanceFillter").get(getAdvanceFillter);
 
 router.route("/get_lead_by_id/:id").get(getLeadById); 
 router.route("/delete_all_lead").delete(deleteAllLead);
-router.route("/get_Leadby_agentid_status").post(getLeadbyagentidandstatus);
+router.route("/get_Leadby_agentid_status").post(getLeadbyagentidandwithoutstatus);
+//  with loss and won status 
+router.route("/get_Leadby_agentid_with_status").post(getLeadbyagentidandwithstatus);  
 router.route("/get_All_Lead_Followup").get(getAllLeadFollowup); 
 router.route("/BulkLeadUpdate").put(BulkLeadUpdate);
 
