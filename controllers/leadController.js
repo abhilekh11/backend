@@ -372,6 +372,18 @@ exports.getLeadbyagentidandstatus=catchAsyncErrors(async (req,res,next)=>{
         },
       },
 
+      /////for  loss status remove
+    {
+      $match: {
+         
+       // status: { $ne: "6540873b3bdc70798d3e9f4e" } // Exclude leads with status 'loss'
+       status: { $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"] }
+      },
+    },
+
+
+   
+
       {
         $sort: {
           followup_date: 1, 
