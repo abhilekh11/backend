@@ -20,6 +20,7 @@ const followup=require('./routes/followupRoute');
 const calllog=require('./routes/calllogRoute');
 const lostreason=require('./routes/lostreasonRoute');
 const YearlySaleApi=require('./routes/genralapiRoute');
+const Updateandsavenotification=require('./routes/notificationRoute');
  
 app.use(cors());
 app.use("/api/v1/",agent);
@@ -32,6 +33,7 @@ app.use("/api/v1/",followup);
 app.use("/api/v1/",calllog);
 app.use("/api/v1/",lostreason);
 app.use("/api/v1/",YearlySaleApi);
+app.use("/api/v1/",Updateandsavenotification);
 app.get('/', function (req, res) { 
     
   // res.end(`The client's IP Address is: ${req.socket.remoteAddress}`);
@@ -42,7 +44,7 @@ app.get('/', function (req, res) {
            "massage":"get Product"   
           }
         );   
-         
+          
         } catch (error) { 
           res.status(500).send(error);  
         }

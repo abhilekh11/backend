@@ -27,10 +27,7 @@ res.status(201).json({
   //     message:"Email Or Mobile Already Exit..."
   //   });
   // }
-
-  
-
-  //sendToken(agent,201,res);
+    //sendToken(agent,201,res);
 });
 
 // Delete Agent --admin
@@ -128,8 +125,7 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
   sendToken(agent, 200, res);
   // res.status(201).json({
   //   success: true,
-  //   loginHistory11, 
-      
+  //   loginHistory11,     
   // });
   
 });

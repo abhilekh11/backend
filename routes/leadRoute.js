@@ -17,5 +17,5 @@ router.route("/get_Leadby_agentid_status").post(getLeadbyagentidandwithoutstatus
 router.route("/get_Leadby_agentid_with_status").post(getLeadbyagentidandwithstatus);  
 router.route("/get_All_Lead_Followup").get(getAllLeadFollowup); 
 router.route("/BulkLeadUpdate").put(BulkLeadUpdate);
-
-module.exports=router;          
+    
+module.exports=router;            
