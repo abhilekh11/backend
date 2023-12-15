@@ -4,7 +4,7 @@ const useragent = require('express-useragent');
 const app = express();
 var cors = require('cors');
 const errorMiddleware=require("./middleware/error");
-
+ const scheduleJob1=require("./controllers/sentNotificationWebController");
 
 app.use(useragent.express());
 app.use(express.json());
@@ -21,7 +21,9 @@ const calllog=require('./routes/calllogRoute');
 const lostreason=require('./routes/lostreasonRoute');
 const YearlySaleApi=require('./routes/genralapiRoute');
 const Updateandsavenotification=require('./routes/notificationRoute');
- 
+// const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
+
+scheduleJob1();
 app.use(cors());
 app.use("/api/v1/",agent);
 app.use("/api/v1/",product_service); 
@@ -34,6 +36,8 @@ app.use("/api/v1/",calllog);
 app.use("/api/v1/",lostreason);
 app.use("/api/v1/",YearlySaleApi);
 app.use("/api/v1/",Updateandsavenotification);
+// app.use("/api/v1/",updateandsavenotification1)
+
 app.get('/', function (req, res) { 
     
   // res.end(`The client's IP Address is: ${req.socket.remoteAddress}`);

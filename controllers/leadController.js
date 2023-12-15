@@ -7,6 +7,7 @@ const ErrorHander = require("../utils/errorhander");
 const useragent = require("express-useragent");
 //const geoip = require('geoip-lite');
 /// creat Lead
+
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.create(req.body);
 
