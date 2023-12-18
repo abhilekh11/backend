@@ -5,6 +5,7 @@ const FollowupLead = require("../models/followupModel");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
 const { param } = require("../app");
+const SaveNotification=require("../models/websavenotification");
 
 /// creat followup Lead
 exports.Add_Followup_Lead = catchAsyncErrors(async (req, res, next) => {
@@ -80,6 +81,9 @@ exports.Add_Followup_Lead = catchAsyncErrors(async (req, res, next) => {
     add_to_calender:add_to_calender,
     massage_of_calander:massage_of_calander };   
   const update_lead = await Lead.updateOne(condition, update_data);    
+    const adddata= {user_id:assign_to_agent,title:'Notification Of Your Lead',body:massage_of_calander,datetime:followup_date}
+  const SaveNotificationdata=await SaveNotification.create(adddata);
+   
 
   res.status(201).json({ 
     success: true,

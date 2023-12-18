@@ -3,6 +3,7 @@ const webNotification=require("../models/notificationForWebModel")
 const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Agent = require("../models/agentModel");
+const SaveNotification=require("../models/websavenotification");
 
 // save and update device token  for app
 
@@ -74,3 +75,30 @@ exports.updateandsavenotificationForWeb = catchAsyncErrors(async (req, res, next
 } 
 
 });
+
+
+
+////////////////////////////////////////// save notification massage in crm_notificationwebsave
+
+exports.getnotificationmassage=catchAsyncErrors(async (req,res,next)=>{
+   
+      const {user_id,datetime}=req.body;
+      if (!user_id) {
+        return next(new ErrorHander("User is Required", 400));
+      }        
+      if (!datetime) {
+        return next(new ErrorHander("time is Required", 400));
+      }
+
+      const SaveNotificationget = await SaveNotification.find({
+        datetime:  datetime, 
+        user_id: user_id,
+      });
+
+     res.status(201).json({
+        success: true,
+        massage:'Notification get',    
+        SaveNotificationget
+      });
+
+})

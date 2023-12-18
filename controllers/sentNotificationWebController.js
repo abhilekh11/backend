@@ -14,7 +14,7 @@ async function scheduleJob() {
   const formattedDate = inputDate.toISOString();
      //console.log(inputDate)
   const leads = await Lead.find({
-    followup_date: { $gte: formattedDate },
+    followup_date: { $gte: formattedDate }, 
     status: { $nin: ["6539fa950b9756b61601287b", "6561c44233093ed343745a3e"] },
   });
 
@@ -31,6 +31,8 @@ async function scheduleJob() {
       //console.log(targetDate)
        schedule.scheduleJob(targetDate, async () => {
         try {
+
+
           //console.log('chala')
          // console.log('agent_id',agent_id)
           const tokentable = await webNotification.findOne({
@@ -57,6 +59,9 @@ async function scheduleJob() {
               my_another_key: "my another value",
             },  
           };
+
+          
+
           fcm.send(message1, function (err, response) {
             if (err) {
               console.log("Something has gone wrong!");
