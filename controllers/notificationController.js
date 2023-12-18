@@ -10,7 +10,7 @@ exports.updateandsavenotification = catchAsyncErrors(async (req, res, next) => {
   const { user_id, token } = req.body;
   if (!user_id) {
     return next(new ErrorHander("User is Required", 400));
-  }
+  }        
   if (!token) {
     return next(new ErrorHander("Device Token is Required", 400));
   }
@@ -23,7 +23,7 @@ exports.updateandsavenotification = catchAsyncErrors(async (req, res, next) => {
       success: true,
       notification,
     });
-  }
+  }else{
    //// update the token in notification collection
   const condition = { user_id: user_id }; 
   const updatedate={    
@@ -34,7 +34,7 @@ exports.updateandsavenotification = catchAsyncErrors(async (req, res, next) => {
    success: true,
    massage:'Token Update Successfully...',    
  });
-  
+}
   
 
 });
@@ -59,10 +59,10 @@ exports.updateandsavenotificationForWeb = catchAsyncErrors(async (req, res, next
       success: true,
       notification,
     });
-  }
+  }else{
    //// update the token in notification collection
   const condition = { user_id: user_id }; 
-  const updatedate={    
+  const updatedate={      
    token:token,
   }
  const notificationupdate=await webNotification.updateOne(condition, updatedate);    
@@ -71,6 +71,6 @@ exports.updateandsavenotificationForWeb = catchAsyncErrors(async (req, res, next
    massage:'Token Update Successfully...',    
  });
   
-  
+} 
 
 });
