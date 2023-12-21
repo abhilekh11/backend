@@ -7,7 +7,7 @@ const { Add_Lead, getAllLead ,getLeadById, deleteAllLead,
 const router=express.Router();
 router.route("/add_lead").post(Add_Lead);
 router.route("/get_all_lead").get(getAllLead);  
-router.route("/getAdvanceFillter").get(getAdvanceFillter); 
+router.route("/getAdvanceFillter").post(getAdvanceFillter); 
 
 
 router.route("/get_lead_by_id/:id").get(getLeadById); 
