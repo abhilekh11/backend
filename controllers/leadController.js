@@ -670,6 +670,14 @@ exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
     matchConditions.status = Status;
   }
 
+  if (startDate && endDate) {
+    matchConditions.followup_date = {  
+      $gte: new Date(startDate),
+      $lte: new Date(endDate), 
+    };
+  }
+
+
   const lead = await Lead.aggregate([
     {
       $lookup: {
