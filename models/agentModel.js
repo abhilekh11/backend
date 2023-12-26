@@ -77,6 +77,9 @@ const agentSchema= new mongoose.Schema({
    this.agent_password=  await bcrypt.hash(this.agent_password,10);
 })
 
+
+ 
+
 // JWT Token 
 
 agentSchema.methods.getJWTToken= function(){ 

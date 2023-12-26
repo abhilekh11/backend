@@ -4,7 +4,7 @@ const Lead = require("../models/leadModel");
 const schedule = require("node-schedule");
 var FCM = require("fcm-node");
 var serverKey =
-  "AAAAG8g0Jgk:APA91bF2Tm4IkOcsVuAwaw2nqicIndyvBQOiO_GXRxAntYjhYKLTPkKIy4d0yyBY1cY8H175mHUzpASxUGpGJ7xJXT1Fpc0nIggGaPQXpzrrt2aaJM1WPO1D4ELcT18emGKV_BviJkkE"; //put your server key here
+  "AAAA7j2plT4:APA91bEL_A-FJ1HkkOh4sw2sN32PptFyC4dCYG27b4Fp3FqZo1BUdFceyJpEPN9fgR80kQVaK-OjZOwxGN0CBtp6YTgJ7VNBg0U0kwQDFOiXfIvtePnpWuibq3QIKOs-NULrtMC0I-sZ"; //put your server key here
 var fcm = new FCM(serverKey);
 
 async function scheduleJob() {
@@ -31,9 +31,7 @@ async function scheduleJob() {
       //console.log(targetDate)
        schedule.scheduleJob(targetDate, async () => {
         try {
-
-
-          //console.log('chala')
+          console.log('chala')
          // console.log('agent_id',agent_id)
           const tokentable = await webNotification.findOne({
             user_id: agent_id,
@@ -50,7 +48,7 @@ async function scheduleJob() {
           var message1 = {  
             to: token,
             collapse_key: "your_collapse_key",
-            notification: {
+            notification: {   
               title: "Title of your push notification",
               body: message,
             },

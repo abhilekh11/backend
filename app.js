@@ -4,12 +4,12 @@ const useragent = require('express-useragent');
 const app = express();
 var cors = require('cors');
 const errorMiddleware=require("./middleware/error");
- const scheduleJob1=require("./controllers/sentNotificationWebController");
+const scheduleJob1=require("./controllers/sentNotificationWebController");
 
 app.use(useragent.express());
 app.use(express.json());
 app.use(cookieParser());  
-
+app.use(express.static('public'));
 const agent =require('./routes/agentRoute');
 const product_service=require('./routes/productserviceRoute');
 const lead_source=require('./routes/leadsourceRoute');
@@ -21,6 +21,7 @@ const calllog=require('./routes/calllogRoute');
 const lostreason=require('./routes/lostreasonRoute');
 const YearlySaleApi=require('./routes/genralapiRoute');
 const Updateandsavenotification=require('./routes/notificationRoute');
+const excelUplode=require('./routes/excelUplodeRoute');
 // const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
 
 scheduleJob1();
@@ -36,6 +37,7 @@ app.use("/api/v1/",calllog);
 app.use("/api/v1/",lostreason);
 app.use("/api/v1/",YearlySaleApi);
 app.use("/api/v1/",Updateandsavenotification);
+app.use("/",excelUplode);   
 // app.use("/api/v1/",updateandsavenotification1)
 
 app.get('/', function (req, res) { 

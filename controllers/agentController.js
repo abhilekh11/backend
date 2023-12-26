@@ -3,17 +3,11 @@ const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
 const LoginHistory=require("../models/LoginHistory");
-// const useragent = require('useragent');
-// const geoip = require('geoip-lite');
+const bcrypt = require('bcryptjs');
 const useragent = require('express-useragent');
-// creat agent  -- admin
-exports.createAgent = catchAsyncErrors(async (req, res, next) => {
-  //const {agent_mobile,agent_email} =req.body;
 
-  //console.log(agent_email);
-  // const agent=await Agent.find({agent_mobile});
+exports.createAgent = catchAsyncErrors(async (req, res, next) => {
   
-  // if(!agent){
 const agent = await Agent.create(req.body);
 
 res.status(201).json({
@@ -21,13 +15,7 @@ res.status(201).json({
   agent,
   message:"Agent Added Successfully...."
 });  
-  // }else{
-  //   res.status(202).json({
-  //     success: false,
-  //     message:"Email Or Mobile Already Exit..."
-  //   });
-  // }
-    //sendToken(agent,201,res);
+ 
 });
 
 // Delete Agent --admin
@@ -82,10 +70,7 @@ exports.getAgentDetails = catchAsyncErrors(async (req, res, next) => {
 
 exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
   // const {agent_email, agent_password} =req.body;
-  // const agentsfdsfds = useragent.parse(req.headers['user-agent']);
-  // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-  // const geo = geoip.lookup(ip);
+  
 
  
   
@@ -105,28 +90,12 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHander("Invalid email Or password", 400));
   }
   const userAgent = req.useragent;
-  // const loginHistory1 ={
-  //   "userId": userAgent.source,
-  //   "ipAddress":req.ip,
-  //   "browser": userAgent.browser,
-  //   "system": userAgent.os,
   
-  // }; 
-
- // loginHistory11=await LoginHistory.create({loginHistory1});
-
- console.log('User Agent:', userAgent.source);  
- console.log('Browser:', userAgent.browser);
- console.log('Operating System:', userAgent.os);
- 
  
   const token = agent.getJWTToken();
  
   sendToken(agent, 200, res);
-  // res.status(201).json({
-  //   success: true,
-  //   loginHistory11,     
-  // });
+  
   
 });
 /// update Client Access
@@ -153,6 +122,65 @@ exports.updateClientAccess=catchAsyncErrors(async(req,res,next)=>{
     
   });
  });
+
+
+ exports.EditAgentDetails=catchAsyncErrors(async(req,res,next)=>{
+  const agent = await Agent.findById(req.params.id).select(
+    "+agent_password"
+  );
+  if(!agent){   
+    return next(new ErrorHander("Invalid email Or password", 400));
+  }
+ if(!req.body.agent_password){ 
+     const  updateagent=await Agent.findByIdAndUpdate(req.params.id,req.body,{   
+    new:true,    
+    runValidators:true,    
+    useFindAndModify:false,
+})
+
+res.status(200).json({     
+  success: true, 
+  updateagent,  
+});
+ }else{
+
+  const isPasswordMatched = await agent.comparePassword(req.body.agent_password);
+  if (!isPasswordMatched) { 
+     
+   const convertohashpass=  await bcrypt.hash(req.body.agent_password,10);
+     const {agent_password ,...newAaa}=await req.body;
+     const updatekrnewaladata= await {...newAaa,agent_password:convertohashpass};
+     const  updateagent=await Agent.findByIdAndUpdate(req.params.id,updatekrnewaladata,{   
+      new:true,    
+      runValidators:true,    
+      useFindAndModify:false,
+  })
+  
+  res.status(200).json({     
+    success: true, 
+    updateagent,  
+  });
+  }else{
+    const  updateagent=await Agent.findByIdAndUpdate(req.params.id,req.body,{   
+      new:true,    
+      runValidators:true,    
+      useFindAndModify:false,
+  })
+  
+  res.status(200).json({     
+    success: true, 
+    updateagent,  
+  });
+  }
+
+ }
+
+
+
+
+ })
+
+
 
  exports.forgotPassword=catchAsyncErrors(async (req,res,next)=>{
        //    const {email,new_password}=req.body;
