@@ -154,7 +154,7 @@ exports.getFollowupById = catchAsyncErrors(async (req, res, next) => {
 
       {
         $sort: {
-          created: 1, // 1 for ascending order, -1 for descending
+          created: -1, // 1 for ascending order, -1 for descending
         },
       },
     ]);
