@@ -805,3 +805,16 @@ exports.BulkLeadUplodeExcel = catchAsyncErrors(async (req, res, next) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });    
+
+
+exports.BulkDeleteLead=catchAsyncErrors(async (req,res,next)=>{
+    
+  const leadIds = req.body.ids; // Assuming you send an array of lead _id values in the request body
+
+  const result = await Lead.deleteMany({ _id: { $in: leadIds } });
+  res.status(200).json({
+    success: true,
+     message:"Lead Has Been Deleted",
+  });
+  
+})

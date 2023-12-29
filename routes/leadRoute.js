@@ -2,7 +2,7 @@ const express=require('express');
 
 const { Add_Lead, getAllLead ,getLeadById, deleteAllLead,
       getLeadbyagentidandwithoutstatus,getAllLeadFollowup,getLeadbyagentidandwithstatus,
-      BulkLeadUpdate, getAdvanceFillter} = require('../controllers/leadController');  
+      BulkLeadUpdate, getAdvanceFillter,BulkDeleteLead} = require('../controllers/leadController');  
 
 
 const router=express.Router();
@@ -17,6 +17,7 @@ router.route("/get_Leadby_agentid_status").post(getLeadbyagentidandwithoutstatus
 router.route("/get_Leadby_agentid_with_status").post(getLeadbyagentidandwithstatus);  
 router.route("/get_All_Lead_Followup").get(getAllLeadFollowup); 
 router.route("/BulkLeadUpdate").put(BulkLeadUpdate);
+router.route("/BulkDeleteLead").delete(BulkDeleteLead)
 // router.route("/BulkLeadUplodeExcel",upload.single('file')).post(BulkLeadUplodeExcel); 
       
 module.exports=router;            
