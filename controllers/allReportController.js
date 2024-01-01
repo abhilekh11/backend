@@ -39,6 +39,7 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
       }
   res.status(201).json({
     success: true,
+    message:'Lead Source Get Successfully',
     leadSource,
   });
 
