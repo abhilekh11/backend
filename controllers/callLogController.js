@@ -150,12 +150,6 @@ countMap.forEach((objects, value) => {
     maxCountDial = count;
   }
 });
-
- 
- 
-
-
-
   details.push({
     totalDuration: total_duration,
     totalworkinghoure:totalworkinghoure,  

@@ -6,18 +6,13 @@ const ErrorHander = require("../utils/errorhander");
 
 /// creat LeadSource
 exports.Add_LeadSource = catchAsyncErrors(async (req, res, next) => {
-      
-    
-    const leadSource = await Lead_Source.create(req.body);
-  
-    res.status(201).json({
+     const leadSource = await Lead_Source.create(req.body);
+     res.status(201).json({
       success: true,
       message:"leadSource  Has Been Added Successfully",
       leadSource,
     });   
-  
-   
-  });
+    });
 
   /// Delete LeadSource
 
@@ -70,6 +65,8 @@ exports.Add_LeadSource = catchAsyncErrors(async (req, res, next) => {
           });
 
    })
+
+   ////////// 
 
 
 

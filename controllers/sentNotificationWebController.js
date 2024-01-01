@@ -74,7 +74,7 @@ async function scheduleJob() {
     // console.log(targetDate)
     }
   } else {
-    console.log("No leads found. Job not scheduled.");
+   // console.log("No leads found. Job not scheduled.");
   }
 }
  

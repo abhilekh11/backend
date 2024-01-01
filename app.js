@@ -22,6 +22,7 @@ const lostreason=require('./routes/lostreasonRoute');
 const YearlySaleApi=require('./routes/genralapiRoute');
 const Updateandsavenotification=require('./routes/notificationRoute');
 const excelUplode=require('./routes/excelUplodeRoute');
+const Report=require('./routes/allReportRoute');
 // const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
 
 scheduleJob1();
@@ -37,7 +38,8 @@ app.use("/api/v1/",calllog);
 app.use("/api/v1/",lostreason);
 app.use("/api/v1/",YearlySaleApi);
 app.use("/api/v1/",Updateandsavenotification);
-app.use("/",excelUplode);   
+app.use("/",excelUplode);  
+app.use("/api/v1/",Report); 
 // app.use("/api/v1/",updateandsavenotification1)
 
 app.get('/', function (req, res) { 
