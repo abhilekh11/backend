@@ -12,7 +12,7 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
         return next(new ErrorHander("Lead source is required", 400));
       }
      
-    
+      
  // Parse start_date and end_date into Date objects if provided
  const startDateObj = start_date ? new Date(start_date) : null;
  const endDateObj = end_date ? new Date(end_date) : null;
@@ -37,6 +37,10 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
      if (!leadSource || leadSource.length === 0) {
         return next(new ErrorHander("No Data Found Now", 404));
       }
+
+
+
+
   res.status(201).json({
     success: true,
     message:'Lead Source Get Successfully',

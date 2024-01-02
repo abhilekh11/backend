@@ -818,3 +818,27 @@ exports.BulkDeleteLead=catchAsyncErrors(async (req,res,next)=>{
   });
   
 })
+
+
+///////// lead Edit  
+exports.UpdateLeadByLeadId=catchAsyncErrors(async(req,res,next)=>{
+
+  let lead=await Lead.findById(req.params.id);
+  if(!lead){
+     return next(new ErrorHander("Lead Not Found"))
+  }
+
+   lead=await Lead.findByIdAndUpdate(req.params.id,req.body,{   
+       new:true,    
+       runValidators:true,    
+       useFindAndModify:false,
+  })
+
+  res.status(200).json({     
+     success: true, 
+     message:"Lead Update Successfully",
+     lead,  
+   });
+
+
+})
