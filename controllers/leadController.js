@@ -51,15 +51,9 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
           {
             $match: {
               $expr: {
-                $eq: [
-                  {
-                    $cond: {
-                      if: { $ne: ["$$assign_to_agentString", ""] },
-                      then: { $toObjectId: "$$assign_to_agentString" },
-                      else: null,
-                    },
-                  },
-                  "$_id",
+                $and: [
+                  { $ne: ["$$assign_to_agentString", ""] }, // Filter out empty strings
+                  { $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }] },
                 ],
               },
             },
@@ -131,18 +125,13 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
           //     },
           //   },
           // },
+         
           {
             $match: {
               $expr: {
-                $eq: [
-                  {
-                    $cond: {
-                      if: { $ne: ["$$statusString", ""] },
-                      then: { $toObjectId: "$$statusString" },
-                      else: null,
-                    },
-                  },
-                  "$_id",
+                $and: [
+                  { $ne: ["$$statusString", ""] }, // Filter out empty strings
+                  { $eq: ["$_id", { $toObjectId: "$$statusString" }] },
                 ],
               },
             },
