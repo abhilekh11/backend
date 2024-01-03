@@ -25,25 +25,6 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
 exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.aggregate([
     {
-      // $lookup: {
-      //   from: "crm_agents",
-      //   let: { assign_to_agentString: "$assign_to_agent" },
-      //   pipeline: [
-      //     {
-      //       $match: {
-      //         $expr: {
-      //           $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
-      //         },
-      //       },
-      //     },
-      //     {
-      //       $project: {
-      //         agent_name: 1,
-      //       },
-      //     },
-      //   ],
-      //   as: "agent_details",
-      // },
       $lookup: {
         from: "crm_agents",
         let: { assign_to_agentString: "$assign_to_agent" },
@@ -51,13 +32,26 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
           {
             $match: {
               $expr: {
-                $and: [
-                  { $ne: ["$$assign_to_agentString", ""] }, // Filter out empty strings
-                  { $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }] },
-                ],
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
               },
             },
           },
+
+          ///  this is for null get id *imp
+
+          // {
+          //   $project: {
+          //     convertedField: {
+          //       $cond: {
+          //         if: { $ne: ['$assign_to_agent', ''] },
+          //         then: { $toObjectId: '$assign_to_agent' },
+          //         else: null, // or another default value
+          //       },
+          //     },
+          //   },
+          // },
+          ///  this is for null get id *imp
+
           {
             $project: {
               agent_name: 1,
@@ -66,9 +60,6 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         ],
         as: "agent_details",
       },
-
- 
-
     },
 
     {
@@ -76,33 +67,13 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         from: "crm_product_services",
         let: { serviceString: "$service" },
         pipeline: [
-          // {
-          //   $match: {
-          //     $expr: {
-          //       $eq: ["$_id", { $toObjectId: "$$serviceString" }],
-          //     },
-          //   },
-          // },
-
           {
             $match: {
               $expr: {
-                $eq: [
-                  {
-                    $cond: {
-                      if: { $ne: ["$$serviceString", ""] },
-                      then: { $toObjectId: "$$serviceString" },
-                      else: null,
-                    },
-                  },
-                  "$_id",
-                ],
+                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
               },
             },
           },
-
-
-
           {
             $project: {
               product_service_name: 1,
@@ -118,26 +89,13 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         from: "crm_statuses",
         let: { statusString: "$status" },
         pipeline: [
-          // {
-          //   $match: {
-          //     $expr: {
-          //       $eq: ["$_id", { $toObjectId: "$$statusString" }],
-          //     },
-          //   },
-          // },
-         
           {
             $match: {
               $expr: {
-                $and: [
-                  { $ne: ["$$statusString", ""] }, // Filter out empty strings
-                  { $eq: ["$_id", { $toObjectId: "$$statusString" }] },
-                ],
+                $eq: ["$_id", { $toObjectId: "$$statusString" }],
               },
             },
           },
-
-
           {
             $project: {
               status_name: 1,
@@ -153,32 +111,13 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         from: "crm_lead_sources",
         let: { lead_sourceString: "$lead_source" },
         pipeline: [
-          // {
-          //   $match: {
-          //     $expr: {
-          //       $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
-          //     },
-          //   },
-          // },
-         
           {
             $match: {
               $expr: {
-                $eq: [
-                  {
-                    $cond: {
-                      if: { $ne: ["$$lead_sourceString", ""] },
-                      then: { $toObjectId: "$$lead_sourceString" },
-                      else: null,
-                    },
-                  },
-                  "$_id",
-                ],
+                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
               },
             },
           },
-
-
           {
             $project: {
               lead_source_name: 1,
