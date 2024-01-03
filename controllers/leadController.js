@@ -25,6 +25,25 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
 exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.aggregate([
     {
+      // $lookup: {
+      //   from: "crm_agents",
+      //   let: { assign_to_agentString: "$assign_to_agent" },
+      //   pipeline: [
+      //     {
+      //       $match: {
+      //         $expr: {
+      //           $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+      //         },
+      //       },
+      //     },
+      //     {
+      //       $project: {
+      //         agent_name: 1,
+      //       },
+      //     },
+      //   ],
+      //   as: "agent_details",
+      // },
       $lookup: {
         from: "crm_agents",
         let: { assign_to_agentString: "$assign_to_agent" },
@@ -32,26 +51,19 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
           {
             $match: {
               $expr: {
-                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+                $eq: [
+                  {
+                    $cond: {
+                      if: { $ne: ["$$assign_to_agentString", ""] },
+                      then: { $toObjectId: "$$assign_to_agentString" },
+                      else: null,
+                    },
+                  },
+                  "$_id",
+                ],
               },
             },
           },
-
-          ///  this is for null get id *imp
-
-          // {
-          //   $project: {
-          //     convertedField: {
-          //       $cond: {
-          //         if: { $ne: ['$assign_to_agent', ''] },
-          //         then: { $toObjectId: '$assign_to_agent' },
-          //         else: null, // or another default value
-          //       },
-          //     },
-          //   },
-          // },
-          ///  this is for null get id *imp
-
           {
             $project: {
               agent_name: 1,
@@ -60,6 +72,9 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         ],
         as: "agent_details",
       },
+
+ 
+
     },
 
     {
@@ -67,13 +82,33 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         from: "crm_product_services",
         let: { serviceString: "$service" },
         pipeline: [
+          // {
+          //   $match: {
+          //     $expr: {
+          //       $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+          //     },
+          //   },
+          // },
+
           {
             $match: {
               $expr: {
-                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+                $eq: [
+                  {
+                    $cond: {
+                      if: { $ne: ["$$serviceString", ""] },
+                      then: { $toObjectId: "$$serviceString" },
+                      else: null,
+                    },
+                  },
+                  "$_id",
+                ],
               },
             },
           },
+
+
+
           {
             $project: {
               product_service_name: 1,
@@ -89,13 +124,31 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         from: "crm_statuses",
         let: { statusString: "$status" },
         pipeline: [
+          // {
+          //   $match: {
+          //     $expr: {
+          //       $eq: ["$_id", { $toObjectId: "$$statusString" }],
+          //     },
+          //   },
+          // },
           {
             $match: {
               $expr: {
-                $eq: ["$_id", { $toObjectId: "$$statusString" }],
+                $eq: [
+                  {
+                    $cond: {
+                      if: { $ne: ["$$statusString", ""] },
+                      then: { $toObjectId: "$$statusString" },
+                      else: null,
+                    },
+                  },
+                  "$_id",
+                ],
               },
             },
           },
+
+
           {
             $project: {
               status_name: 1,
@@ -111,13 +164,32 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         from: "crm_lead_sources",
         let: { lead_sourceString: "$lead_source" },
         pipeline: [
+          // {
+          //   $match: {
+          //     $expr: {
+          //       $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+          //     },
+          //   },
+          // },
+         
           {
             $match: {
               $expr: {
-                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+                $eq: [
+                  {
+                    $cond: {
+                      if: { $ne: ["$$lead_sourceString", ""] },
+                      then: { $toObjectId: "$$lead_sourceString" },
+                      else: null,
+                    },
+                  },
+                  "$_id",
+                ],
               },
             },
           },
+
+
           {
             $project: {
               lead_source_name: 1,
