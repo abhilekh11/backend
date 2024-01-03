@@ -3,19 +3,23 @@ const  excel=express();
 const multer = require('multer');
 const path=require('path');
 
-// const bodypParser=require('body-parser');
+const fs = require('fs');
 
-// excel.use(bodypParser.urlencoded({extended:true}));
+const destinationPath = path.join(__dirname, '../public', 'exceluplode');
+console.log(destinationPath);
+// Create the directory if it doesn't exist
+if (!fs.existsSync(destinationPath)) {
+  fs.mkdirSync(destinationPath, { recursive: true });
+}
 
-excel.use(express.static(path.resolve(__dirname,'public')));
+excel.use(express.static(path.resolve(__dirname,'../public')));
 
 var storage= multer.diskStorage({
     destination:(req,file,cb)=>{
-        cb(null, path.resolve(__dirname, 'public', 'uplodes'));     
+       cb(null, destinationPath);
     },
     filename:(req,file,cb)=>{
-        console.log('Original file name:', file.originalname);
-        cb(null,file.originalname)
+         cb(null, Date.now() + '-' + file.originalname);
     }
 })
 
