@@ -1,6 +1,6 @@
 const Lead = require("../models/leadModel");
 const csv = require("csvtojson");
-
+const leadattechment=require('../models/leadattechmentModel');
 const ExcelUplode = async (req, res) => {
   try {
     var leadData = [];
@@ -43,6 +43,28 @@ const ExcelUplode = async (req, res) => {
   }
 };
 
+
+const FileUplode=async(req,res)=>{
+   try {
+    var leadData = [];
+    const { attechment_name,location,lead_id } =req.body;  
+    const file=req.file;
+    leadData.push({
+      lead_id:lead_id,
+      location:location,
+      attechment_name:attechment_name,
+      leadattechment:file.path,
+    })
+    await leadattechment.create(leadData);
+    res.send({
+      status: 200,
+      success: true,
+      message: "Uploded  File Successfully",
+    });
+  } catch (error) {
+    res.send({ status: 400, success: false, mass: "not running" });
+  }
+}
 module.exports = {
-  ExcelUplode,
+  ExcelUplode,FileUplode
 };

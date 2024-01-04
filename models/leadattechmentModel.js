@@ -4,12 +4,16 @@ const leadAttechmentSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  attechment_name: {
+    type: String,
+    trim: true,
+  },
   lead_id: {
     type: String,
     required: true,
     trim: true,
   },
-  address: {
+  location: {
     type: String,
     trim: true,
   },

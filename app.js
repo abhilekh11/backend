@@ -22,11 +22,12 @@ const lostreason=require('./routes/lostreasonRoute');
 const YearlySaleApi=require('./routes/genralapiRoute');
 const Updateandsavenotification=require('./routes/notificationRoute');
 const excelUplode=require('./routes/excelUplodeRoute');
+const LeadFileUplode=require('./routes/leadFileRoute');
 const Report=require('./routes/allReportRoute');
 // const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
 
 scheduleJob1();
-app.use(cors());
+
 app.use("/api/v1/",agent);
 app.use("/api/v1/",product_service); 
 app.use("/api/v1/",lead_source); 
@@ -39,9 +40,10 @@ app.use("/api/v1/",lostreason);
 app.use("/api/v1/",YearlySaleApi);
 app.use("/api/v1/",Updateandsavenotification);
 app.use("/",excelUplode);  
+app.use("/",LeadFileUplode);  
 app.use("/api/v1/",Report); 
 // app.use("/api/v1/",updateandsavenotification1)
-
+app.use(cors());
 app.get('/', function (req, res) { 
     
   // res.end(`The client's IP Address is: ${req.socket.remoteAddress}`);
