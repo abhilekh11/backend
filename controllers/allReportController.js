@@ -39,8 +39,10 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
       }
  let  total=0;
       leadSource.map((hhhhh)=>{
-         
+        if(hhhhh?.lead_cost){
           total+=parseInt(hhhhh.lead_cost);
+        }
+         
       })
 
      let addd={
@@ -54,7 +56,7 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
   res.status(201).json({
     success: true,
     message:'Lead Source Get Successfully',
-    leadSource, total,
+    leadSource,
   });
 
 
