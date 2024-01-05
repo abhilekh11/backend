@@ -19,5 +19,5 @@ var storage= multer.diskStorage({
 var upload = multer({ storage: storage });
 const  excelController=require('../controllers/excelUplode'); 
 excel.post('/api/v1/file_uplode',upload.single('leadattechment'),excelController.FileUplode);     
-module.exports=excel;
+module.exports=excel;      
 

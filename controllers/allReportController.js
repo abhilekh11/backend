@@ -37,14 +37,24 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
      if (!leadSource || leadSource.length === 0) {
         return next(new ErrorHander("No Data Found Now", 404));
       }
+ let  total=0;
+      leadSource.map((hhhhh)=>{
+         
+          total+=parseInt(hhhhh.lead_cost);
+      })
 
+     let addd={
+      full_name: "Total",
+      lead_cost:total
+     }
+     await leadSource.push(addd)
 
 
 
   res.status(201).json({
     success: true,
     message:'Lead Source Get Successfully',
-    leadSource,
+    leadSource, total,
   });
 
 
