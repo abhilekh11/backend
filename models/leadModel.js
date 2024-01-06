@@ -38,7 +38,8 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   service: {   
-    type: String,
+    // type: String,
+    type: mongoose.Schema.ObjectId,
     //required: true,
     trim: true,
   },
@@ -65,7 +66,8 @@ const leadSchema = new mongoose.Schema({
    
   },
   lead_source: {
-    type: String,
+   // type: String,
+   type: mongoose.Schema.ObjectId,
     //required:true,
     trim: true,
   },
@@ -94,7 +96,8 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   status: {
-    type: String,
+   //type: String,
+   type: mongoose.Schema.ObjectId,
     trim: true,
   },
   logistics_status: {
@@ -102,7 +105,8 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   assign_to_agent: {
-    type: String,
+    //type: String,
+    type: mongoose.Schema.ObjectId,
     // required:true,
     trim: true,
   },

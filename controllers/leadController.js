@@ -109,12 +109,19 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
     {
       $lookup: {
         from: "crm_lead_sources",
+        // localField:'lead_source',
+        // foreignField:'_id',
         let: { lead_sourceString: "$lead_source" },
-        pipeline: [
+       pipeline: [
           {
             $match: {
               $expr: {
                 $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+                // $cond: {
+                //   if: { $ne: ["$$lead_sourceString", ""] },
+                //   then: { $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }] },
+                //   else: false,
+                // },
               },
             },
           },
@@ -122,12 +129,13 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
             $project: {
               lead_source_name: 1,
             },
-          },
+          }, 
         ],
         as: "lead_source_details",
       },
+     
     },
-
+   
     {
       $sort: {
         followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
@@ -804,41 +812,34 @@ exports.BulkLeadUplodeExcel = catchAsyncErrors(async (req, res, next) => {
     console.error("Error uploading leads:", error);
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
-});    
+});
 
-
-exports.BulkDeleteLead=catchAsyncErrors(async (req,res,next)=>{
-    
+exports.BulkDeleteLead = catchAsyncErrors(async (req, res, next) => {
   const leadIds = req.body.ids; // Assuming you send an array of lead _id values in the request body
 
   const result = await Lead.deleteMany({ _id: { $in: leadIds } });
   res.status(200).json({
     success: true,
-     message:"Lead Has Been Deleted",
+    message: "Lead Has Been Deleted",
   });
-  
-})
+});
 
-
-///////// lead Edit  
-exports.UpdateLeadByLeadId=catchAsyncErrors(async(req,res,next)=>{
-
-  let lead=await Lead.findById(req.params.id);
-  if(!lead){
-     return next(new ErrorHander("Lead Not Found"))
+///////// lead Edit
+exports.UpdateLeadByLeadId = catchAsyncErrors(async (req, res, next) => {
+  let lead = await Lead.findById(req.params.id);
+  if (!lead) {
+    return next(new ErrorHander("Lead Not Found"));
   }
 
-   lead=await Lead.findByIdAndUpdate(req.params.id,req.body,{   
-       new:true,    
-       runValidators:true,    
-       useFindAndModify:false,
-  })
+  lead = await Lead.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
 
-  res.status(200).json({     
-     success: true, 
-     message:"Lead Update Successfully",
-     lead,  
-   });
-
-
-})
+  res.status(200).json({
+    success: true,
+    message: "Lead Update Successfully",
+    lead,
+  });
+});
