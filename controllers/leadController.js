@@ -14,18 +14,18 @@ const FollowupLead=require('../models/followupModel')
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.create(req.body);
 
-  const lead_id = lead.lead_id;
-  const assign_to_agent = lead.assign_to_agent;
-  const commented_by= req.commented_id;
-  const followup_status_id = lead.status;
-  const followup_date=lead.followup_date;
-  const followup_desc=lead.followup_date;
+  // const lead_id = lead.lead_id;
+  // const assign_to_agent = lead.assign_to_agent;
+  // const commented_by= req.commented_id;
+  // const followup_status_id = lead.status;
+  // const followup_date=lead.followup_date;
+  // const followup_desc=lead.followup_date;
 
 
-  const update_data = { assign_to_agent: assign_to_agent, commented_by: commented_by,lead_id:lead_id,
-    followup_status_id:followup_status_id,followup_date:followup_date,
-    followup_desc:followup_desc };   
-             await FollowupLead.create(update_data);    
+  // const update_data = { assign_to_agent: assign_to_agent, commented_by: commented_by,lead_id:lead_id,
+  //   followup_status_id:followup_status_id,followup_date:followup_date,
+  //   followup_desc:followup_desc };   
+  //            await FollowupLead.create(update_data);    
 
   res.status(201).json({
     success: true,
