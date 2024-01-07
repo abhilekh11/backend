@@ -3,7 +3,8 @@ const CallLog = require("../models/callLogModel");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
 const moment = require("moment");
-const SecondToHoure=require("../utils/secondtohoure")
+const SecondToHoure=require("../utils/secondtohoure");
+const  Agent  = require("../models/agentModel");
 ///  add call log
 exports.Add_CallLog = catchAsyncErrors(async (req, res, next) => {
   const { datetime, user_id } = req.body;
@@ -174,6 +175,103 @@ countMap.forEach((objects, value) => {
     details,
   });
 });
+
+
+/////// Get Call Details BY
+exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
+
+  try {
+    const agents = await Agent.find({ role: 'user' });
+    let array = [];
+
+    await Promise.all(
+      agents.map(async (agent) => {
+        const user_id = agent._id; // Assuming _id is the correct property for user_id
+        let TotalTime = 0; // Reset TotalTime for each user
+       
+
+        const callDetail = await CallLog.find({ user_id: user_id });
+        const HigstNoOfCall = await callDetail?.length;
+
+        callDetail.map((callDetails) => {
+          TotalTime += parseInt(callDetails?.duration) || 0; // Add the duration for each call
+        });
+
+        const AvrageTime=await parseInt(TotalTime/HigstNoOfCall);
+
+
+
+        array.push({
+          ['user_id']: agent._id,
+          ['username']: agent.agent_name,
+          ['HigstNoOfCall']: HigstNoOfCall,
+          ['TotalTime']: TotalTime,
+          ['AvrageTime']:AvrageTime,
+        });
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      array,
+    });
+  } catch (error) {
+    next(error); // Pass the error to the error handler
+  }
+})
+
+/////// Get Call Details BY Date Wise
+exports.GetAllUserCallLogByDateWise=catchAsyncErrors(async (req, res, next)=>{
+  const  {start_date,end_date} = req.body;
+  try {
+    const agents = await Agent.find({ role: 'user' });
+    let array = [];
+
+    await Promise.all(
+      agents.map(async (agent) => {
+        const user_id = agent._id; // Assuming _id is the correct property for user_id
+        let TotalTime = 0; // Reset TotalTime for each user
+       
+          const callDetail = await CallLog.find({ 
+            user_id: user_id,
+            calldate: {
+              $gte: start_date, // Filter calls with calldate greater than or equal to start_date
+              $lte: end_date,   // Filter calls with calldate less than or equal to end_date
+            },
+          
+          });
+       
+
+       
+        const HigstNoOfCall = await callDetail?.length;
+
+        callDetail.map((callDetails) => {
+          TotalTime += parseInt(callDetails?.duration) || 0; // Add the duration for each call
+        });
+
+        const AvrageTime=await parseInt(TotalTime/HigstNoOfCall);
+
+
+
+        array.push({
+          ['user_id']: agent._id,
+          ['username']: agent.agent_name,
+          ['HigstNoOfCall']: HigstNoOfCall, 
+          ['TotalTime']: TotalTime,
+          ['AvrageTime']:AvrageTime,
+        });
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      array,
+    });
+  } catch (error) {
+    next(error); // Pass the error to the error handler
+  }
+})
+
 
 /// delete all calll log
 
