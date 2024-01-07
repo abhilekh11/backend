@@ -43,7 +43,7 @@ exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
     TotalAmountLost += parseInt(leads.lead_cost);
   });
   wonleadforthirtyday.map((leads) => {
-    TotalAmountwonmanthely += parseInt(leads.lead_cost);
+    TotalAmountwonmanthely += parseInt(leads.followup_won_amount);
   });
 
   details.push({
