@@ -24,7 +24,7 @@ recurring:{
 },    
 billing_cycle:{
     type:String,
-    required:[true,"Please Enter product_service_name"],
+   // required:[true,"Please Enter product_service_name"],
     trim:true
 }, 
 product_service_status:{
