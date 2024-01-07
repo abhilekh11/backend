@@ -1,6 +1,6 @@
 const Lead = require("../models/leadModel");
 const agent = require("../models/agentModel");
-
+const { ObjectId } = require('mongoose').Types;
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
 //const useragent = require('useragent');
@@ -13,6 +13,13 @@ const xlsx = require("xlsx");
 
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.create(req.body);
+
+  // const lead_id = lead.lead_id;
+  // const assign_to_agent = lead.assign_to_agent;
+  // const followup_status_id = lead.status;
+  // const followup_date=lead.followup_date;
+  // const followup_desc=lead.followup_date;
+
 
   res.status(201).json({
     success: true,
@@ -36,22 +43,6 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
               },
             },
           },
-
-          ///  this is for null get id *imp
-
-          // {
-          //   $project: {
-          //     convertedField: {
-          //       $cond: {
-          //         if: { $ne: ['$assign_to_agent', ''] },
-          //         then: { $toObjectId: '$assign_to_agent' },
-          //         else: null, // or another default value
-          //       },
-          //     },
-          //   },
-          // },
-          ///  this is for null get id *imp
-
           {
             $project: {
               agent_name: 1,
@@ -672,16 +663,16 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
 /////// Advance Fillter sarch Api
 exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
   const { agent, Status, startDate, endDate } = req.body;
-
   const matchConditions = {};
-
   if (agent) {
-    matchConditions.assign_to_agent = agent;
+    const agentObjectId = new ObjectId(agent);
+    matchConditions.assign_to_agent=agentObjectId;
+  }
+  if (Status) {
+    const StatusObjectId = new ObjectId(Status);
+    matchConditions.status=StatusObjectId;
   }
 
-  if (Status) {
-    matchConditions.status = Status;
-  }
 
   if (startDate && endDate) {
     matchConditions.followup_date = {
@@ -792,8 +783,7 @@ exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-
-    lead,
+     lead,
   });
 });
 
