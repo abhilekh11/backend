@@ -664,7 +664,7 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
 exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
   const { agent, Status, startDate, endDate } = req.body;
   const matchConditions = {};
-  if (agent) {
+  if (agent) {  
     const agentObjectId = new ObjectId(agent);
     matchConditions.assign_to_agent=agentObjectId;
   }
