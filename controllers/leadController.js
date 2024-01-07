@@ -16,7 +16,7 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
 
   const lead_id = lead.lead_id;
   const assign_to_agent = lead.assign_to_agent;
-  const commented_by= lead.commented_id;
+  const commented_by= req.commented_id;
   const followup_status_id = lead.status;
   const followup_date=lead.followup_date;
   const followup_desc=lead.followup_date;
