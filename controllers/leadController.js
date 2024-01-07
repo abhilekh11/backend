@@ -669,7 +669,7 @@ exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
     matchConditions.assign_to_agent=agentObjectId;
   }
   if (Status) {
-    const StatusObjectId = new ObjectId(Status);
+    const StatusObjectId = new ObjectId(Status);   
     matchConditions.status=StatusObjectId;
   }
 
