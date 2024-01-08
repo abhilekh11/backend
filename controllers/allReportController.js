@@ -102,4 +102,58 @@ exports.LeadProductServiceOverviewApi = catchAsyncErrors(async (req, res, next) 
 
 //////// Product And Service Report Date Wise Filter in Table
 
+exports.GetProductReportDateWise=catchAsyncErrors(async (req,res,next)=>{
+  const { product_service_id, start_date, end_date } = req.body;
+  if (!product_service_id) {
+    return next(new ErrorHander("Product Service is required", 400));
+  }
+ 
+  
+// Parse start_date and end_date into Date objects if provided
+const startDateObj = start_date ? new Date(start_date) : null;
+const endDateObj = end_date ? new Date(end_date) : null;
 
+const query = {
+  service: product_service_id,
+};
+
+if (startDateObj && !isNaN(startDateObj)) {
+query.created = {
+  $gte: startDateObj,
+};
+}
+
+if (endDateObj && !isNaN(endDateObj)) {
+// If query.created already exists, add $lte to it, otherwise, create a new object
+query.created = query.created || {};
+query.created.$lte = endDateObj;
+}
+
+const leadSource = await Lead.find(query).select("full_name followup_won_amount").maxTimeMS(30000);
+ if (!leadSource || leadSource.length === 0) {
+    return next(new ErrorHander("No Data Found Now", 404));
+  }
+let  total=0;
+  leadSource.map((hhhhh)=>{
+    if(hhhhh?.followup_won_amount){
+      total+=parseInt(hhhhh.followup_won_amount);
+    }
+     
+  })
+
+ let addd={
+  full_name: "Total",
+  lead_cost:total
+ }
+ await leadSource.push(addd)
+
+
+
+res.status(201).json({
+success: true,
+message:'Lead Source Get Successfully',
+leadSource,
+});
+
+
+})
