@@ -2,6 +2,7 @@ const Lead_Source=require('../models/leadsourceModel');
 const catchAsyncErrors=require('../middleware/catchAsyncErrors');
 const ErrorHander = require("../utils/errorhander");
 const Lead=require('../models/leadModel');
+const Product=require('../models/productserviceModel');
 
 
 
@@ -61,5 +62,44 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
 
 
 })
+
+
+//////// Product And Service Report By Default Graph
+
+exports.LeadProductServiceOverviewApi = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const product = await Product.find();
+    
+    const product1_id = product.map((product1) => product1._id);
+    const product_name = product.map((product2) => product2.product_service_name);
+
+    const product_countPromises = product1_id.map(async (product1_id1) => {
+      const lead = await Lead.find({ service: product1_id1 });
+      const lead_length = lead.length;
+
+      return lead_length;
+    });
+
+    const product_count = await Promise.all(product_countPromises);
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Leads Source Overview",
+      product_count,
+      product_name,
+      product1_id,
+    });
+  } catch (error) {
+    // Handle errors appropriately
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+
+//////// Product And Service Report Date Wise Filter in Table
 
 
