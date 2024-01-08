@@ -7,6 +7,11 @@ const statusSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    status_name1: {
+      type: String,
+    //  required: true, 
+      trim: true,
+    },
     status_index: {
       type: Number,
       trim: true,

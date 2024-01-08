@@ -56,7 +56,7 @@ exports.updateLeadStatus=catchAsyncErrors(async (req,res,next)=>{
         return next(new ErrorHander("Status is not found",404));
       }
 
-     const  leadstatus1=await Status.findByIdAndUpdate(req.params.id,req.body,{
+     const leadstatus1=await Status.findByIdAndUpdate(req.params.id,req.body,{
          new:true,
          runValidators:true,
          useFindAndModify:false,
