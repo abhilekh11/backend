@@ -143,7 +143,7 @@ let  total=0;
 
  let addd={
   full_name: "Total",
-  lead_cost:total
+  followup_won_amount:total
  }
  await leadSource.push(addd)
 
