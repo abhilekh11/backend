@@ -273,6 +273,27 @@ exports.GetAllUserCallLogByDateWise=catchAsyncErrors(async (req, res, next)=>{
 })
 
 
+////// GEt Call Log BY UserId And Date Range
+exports.GetCallLogByIdAndDateRange=catchAsyncErrors(async(req,res,next)=>{
+  const { user_id, startDate, endDate } = req.body;
+  
+
+  const CallLogs=await CallLog.find({
+    user_id:user_id,
+    calldate:{
+      $gte: startDate,
+      $lte: endDate,
+    }
+  });
+  res.status(200).json({
+    success: true,
+    message: "Get CallLog Successfully",
+    CallLogs
+  });
+
+})
+
+
 /// delete all calll log
 
 exports.deleteAllCallLog = catchAsyncErrors(async (req, res, next) => {

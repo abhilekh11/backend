@@ -1,6 +1,7 @@
 const express=require('express');
 
-const { Add_CallLog,getCallLogById,getCallLogByIdAndDate,deleteAllCallLog,GetAllUserCallLogById,GetAllUserCallLogByDateWise } = require('../controllers/callLogController');
+const { Add_CallLog,getCallLogById,getCallLogByIdAndDate,deleteAllCallLog,GetAllUserCallLogById
+    ,GetAllUserCallLogByDateWise ,GetCallLogByIdAndDateRange} = require('../controllers/callLogController');
 
 const router=express.Router();
   
@@ -10,6 +11,7 @@ router.route("/get_call_log_by_id_date").post(getCallLogByIdAndDate);
 router.route("/delete_all_call_log").delete(deleteAllCallLog);
 router.route("/GetAllUserCallLogById").get(GetAllUserCallLogById);
 router.route("/GetAllUserCallLogByDateWise").post(GetAllUserCallLogByDateWise);
+router.route("/GetCallLogByIdAndDateRange").post(GetCallLogByIdAndDateRange);
 
  
 module.exports=router;     
