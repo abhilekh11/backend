@@ -7,6 +7,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
 const { param } = require("../app");
 const leadsourceModel = require("../models/leadsourceModel");
+const Setting=require('../models/settingModel');
 
 /////// Yearly Base Sale Api
 
@@ -356,3 +357,39 @@ exports.GetCalandarData=catchAsyncErrors(async(req,res,next)=>{
                 lead,
               });
 });
+
+
+//////// Company Information Setting
+exports.CompanyDetails = catchAsyncErrors(async (req, res, next) => {
+  const existingSettings = await Setting.find();
+
+  if (existingSettings.length > 0) {
+    // If settings exist, update them
+    const updateResult = await Setting.updateOne({}, req.body);
+
+    if (updateResult.modifiedCount > 0) {
+      res.status(200).json({
+        success: true,
+        message: "Information Updated Successfully",
+        setting: req.body, // Assuming you want to send the updated settings in the response
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "No changes made. Information remains the same.",
+      });
+    }
+  } else {
+    // If no settings exist, create new settings
+    const newSetting = await Setting.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Information Added Successfully",
+      setting: newSetting,
+    });
+  }
+});
+
+
+
