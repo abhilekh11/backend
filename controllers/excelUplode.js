@@ -62,7 +62,7 @@ const FileUplode=async(req,res)=>{
       message: "Uploded  File Successfully",
     });
   } catch (error) {
-    res.send({ status: 400, success: false, mass: "not running" });
+    res.send({ status: 400, success: false, message: "file not Uploded" });
   }
 }
 module.exports = {
