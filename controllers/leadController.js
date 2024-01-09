@@ -10,7 +10,8 @@ const useragent = require("express-useragent");
 const multer = require("multer");
 const upload = multer();
 const xlsx = require("xlsx");
-const FollowupLead=require('../models/followupModel')
+const FollowupLead=require('../models/followupModel');
+const LeadAttechment=require('../models/leadattechmentModel')
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.create(req.body);
 
@@ -839,3 +840,35 @@ exports.UpdateLeadByLeadId = catchAsyncErrors(async (req, res, next) => {
     lead,
   });
 });
+
+
+
+////////// Lead Attechment History
+exports.leadattechmenthistory=catchAsyncErrors(async (req, res, next)=>{
+  const lead=await LeadAttechment.find({lead_id:req.params.id});
+  if(!lead){
+      return next(new ErrorHander("lead is not found"));
+   }
+  res.status(200).json({
+      success:true,
+      message:"lead  Has Been Get Successfully",
+      lead
+        })
+ 
+})
+
+////////// Lead Attechment History Delete
+
+exports.deleteLeadAttechmentHistory=catchAsyncErrors(async(req,res,next)=>{
+  const lead=await LeadAttechment.find({lead_id:req.params.id});
+ if(!lead){
+     return next(new ErrorHander("lead is not found"));
+  }
+  await LeadAttechment.deleteOne();
+  res.status(200).json({
+     success:true,
+     message:"lead  Has Been Delete Successfully",
+       })
+});
+
+
