@@ -868,7 +868,7 @@ exports.deleteLeadAttechmentHistory=catchAsyncErrors(async(req,res,next)=>{
   res.status(200).json({
      success:true,
      message:"lead  Has Been Delete Successfully",
-     lead
+     lead 
        })
 });
 
