@@ -2,7 +2,7 @@ const Lead = require("../models/leadModel");
 const agent = require("../models/agentModel");
 const FollowupLead = require("../models/followupModel");
 const lead_status = require("../models/statusModel");
-
+const Status =require('../models/statusModel');
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
 const { param } = require("../app");
@@ -401,6 +401,66 @@ exports.GetCompanyDetails=catchAsyncErrors(async (req,res,next)=>{
     message: "Details found Successfully.",
     setting: existingSettings,
   });
+})
+
+
+///////// dashboard data for lead type
+exports.DashboardLeadCount=catchAsyncErrors(async (req,res,next)=>{
+         let array=[];
+         const lead=await Lead.find();
+         const TotalLead=lead.length;
+         const Agent=await agent.find();
+         const TotalAgent=Agent.length;
+         const currentDate=new Date();
+         currentDate.setHours(currentDate.getHours() + 5);
+         currentDate.setMinutes(currentDate.getMinutes() + 30);
+         const formattedDate1 = currentDate.toISOString();
+         const targetDate = new Date(formattedDate1);
+        
+         ///// for meeting
+         const meetinglead=await Lead.find({
+          status:'6561c41433093ed343745a36',
+          followup_date: { $gte: targetDate },
+         });
+         const meetinglead_name=await Status.findOne({_id:'6561c41433093ed343745a36'});
+        ///// for Call Back (Visit)
+         const Visit=await Lead.find({
+          status:'659e5d41ae693b63bf17d801',
+          followup_date: { $gte: targetDate },
+         });
+         const Visit_name=await Status.findOne({_id:'659e5d41ae693b63bf17d801'});
+         
+         ///// for Call Back (Re-Visit)
+         const Re_Visit=await Lead.find({
+          status:'6561c3a433093ed343745a2f',
+          followup_date: { $gte: targetDate },
+         });
+         const Re_Visit_name=await Status.findOne({_id:'6561c3a433093ed343745a2f'});
+         ///// for Call Back (Re-Visit)
+         const Shedule_Visit=await Lead.find({
+          status:'659e5d63ae693b63bf17d803',
+          followup_date: { $gte: targetDate },
+         });
+         const Shedule_Visit_name=await Status.findOne({_id:'659e5d63ae693b63bf17d803'});
+         array.push(
+         {['name']:'Total Lead',['Value']:TotalLead},
+         {['name']:'Total Agent',['Value']:TotalAgent},
+         {['name']:meetinglead_name?.status_name1,['Value']:meetinglead.length},
+         {['name']:Visit_name?.status_name1,['Value']:Visit.length},
+         {['name']:Re_Visit_name?.status_name1,['Value']:Re_Visit.length},
+         {['name']:Shedule_Visit_name?.status_name1,['Value']:Shedule_Visit.length},
+         );
+         res.status(201).json({
+          success: true,
+          message: "Get Lead Count Successfully",
+          Count: array,
+        });
+
+
+
+        
+
+
 })
 
 
