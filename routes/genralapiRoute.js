@@ -1,5 +1,6 @@
 const express=require('express');
-const { YearlySaleApi, LeadSourceOverviewApi, IncomeGraphOverview,GetCalandarData,CompanyDetails } = require('../controllers/genralApiController');
+const { YearlySaleApi, LeadSourceOverviewApi, IncomeGraphOverview,GetCalandarData
+    ,CompanyDetails,GetCompanyDetails } = require('../controllers/genralApiController');
 const {LeadProductServiceOverviewApi}  =require('../controllers/allReportController')
 
 const router=express.Router();
@@ -10,5 +11,6 @@ router.route("/Income_Graph_Overview").get(IncomeGraphOverview);
 router.route("/get_calander_data").get(GetCalandarData);  
 router.route("/LeadProductServiceOverviewApi").get(LeadProductServiceOverviewApi);  
 router.route("/CompanyDetails").post(CompanyDetails); 
+router.route("/GetCompanyDetails").get(GetCompanyDetails);  
 
 module.exports=router;     

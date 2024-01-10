@@ -391,5 +391,17 @@ exports.CompanyDetails = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+exports.GetCompanyDetails=catchAsyncErrors(async (req,res,next)=>{
+  const existingSettings = await Setting.find();
+  if(!existingSettings){
+    return next(new ErrorHander("Details not found!...", 404));
+  }
+  res.status(200).json({
+    success: true,
+    message: "Details found Successfully.",
+    setting: existingSettings,
+  });
+})
+
 
 
