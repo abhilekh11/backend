@@ -860,7 +860,7 @@ exports.leadattechmenthistory=catchAsyncErrors(async (req, res, next)=>{
 ////////// Lead Attechment History Delete
 
 exports.deleteLeadAttechmentHistory=catchAsyncErrors(async(req,res,next)=>{
-  const lead=await LeadAttechment.find({lead_id:req.params.id});
+  const lead=await LeadAttechment.find({_id:req.params.id});
  if(!lead){
      return next(new ErrorHander("lead is not found"));
   }
