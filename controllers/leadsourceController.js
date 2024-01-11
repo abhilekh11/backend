@@ -48,18 +48,16 @@ exports.Add_LeadSource = catchAsyncErrors(async (req, res, next) => {
 
    ///// update lead Source   
    exports.updateLeadSource=catchAsyncErrors(async (req,res,next)=>{
-         const leadSource=await Lead_Source.findById(req.params.id);
-         if(!leadSource){
+         const leadSource1=await Lead_Source.findById(req.params.id);
+         if(!leadSource1){
             return next(new ErrorHander("Lead Source Not Found"))
          }
-
-         leadSource=await Lead_Source.findByIdAndUpdate(req.params.id,req.body,{   
+         const leadSource=await Lead_Source.findByIdAndUpdate(req.params.id,req.body,{   
               new:true,    
               runValidators:true,    
               useFindAndModify:false,
          })
-
-         res.status(200).json({     
+          res.status(200).json({     
             success: true, 
             message:'Lead Update Successfully',
             leadSource,  
