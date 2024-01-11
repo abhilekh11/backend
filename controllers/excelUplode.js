@@ -1,48 +1,52 @@
 const Lead = require("../models/leadModel");
 const csv = require("csvtojson");
 const leadattechment=require('../models/leadattechmentModel');
+
 const ExcelUplode = async (req, res) => {
   try {
-    var leadData = [];
-    const { lead_source, status, service, assign_to_agent, country, state } =
-      req.body;
-    csv()
-      .fromFile(req.file.path)
-      .then(async (responce) => {
-        for (var x = 0; x < responce.length; x++) {
-          leadData.push({
-            full_name: responce[x].full_name,
-            email_id: responce[x].email_id,
-            contact_no: responce[x].contact_no,
-            alternative_no: responce[x].alternative_no,
-            company_name: responce[x].company_name,
-            position: responce[x].position,
-            website: responce[x].website,
-            lead_cost: responce[x].lead_cost,
-            full_address: responce[x].full_address,
-            city: responce[x].city,
-            pincode: responce[x].pincode,
-            description: responce[x].description,
-            lead_source: lead_source,
-            service: service,
-            status: status,
-            country: country,
-            assign_to_agent: assign_to_agent,
-            state: state,
-            followup_date: new Date(),
-          });
-        }
-        await Lead.insertMany(leadData);
+    const { lead_source, status, service, assign_to_agent, country, state } = req.body;
+    const leadData = await csv().fromFile(req.file.path);
+    const insertedLeads = await Lead.insertMany(leadData.map(entry => ({
+      full_name: entry.full_name,
+      email_id: entry.email_id,
+      contact_no: entry.contact_no,
+      alternative_no: entry.alternative_no,
+      company_name: entry.company_name,
+      position: entry.position,
+      website: entry.website,
+      lead_cost: entry.lead_cost,
+      full_address: entry.full_address,
+      city: entry.city,
+      pincode: entry.pincode,
+      description: entry.description,
+      lead_source,
+      service,
+      status,
+      country,
+      assign_to_agent,
+      state,
+      followup_date: new Date(),
+    })));
+
+    if (insertedLeads.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "Uploaded CSV File Successfully",
       });
-    res.send({
-      status: 200,
-      success: true,
-      message: "Uploded Csv File Successfully",
-    });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "CSV File is Not Uploaded Successfully",
+      });
+    }
   } catch (error) {
-    res.send({ status: 400, success: false, mass: "not running" });
+    res.status(500).json({
+      success: false,
+      message: "File is Not Uploaded Successfully",
+    });
   }
 };
+
 
 
 const FileUplode=async(req,res)=>{

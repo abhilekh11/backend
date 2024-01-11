@@ -6,7 +6,6 @@ const path=require('path');
 const fs = require('fs');
 
 const destinationPath = path.join(__dirname, '../public', 'exceluplode');
-// Create the directory if it doesn't exist
 if (!fs.existsSync(destinationPath)) {
   fs.mkdirSync(destinationPath, { recursive: true });
 }
@@ -21,11 +20,20 @@ var storage= multer.diskStorage({
          cb(null, Date.now() + '-' + file.originalname);
     }
 })
+// Multer file filter configuration
+function fileFilter(req, file, cb) {
+  const allowedFileTypes = ['csv'];
+  const fileExtension = path.extname(file.originalname).toLowerCase().replace('.', '');
 
-var  upload=multer({storage:storage});    
+  if (allowedFileTypes.includes(fileExtension)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only CSV files are allowed.'), false);
+  }
+}
+
+var upload = multer({ storage: storage, fileFilter: fileFilter });
 const  excelController=require('../controllers/excelUplode'); 
-
 excel.post('/api/v1/import',upload.single('file'),excelController.ExcelUplode);     
-
 module.exports=excel;
 
