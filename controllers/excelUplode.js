@@ -29,6 +29,7 @@ const ExcelUplode = async (req, res) => {
             country: country,
             assign_to_agent: assign_to_agent,
             state: state,
+            followup_date: new Date(),
           });
         }
         await Lead.insertMany(leadData);
