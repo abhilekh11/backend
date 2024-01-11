@@ -3,6 +3,7 @@ const catchAsyncErrors=require('../middleware/catchAsyncErrors');
 const ErrorHander = require("../utils/errorhander");
 const Lead=require('../models/leadModel');
 const Product=require('../models/productserviceModel');
+const  Agent=require('../models/agentModel');
 
 
 
@@ -107,9 +108,6 @@ exports.GetProductReportDateWise=catchAsyncErrors(async (req,res,next)=>{
   if (!product_service_id) {
     return next(new ErrorHander("Product Service is required", 400));
   }
- 
-  
-// Parse start_date and end_date into Date objects if provided
 const startDateObj = start_date ? new Date(start_date) : null;
 const endDateObj = end_date ? new Date(end_date) : null;
 
@@ -156,4 +154,40 @@ leadSource,
 });
 
 
-})
+});
+
+///////  Employees Report 
+exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
+  try {
+    let array = [];
+    const agents = await Agent.find();
+
+    for (const agent of agents) {
+      let totalAmount = 0;
+      const leads = await Lead.find({ assign_to_agent: agent._id });
+
+      leads.forEach((lead) => {
+        totalAmount += lead.followup_won_amount || 0;
+      });
+
+      array.push({
+        name: agent.agent_name,
+        value: totalAmount,
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Leads Source Overview",
+      array,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+
