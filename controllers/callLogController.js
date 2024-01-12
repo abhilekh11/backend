@@ -183,6 +183,8 @@ exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
   try {
     const agents = await Agent.find({ role: 'user' });
     let array = [];
+    let username = [];
+    let value = [];
 
     await Promise.all(
       agents.map(async (agent) => {
@@ -208,12 +210,16 @@ exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
           ['TotalTime']: TotalTime,
           ['AvrageTime']:AvrageTime,
         });
+        username.push(agent.agent_name);
+        value.push(HigstNoOfCall);
       })
     );
 
     res.status(200).json({
       success: true,
       array,
+      username,
+      value,
     });
   } catch (error) {
     next(error); // Pass the error to the error handler
