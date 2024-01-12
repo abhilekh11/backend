@@ -159,7 +159,8 @@ leadSource,
 ///////  Employees Report 
 exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
   try {
-    let array = [];
+    let name = [];
+    let value = [];
     const agents = await Agent.find({role:'user'});
 
     for (const agent of agents) {
@@ -170,16 +171,15 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
         totalAmount += lead.followup_won_amount || 0;
       });
 
-      array.push({
-        name: agent.agent_name,
-        value: totalAmount,
-      });
+      name.push(agent.agent_name);
+       value.push(totalAmount,);
     }
 
     res.status(201).json({
       success: true,
       message: "Successfully Leads Source Overview",
-      array,
+      name,
+      value,
     });
   } catch (error) {
     console.error(error);
