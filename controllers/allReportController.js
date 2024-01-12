@@ -4,7 +4,7 @@ const ErrorHander = require("../utils/errorhander");
 const Lead=require('../models/leadModel');
 const Product=require('../models/productserviceModel');
 const  Agent=require('../models/agentModel');
-
+const { ObjectId } = require('mongoose').Types;
 
 
 /////// leadsource report 
@@ -160,7 +160,7 @@ leadSource,
 exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
   try {
     let array = [];
-    const agents = await Agent.find();
+    const agents = await Agent.find({role:'user'});
 
     for (const agent of agents) {
       let totalAmount = 0;
@@ -188,6 +188,55 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
       message: "Internal Server Error",
     });
   }
+});
+
+/////////  Employees report By Filter
+exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) => {
+  const { agent, service, startDate, endDate } = req.body;
+  let array=[];
+  let total=0;
+  const matchConditions = {};
+  if (agent) {  
+    const agentObjectId = new ObjectId(agent);
+    matchConditions.assign_to_agent=agentObjectId;
+  }
+  if (service) {
+    const serviceObjectId = new ObjectId(service);   
+    matchConditions.service=serviceObjectId;
+  }
+    const StatusObjectId = new ObjectId('6539fa950b9756b61601287b');   
+      matchConditions.status=StatusObjectId;
+   if (startDate && endDate) {
+    matchConditions.followup_date = {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    };
+  }
+ const lead = await Lead.aggregate([
+      {
+      $match: matchConditions,
+    },
+    {
+      $sort: {
+        followup_date: 1,
+      },
+    },
+    {
+      $project: {
+        full_name: 1,
+        contact_no: 1,
+        followup_won_amount: 1,
+         },
+    },
+  ]);
+  lead.map((lead1)=>{
+      total+=parseInt(lead1?.followup_won_amount);
+  });
+  lead.push({['full_name']:'Total Amount',['contact_no']:'Total Amount',['followup_won_amount']:total,})
+  res.status(200).json({
+    success: true,
+     lead:lead,
+  });
 });
 
 

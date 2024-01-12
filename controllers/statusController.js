@@ -38,8 +38,7 @@ exports.deleteLeadStatus=catchAsyncErrors(async (req,res,next)=>{
 
 // get All Lead Status 
 exports.getAllLeadStatus=catchAsyncErrors(async(req,res,next)=>{
-          const leadstatus=await Status.find();
-
+          const leadstatus=await Status.find().sort({ status_name: 1 });
           res.status(200).json({
             success:true,
             leadstatus

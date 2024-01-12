@@ -49,6 +49,7 @@ const leadSchema = new mongoose.Schema({
   },
   followup_won_amount: {
     type: Number,
+    default: 0,
     trim: true,
   },
   followup_lost_reason_id: {
