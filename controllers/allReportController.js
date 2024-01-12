@@ -235,6 +235,7 @@ exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) 
   lead.push({['full_name']:'Total Amount',['contact_no']:'Total Amount',['followup_won_amount']:total,})
   res.status(200).json({
     success: true,
+    message: "Successfully get data",
      lead:lead,
   });
 });
