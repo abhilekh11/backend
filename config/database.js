@@ -10,7 +10,7 @@ const connectDatabase =()=>{
    }).then((data)=>{
        console.log(`Mongoosedb connected with server :${data.connection.host}`);
      }).catch((err)=>{  
-       console.log('not connect');
+       console.log('not connect',err);
      })
  }   
 
