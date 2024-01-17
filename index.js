@@ -12,8 +12,7 @@ const PORT = process.env.PORT || 80;
 connectDatabase();
 
 app.listen(PORT, () => {
-  console.log(`Server is working on http://localhost:${PORT}`);
-  console.log(PORT) 
+  console.log(`Server is working on http://localhost:${PORT}`); 
 }); 
 
 // Unhandled promise rejection 
