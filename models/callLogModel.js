@@ -4,7 +4,7 @@ const callLogSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      //required: true,
       trim: true,
     },
     user_id:{
@@ -22,18 +22,15 @@ const callLogSchema = new mongoose.Schema(
     },
     duration: {
       type: Number,
-     
       trim: true,
     },
     phone_number: {
       type: Number,
-    
       trim: true,
     },
     rawtype: {
         type: Number,
-       
-        trim: true,
+       trim: true,
       },
       type: {   
         type: String,

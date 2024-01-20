@@ -201,7 +201,7 @@ exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
 
         const AvrageTime=await parseInt(TotalTime/HigstNoOfCall);
 
- 
+  
 
         array.push({
           ['user_id']: agent._id,

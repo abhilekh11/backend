@@ -270,13 +270,12 @@ exports.getLeadbyagentidandwithoutstatus = catchAsyncErrors(
     if (!assign_to_agent) {
       return next(new ErrorHander("assign_to_agent is required..!", 404));
     }
+    const matchConditions = {};
+    const agentObjectId = new ObjectId(assign_to_agent);
+    matchConditions.assign_to_agent=agentObjectId;
     const lead = await Lead.aggregate([
-      {
-        $match: {
-          $expr: {
-            $eq: ["$assign_to_agent", assign_to_agent],
-          },
-        },
+        {
+        $match: matchConditions,
       },
 
       {
@@ -402,13 +401,13 @@ exports.getLeadbyagentidandwithstatus = catchAsyncErrors(
     if (!assign_to_agent) {
       return next(new ErrorHander("assign_to_agent is required..!", 404));
     }
-    const lead = await Lead.aggregate([
+
+    const matchConditions = {};
+    const agentObjectId = new ObjectId(assign_to_agent);
+    matchConditions.assign_to_agent=agentObjectId;
+   const lead = await Lead.aggregate([
       {
-        $match: {
-          $expr: {
-            $eq: ["$assign_to_agent", assign_to_agent],
-          },
-        },
+        $match: matchConditions,
       },
 
       {

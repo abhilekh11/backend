@@ -13,4 +13,4 @@ router.route("/agent_login").post(loginAgent);
 router.route("/update_agent_access/:id").put(updateClientAccess);
 router.route("/EditAgentDetails/:id").put(EditAgentDetails)
    
-module.exports=router;     
+module.exports=router;      

@@ -12,7 +12,7 @@ const ExcelUplode = async (req, res) => {
       contact_no: entry.contact_no,
       alternative_no: entry.alternative_no,
       company_name: entry.company_name,
-      position: entry.position,
+      position: entry.position, 
       website: entry.website,
       lead_cost: entry.lead_cost,
       full_address: entry.full_address,
