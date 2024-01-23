@@ -369,7 +369,11 @@ exports.getLeadbyagentidandwithoutstatus = catchAsyncErrors(
       {
         $match: {
           status: {
-            $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"],
+            //$nin: ["65a904e04473619190494482", "65a904ed4473619190494484"],
+            $nin: [
+              ObjectId("65a904e04473619190494482"),
+              ObjectId("65a904ed4473619190494484")
+            ],
           },
         },
       },
@@ -401,7 +405,6 @@ exports.getLeadbyagentidandwithstatus = catchAsyncErrors(
     if (!assign_to_agent) {
       return next(new ErrorHander("assign_to_agent is required..!", 404));
     }
-
     const matchConditions = {};
     const agentObjectId = new ObjectId(assign_to_agent);
     matchConditions.assign_to_agent=agentObjectId;

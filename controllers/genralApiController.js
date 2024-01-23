@@ -419,29 +419,29 @@ exports.DashboardLeadCount=catchAsyncErrors(async (req,res,next)=>{
         
          ///// for meeting
          const meetinglead=await Lead.find({
-          status:'6561c41433093ed343745a36',
+          status:'65a904164473619190494480',
           followup_date: { $gte: targetDate },
          });
-         const meetinglead_name=await Status.findOne({_id:'6561c41433093ed343745a36'});
+         const meetinglead_name=await Status.findOne({_id:'65a904164473619190494480'});
         ///// for Call Back (Visit)
          const Visit=await Lead.find({
-          status:'659e5d41ae693b63bf17d801',
+          status:'65a903f8447361919049447c',
           followup_date: { $gte: targetDate },
          });
-         const Visit_name=await Status.findOne({_id:'659e5d41ae693b63bf17d801'});
+         const Visit_name=await Status.findOne({_id:'65a903f8447361919049447c'});
          
          ///// for Call Back (Re-Visit)
          const Re_Visit=await Lead.find({
-          status:'6561c3a433093ed343745a2f',
+          status:'65a903ca4473619190494478',
           followup_date: { $gte: targetDate },
          });
-         const Re_Visit_name=await Status.findOne({_id:'6561c3a433093ed343745a2f'});
+         const Re_Visit_name=await Status.findOne({_id:'65a903ca4473619190494478'});
          ///// for Call Back (Re-Visit)
          const Shedule_Visit=await Lead.find({
-          status:'659e5d63ae693b63bf17d803',
+          status:'65a903e9447361919049447a',
           followup_date: { $gte: targetDate },
          });
-         const Shedule_Visit_name=await Status.findOne({_id:'659e5d63ae693b63bf17d803'});
+         const Shedule_Visit_name=await Status.findOne({_id:'65a903e9447361919049447a'});
          array.push(
          {['name']:'Total Lead',['Value']:TotalLead},
          {['name']:'Total Agent',['Value']:TotalAgent},

@@ -58,6 +58,17 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
     },
   }).maxTimeMS(30000);
 
+  const call_log1 = await CallLog.find({
+    user_id: user_id,
+    calldate: {
+      $gte: start_date,
+      $lte: end_date,
+    },
+    duration:0
+  }).maxTimeMS(30000);  
+
+  const NotConnectedCall=await call_log1.length;
+
   if (!call_log) {
     return next(new ErrorHander("This id is Not Found", 404));
   }
@@ -153,6 +164,7 @@ countMap.forEach((objects, value) => {
 });
   details.push({
     totalDuration: total_duration,
+    NotConnectedCall:NotConnectedCall,
     totalworkinghoure:totalworkinghoure,  
     totalIncommingDuration: tiotal_duration,
     totalOutgoingDuration: tootal_duration,
