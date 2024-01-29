@@ -7,14 +7,26 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 // create status 
 
 exports.addAllSocialMediaLead=catchAsyncErrors(async (req,res,next)=>{
-            const llll={name:'sdsd',email:'annn@'}
-          const leadadd=await socialmedialead.create(llll)
+
+             
+        //     const llll={name:'sdsd',email:'annn@'}
+        //   const leadadd=await socialmedialead.create(llll)
           res.status(201).json({
            success: true,
            message:'Lead Add',
-           leadadd
+          // leadadd
          });   
 })
+
+// get All Lead Status 
+exports.AllSocialMediaLead=catchAsyncErrors(async(req,res,next)=>{
+    if (req.query['hub.verify_token'] === 'abc123') {
+        res.send(req.query['hub.challenge']);
+        return;
+    }
+})
+
+////  
 
 
 // get All Lead Status 
