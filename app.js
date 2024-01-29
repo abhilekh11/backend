@@ -24,6 +24,7 @@ const Updateandsavenotification=require('./routes/notificationRoute');
 const excelUplode=require('./routes/excelUplodeRoute');
 const LeadFileUplode=require('./routes/leadFileRoute');
 const Report=require('./routes/allReportRoute');
+const socialmedialead=require('./routes/socialmedialeadRoute');
 // const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
 
 scheduleJob1();
@@ -42,12 +43,11 @@ app.use("/api/v1/",Updateandsavenotification);
 app.use("/",excelUplode);  
 app.use("/",LeadFileUplode);  
 app.use("/api/v1/",Report); 
+app.use(socialmedialead);
 // app.use("/api/v1/",updateandsavenotification1)
 
 app.get('/', function (req, res) { 
-    
-  // res.end(`The client's IP Address is: ${req.socket.remoteAddress}`);
-    try {  
+      try {  
         res.status(200).send(
           { 
           "success":true, 
