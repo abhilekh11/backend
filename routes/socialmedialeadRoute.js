@@ -9,6 +9,4 @@ router.route("/webhook").post(addAllSocialMediaLead);
 router.route("/webhook").get(AllSocialMediaLead); 
 router.route("/getAllSocialMediaLead").get(getAllSocialMediaLead);   
 
- 
-
 module.exports=router;
