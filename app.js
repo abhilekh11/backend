@@ -5,11 +5,16 @@ const app = express();
 var cors = require('cors');
 const errorMiddleware=require("./middleware/error");
 const scheduleJob1=require("./controllers/sentNotificationWebController");
-
+////  this line add
+const connectDatabase = require('./config/database');
+////   this line add
 app.use(useragent.express());
 app.use(express.json());
 app.use(cookieParser());  
 app.use(express.static('public'));
+////  this line add
+app.use(connectDatabase);  
+////  this line add
 const agent =require('./routes/agentRoute');
 const product_service=require('./routes/productserviceRoute');
 const lead_source=require('./routes/leadsourceRoute');
@@ -25,9 +30,8 @@ const excelUplode=require('./routes/excelUplodeRoute');
 const LeadFileUplode=require('./routes/leadFileRoute');
 const Report=require('./routes/allReportRoute');
 const socialmedialead=require('./routes/socialmedialeadRoute');
-// const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
 
-scheduleJob1();
+// scheduleJob1();
 app.use(cors());
 app.use("/api/v1/",agent);
 app.use("/api/v1/",product_service); 
