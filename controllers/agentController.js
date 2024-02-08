@@ -5,7 +5,7 @@ const sendToken = require("../utils/jwtToken");
 const LoginHistory=require("../models/LoginHistory");
 const bcrypt = require('bcryptjs');
 const useragent = require('express-useragent');
-
+const mongoose=require('mongoose');
 exports.createAgent = catchAsyncErrors(async (req, res, next) => {
   
 const agent = await Agent.create(req.body);
@@ -38,15 +38,27 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 // get all agent --admin
 
 exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
+//   const mongodbUrl = req?.headers['mongodb-url']?.trim();
   
-  const agent = await Agent.find({role:"user"});
-  
-
-  res.status(201).json({
-    success: true,
-    agent, 
+// if (!mongodbUrl) {
+//   return res.status(400).send('No MongoDB URL provided in request headers');
+// }
+// if(mongodbUrl){
+//     await mongoose.connect(mongodbUrl, {
+//         useNewUrlParser: true,
+//         useUnifiedTopology: true,
+//     });  
     
-  });
+// } 
+const agent = await Agent.find({role:"user"});
+ 
+
+    res.status(201).json({
+      success: true,
+      agent, 
+      
+    });
+  
 });     
 
 
