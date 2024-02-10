@@ -1,7 +1,7 @@
 // // index.js
 
 // const app = require('./app');
-// const connectDatabase = require('./config/database');
+const connectDatabase = require('./config/database');
 
 // // Handling uncaught error
 // process.on('uncaughtException', (err) => {
@@ -9,7 +9,7 @@
 //   console.log('Shutting down the server due to uncaught exception');
 //   process.exit(1);
 // });
-// const PORT = process.env.PORT || 3001;
+// const PORT = process.env.PORT || 3001; 
 // (async (req) => {
 //   try {
 //       app.listen(PORT, () => {
@@ -34,7 +34,7 @@
 const app = require('./app');
 
 const PORT = process.env.PORT || 3001;
-
+connectDatabase();
 app.listen(PORT, () => {
   console.log(`Server is working on http://localhost:${PORT}`);
 });
@@ -45,7 +45,7 @@ process.on('uncaughtException', (err) => {
   console.log('Shutting down the server due to uncaught exception');
   process.exit(1);
 });
-
+ 
 // Unhandled promise rejection
 process.on('unhandledRejection', (err) => {
   console.error(`Unhandled Rejection: ${err.message}`);

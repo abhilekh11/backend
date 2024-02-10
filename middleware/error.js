@@ -16,18 +16,18 @@ module.exports=async(err,req,res,next)=>{
     err= new ErrorHander(message,400);
  }
    
-    if(err.message=='Client must be connected before running operations'){
-        const mongodbUrl = req?.headers['mongodb-url']?.trim();
-         if (mongodbUrl) {
-            await mongoose.connect(mongodbUrl, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            });   
-             next();
-        } else {
-            return res.status(400).send('No MongoDB URL provided in request headers');
-        }
-    }
+    // if(err.message=='Client must be connected before running operations'){
+    //     const mongodbUrl = req?.headers['mongodb-url']?.trim();
+    //      if (mongodbUrl) {
+    //         await mongoose.connect(mongodbUrl, {
+    //             useNewUrlParser: true,
+    //             useUnifiedTopology: true,
+    //         });   
+    //          next();
+    //     } else {
+    //         return res.status(400).send('No MongoDB URL provided in request headers');
+    //     }
+    // }
 
     res.status(err.statusCode).json({
         success:false,
