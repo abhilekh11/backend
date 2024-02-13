@@ -2,12 +2,12 @@ const Lead = require("../models/leadModel");
 const agent = require("../models/agentModel");
 const FollowupLead = require("../models/followupModel");
 const lead_status = require("../models/statusModel");
-const Status =require('../models/statusModel');
+const Status = require('../models/statusModel');
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
 const { param } = require("../app");
 const leadsourceModel = require("../models/leadsourceModel");
-const Setting=require('../models/settingModel');
+const Setting = require('../models/settingModel');
 
 /////// Yearly Base Sale Api
 
@@ -80,7 +80,7 @@ exports.LeadSourceOverviewApi1 = catchAsyncErrors(async (req, res, next) => {
   await Promise.all(
     Lead_source_id.map(async (Lead_source_id1) => {
       const lead = await Lead.find({ lead_source: Lead_source_id1 });
-      if(lead){
+      if (lead) {
         const lead_length = await lead.length;
 
         if (!lead_length) {
@@ -89,7 +89,7 @@ exports.LeadSourceOverviewApi1 = catchAsyncErrors(async (req, res, next) => {
           Lead_source_count.push(lead_length);
         }
       }
-      
+
     })
   );
 
@@ -109,7 +109,7 @@ exports.LeadSourceOverviewApi1 = catchAsyncErrors(async (req, res, next) => {
 exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
   try {
     const lead_source = await leadsourceModel.find();
-    
+
     const Lead_source_id = lead_source.map((lead_source1) => lead_source1._id);
     const Lead_source_name = lead_source.map((lead_source1) => lead_source1.lead_source_name);
 
@@ -149,7 +149,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
   const wonstatu = await lead_status.find({ status_name: "Won" });
   const wonStatus_id = wonstatu["0"]._id;
   const monthlyIncom = [];
- ////// for jan
+  ////// for jan
   let total1 = 0;
   const lead1 = await Lead.find({
     status: wonStatus_id,
@@ -346,16 +346,16 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.GetCalandarData=catchAsyncErrors(async(req,res,next)=>{
-              const  lead=await Lead.find({
-                add_to_calender:'yes'
-              }) ;
-   
-              res.status(201).json({
-                success: true,
-                message: "Successfully Get Calandar Data",
-                lead,
-              });
+exports.GetCalandarData = catchAsyncErrors(async (req, res, next) => {
+  const lead = await Lead.find({
+    add_to_calender: 'yes'
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Successfully Get Calandar Data",
+    lead,
+  });
 });
 
 
@@ -391,9 +391,9 @@ exports.CompanyDetails = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-exports.GetCompanyDetails=catchAsyncErrors(async (req,res,next)=>{
+exports.GetCompanyDetails = catchAsyncErrors(async (req, res, next) => {
   const existingSettings = await Setting.find();
-  if(!existingSettings){
+  if (!existingSettings) {
     return next(new ErrorHander("Details not found!...", 404));
   }
   res.status(200).json({
@@ -405,60 +405,119 @@ exports.GetCompanyDetails=catchAsyncErrors(async (req,res,next)=>{
 
 
 ///////// dashboard data for lead type
-exports.DashboardLeadCount=catchAsyncErrors(async (req,res,next)=>{
-         let array=[];
-         const lead=await Lead.find();
-         const TotalLead=lead.length;
-         const Agent=await agent.find();
-         const TotalAgent=Agent.length;
-         const currentDate=new Date();
-         currentDate.setHours(currentDate.getHours() + 5);
-         currentDate.setMinutes(currentDate.getMinutes() + 30);
-         const formattedDate1 = currentDate.toISOString();
-         const targetDate = new Date(formattedDate1);
-        
-         ///// for meeting
-         const meetinglead=await Lead.find({
-          status:'65a904164473619190494480',
-          followup_date: { $gte: targetDate },
-         });
-         const meetinglead_name=await Status.findOne({_id:'65a904164473619190494480'});
-        ///// for Call Back (Visit)
-         const Visit=await Lead.find({
-          status:'65a903f8447361919049447c',
-          followup_date: { $gte: targetDate },
-         });
-         const Visit_name=await Status.findOne({_id:'65a903f8447361919049447c'});
-         
-         ///// for Call Back (Re-Visit)
-         const Re_Visit=await Lead.find({
-          status:'65a903ca4473619190494478',
-          followup_date: { $gte: targetDate },
-         });
-         const Re_Visit_name=await Status.findOne({_id:'65a903ca4473619190494478'});
-         ///// for Call Back (Re-Visit)
-         const Shedule_Visit=await Lead.find({
-          status:'65a903e9447361919049447a',
-          followup_date: { $gte: targetDate },
-         });
-         const Shedule_Visit_name=await Status.findOne({_id:'65a903e9447361919049447a'});
-         array.push(
-         {['name']:'Total Lead',['Value']:TotalLead},
-         {['name']:'Total Agent',['Value']:TotalAgent},
-         {['name']:meetinglead_name?.status_name1,['Value']:meetinglead.length},
-         {['name']:Visit_name?.status_name1,['Value']:Visit.length},
-         {['name']:Re_Visit_name?.status_name1,['Value']:Re_Visit.length},
-         {['name']:Shedule_Visit_name?.status_name1,['Value']:Shedule_Visit.length},
-         );
-         res.status(201).json({
-          success: true,
-          message: "Get Lead Count Successfully",
-          Count: array,
-        });
+exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
+  let array = [];
+  const lead = await Lead.find();
+  const TotalLead = lead.length;
+  const Agent = await agent.find();
+  const TotalAgent = Agent.length;
+  const currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + 5);
+  currentDate.setMinutes(currentDate.getMinutes() + 30);
+  const formattedDate1 = currentDate.toISOString();
+  const targetDate = new Date(formattedDate1);
+  const targetDateOnly = new Date(targetDate.toISOString().split('T')[0]);
+  const nextDate = new Date(targetDate);
+  nextDate.setDate(nextDate.getDate() + 1); // Get next day from targetDate
+  ///// for meeting
+  const meetinglead = await Lead.find({
+    status: '65a904164473619190494480',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } }, // Convert followup_date to date string
+        { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } } // Convert targetDateOnly to date string
+      ]
+    }
+  });
+  const meetingleadNextDay = await Lead.find({
+    status: '65a904164473619190494480',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+        { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+      ]
+    }
+  });
+
+  const meetinglead_name = await Status.findOne({ _id: '65a904164473619190494480' });
+  ///// for Call Back (Visit)
+  const Visit = await Lead.find({
+    status: '65a903f8447361919049447c',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } }, // Convert followup_date to date string
+        { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } } // Convert targetDateOnly to date string
+      ]
+    }
+  });
+  const VisitleadNextDay = await Lead.find({
+    status: '65a903f8447361919049447c',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+        { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+      ]
+    }
+  });
+  const Visit_name = await Status.findOne({ _id: '65a903f8447361919049447c' });
+
+  ///// for Call Back (Re-Visit)
+  const Re_Visit = await Lead.find({
+    status: '65a903ca4473619190494478',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } }, // Convert followup_date to date string
+        { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } } // Convert targetDateOnly to date string
+      ]
+    }
+  });
+  const Re_VisitleadNextDay = await Lead.find({
+    status: '65a903ca4473619190494478',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+        { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+      ]
+    }
+  });
+  const Re_Visit_name = await Status.findOne({ _id: '65a903ca4473619190494478' });
+  ///// for Call Back (Re-Visit)
+  const Shedule_Visit = await Lead.find({
+    status: '65a903e9447361919049447a',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } }, // Convert followup_date to date string
+        { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } } // Convert targetDateOnly to date string
+      ]
+    }
+  });
+  const Shedule_VisitleadNextDay = await Lead.find({
+    status: '65a903e9447361919049447a',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+        { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+      ]
+    }
+  });
+  const Shedule_Visit_name = await Status.findOne({ _id: '65a903e9447361919049447a' });
+  array.push(
+    { ['name']: 'Total Lead', ['Value']: TotalLead },
+    { ['name']: 'Total Agent', ['Value']: TotalAgent },
+    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length },
+    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length },
+    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length },
+    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length },
+  );
+  res.status(201).json({
+    success: true,
+    message: "Get Lead Count Successfully",
+    Count: array,
+  });
 
 
 
-        
+
 
 
 })

@@ -241,9 +241,11 @@ exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
     /////for  loss status remove
     {
       $match: {
-        // status: { $ne: "6540873b3bdc70798d3e9f4e" } // Exclude leads with status 'loss'
         status: {
-          $nin: ["6561c44233093ed343745a3e", "6539fa950b9756b61601287b"],
+          $nin: [
+           new ObjectId("65a904e04473619190494482"),
+           new ObjectId("65a904ed4473619190494484")
+          ],
         },
       },
     },
@@ -276,7 +278,7 @@ exports.getLeadbyagentidandwithoutstatus = catchAsyncErrors(
     const lead = await Lead.aggregate([
         {
         $match: matchConditions,
-      },
+        },
 
       {
         $lookup: {
@@ -371,8 +373,8 @@ exports.getLeadbyagentidandwithoutstatus = catchAsyncErrors(
           status: {
             //$nin: ["65a904e04473619190494482", "65a904ed4473619190494484"],
             $nin: [
-              ObjectId("65a904e04473619190494482"),
-              ObjectId("65a904ed4473619190494484")
+             new ObjectId("65a904e04473619190494482"),
+             new ObjectId("65a904ed4473619190494484")
             ],
           },
         },

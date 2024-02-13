@@ -25,6 +25,7 @@ const excelUplode=require('./routes/excelUplodeRoute');
 const LeadFileUplode=require('./routes/leadFileRoute');
 const Report=require('./routes/allReportRoute');
 const socialmedialead=require('./routes/socialmedialeadRoute');
+const transactional=require('./routes/transactionalsmsRoute');
 // const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
 
 // scheduleJob1();
@@ -40,6 +41,7 @@ app.use("/api/v1/",calllog);
 app.use("/api/v1/",lostreason);
 app.use("/api/v1/",YearlySaleApi);
 app.use("/api/v1/",Updateandsavenotification);
+app.use("/api/v1/",transactional)
 app.use("/",excelUplode);  
 app.use("/",LeadFileUplode);  
 app.use("/api/v1/",Report); 
