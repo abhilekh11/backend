@@ -14,24 +14,23 @@ const FollowupLead=require('../models/followupModel');
 const LeadAttechment=require('../models/leadattechmentModel')
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.create(req.body);
-
-  // const lead_id = lead.lead_id;
-  // const assign_to_agent = lead.assign_to_agent;
-  // const commented_by= req.commented_id;
-  // const followup_status_id = lead.status;
-  // const followup_date=lead.followup_date;
-  // const followup_desc=lead.followup_date;
-
-
-  // const update_data = { assign_to_agent: assign_to_agent, commented_by: commented_by,lead_id:lead_id,
-  //   followup_status_id:followup_status_id,followup_date:followup_date,
-  //   followup_desc:followup_desc };   
-  //            await FollowupLead.create(update_data);    
-
+  const lead_id = lead._id;
+  const assign_to_agent = lead.assign_to_agent;
+  const commented_by= req.body.commented_id;
+  const followup_status_id = lead.status;
+  const followup_date=lead.followup_date;
+  const followup_desc=lead.description;
+ 
+  const update_data = { assign_to_agent: assign_to_agent, commented_by: commented_by,lead_id:lead_id,
+    followup_status_id:followup_status_id,followup_date:followup_date,
+    followup_desc:followup_desc };   
+        const followup_lead= await FollowupLead.create(update_data);    
+        
   res.status(201).json({
     success: true,
     message: "lead  Has Been Added Successfully",
     lead,
+    followup_lead,
   });
 });
 
@@ -668,6 +667,32 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
   res.status(201).json({
     success: true,
     message: "Leads have been successfully updated",
+  });
+});
+/////// Lead Transfer To Other Agent 
+exports.LeadTransfer = catchAsyncErrors(async (req, res, next) => {
+
+  const {  totransfer,oftransfer } = req.body;
+   const leads= await Lead.find({assign_to_agent:oftransfer});
+   console.log(oftransfer)
+  if (leads.length === 0) {
+    return next(new ErrorHander("Please select leads", 404));
+  }
+
+  const updatePromises = leads.map(async (lead) => {
+    const condition = { _id: lead._id };
+    const update_data = {
+      assign_to_agent: totransfer,
+    };
+    return Lead.updateOne(condition, update_data);
+  });
+
+  // Wait for all updates to complete before sending the response
+  await Promise.all(updatePromises);
+
+  res.status(201).json({
+    success: true,
+    message: "Leads have been Transfer successfully..",
   });
 });
 

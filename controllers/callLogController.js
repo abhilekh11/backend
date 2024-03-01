@@ -64,7 +64,7 @@ exports.getCallLogByIdAndDate = catchAsyncErrors(async (req, res, next) => {
       $gte: start_date,
       $lte: end_date,
     },
-    duration:0
+     duration:0
   }).maxTimeMS(30000);  
 
   const NotConnectedCall=await call_log1.length;

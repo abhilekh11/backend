@@ -8,7 +8,7 @@ const followupSchema = new mongoose.Schema({
   },  
   commented_by: { 
     type: String,
-    required: true,
+    // required: true,
     trim: true,
   },
   followup_status_id: {

@@ -8,7 +8,7 @@ const ErrorHander = require("../utils/errorhander");
 const { param } = require("../app");
 const leadsourceModel = require("../models/leadsourceModel");
 const Setting = require('../models/settingModel');
-
+const { ObjectId } = require('mongoose').Types;
 /////// Yearly Base Sale Api
 
 exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
@@ -147,8 +147,9 @@ exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
 
 exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
   const wonstatu = await lead_status.find({ status_name: "Won" });
+  
   const wonStatus_id = wonstatu["0"]._id;
-  const monthlyIncom = [];
+ const monthlyIncom = [];
   ////// for jan
   let total1 = 0;
   const lead1 = await Lead.find({
@@ -161,7 +162,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead1.map((lead11) => {
-    total1 += parseInt(lead11.lead_cost);
+    total1 += parseInt(lead11.followup_won_amount);
   });
   monthlyIncom.push(total1);
   //// for fav
@@ -176,7 +177,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead2.map((lead22) => {
-    total12 += parseInt(lead22.lead_cost);
+    total12 += parseInt(lead22.followup_won_amount);
   });
   monthlyIncom.push(total12);
 
@@ -192,7 +193,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead3.map((lead33) => {
-    total13 += parseInt(lead33.lead_cost);
+    total13 += parseInt(lead33.followup_won_amount);
   });
   monthlyIncom.push(total13);
 
@@ -208,7 +209,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead4.map((lead44) => {
-    total14 += parseInt(lead44.lead_cost);
+    total14 += parseInt(lead44.followup_won_amount);
   });
   monthlyIncom.push(total14);
 
@@ -225,7 +226,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead5.map((lead55) => {
-    total15 += parseInt(lead55.lead_cost);
+    total15 += parseInt(lead55.followup_won_amount);
   });
   monthlyIncom.push(total15);
   // june
@@ -241,7 +242,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead6.map((lead66) => {
-    total16 += parseInt(lead66.lead_cost);
+    total16 += parseInt(lead66.followup_won_amount);
   });
   monthlyIncom.push(total16);
 
@@ -257,7 +258,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead7.map((lead77) => {
-    total17 += parseInt(lead77.lead_cost);
+    total17 += parseInt(lead77.followup_won_amount);
   });
   monthlyIncom.push(total17);
 
@@ -273,7 +274,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead8.map((lead88) => {
-    total18 += parseInt(lead88.lead_cost);
+    total18 += parseInt(lead88.followup_won_amount);
   });
   monthlyIncom.push(total18);
   /// setember
@@ -289,7 +290,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead9.map((lead99) => {
-    total19 += parseInt(lead99.lead_cost);
+    total19 += parseInt(lead99.followup_won_amount);
   });
   monthlyIncom.push(total19);
   //octuber
@@ -304,7 +305,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead10.map((lead1010) => {
-    total110 += parseInt(lead1010.lead_cost);
+    total110 += parseInt(lead1010.followup_won_amount);
   });
   monthlyIncom.push(total110);
   /// nomber
@@ -319,7 +320,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead111.map((lead1111) => {
-    total111 += parseInt(lead1111.lead_cost);
+    total111 += parseInt(lead1111.followup_won_amount);
   });
   monthlyIncom.push(total111);
   /// december
@@ -335,7 +336,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
     },
   });
   lead1112.map((lead11112) => {
-    total1112 += parseInt(lead11112.lead_cost);
+    total1112 += parseInt(lead11112.followup_won_amount);
   });
   monthlyIncom.push(total1112);
 
@@ -347,9 +348,36 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.GetCalandarData = catchAsyncErrors(async (req, res, next) => {
-  const lead = await Lead.find({
-    add_to_calender: 'yes'
-  });
+ 
+  const lead = await Lead.aggregate([
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+    {
+      $match: {
+        add_to_calender: 'yes'
+      },
+    },
+
+  ])
 
   res.status(201).json({
     success: true,
@@ -419,6 +447,19 @@ exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
   const targetDateOnly = new Date(targetDate.toISOString().split('T')[0]);
   const nextDate = new Date(targetDate);
   nextDate.setDate(nextDate.getDate() + 1); // Get next day from targetDate
+  ///// for Followup Lead count
+  const followuplead = await Lead.find({
+      
+        status: {
+          $nin: [
+           new ObjectId("65a904e04473619190494482"),
+           new ObjectId("65a904ed4473619190494484")
+          ],
+        },
+     
+   });
+
+
   ///// for meeting
   const meetinglead = await Lead.find({
     status: '65a904164473619190494480',
@@ -502,7 +543,7 @@ exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
   });
   const Shedule_Visit_name = await Status.findOne({ _id: '65a903e9447361919049447a' });
   array.push(
-    { ['name']: 'Total Lead', ['Value']: TotalLead },
+    { ['name']: 'Followup Lead', ['Value']: followuplead.length },
     { ['name']: 'Total Agent', ['Value']: TotalAgent },
     { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length },
     { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length },
@@ -514,13 +555,7 @@ exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
     message: "Get Lead Count Successfully",
     Count: array,
   });
-
-
-
-
-
-
-})
+});
 
 
 
