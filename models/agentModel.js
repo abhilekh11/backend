@@ -48,6 +48,9 @@ const agentSchema= new mongoose.Schema({
        pimg:{
         type:String, 
        },
+       assigntl:{
+        type:String, 
+       },
        agent_index:{
         type:Number,
        },

@@ -147,6 +147,267 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+
+//////// get All New Lead  (For New Leads) (For Admin)
+exports.getAllNewLead = catchAsyncErrors(async (req, res, next) => {
+  let lead = await Lead.aggregate([
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_product_services",
+        let: { serviceString: "$service" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              product_service_name: 1,
+            },
+          },
+        ],
+        as: "service_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_statuses",
+        let: { statusString: "$status" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$statusString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              status_name: 1,
+            },
+          },
+        ],
+        as: "status_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_lead_sources",
+        // localField:'lead_source',
+        // foreignField:'_id',
+        let: { lead_sourceString: "$lead_source" },
+       pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+                // $cond: {
+                //   if: { $ne: ["$$lead_sourceString", ""] },
+                //   then: { $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }] },
+                //   else: false,
+                // },
+              },
+            },
+          },
+          {
+            $project: {
+              lead_source_name: 1,
+            },
+          }, 
+        ],
+        as: "lead_source_details",
+      },
+     
+    },
+   
+    {
+      $sort: {
+        followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
+      },
+    },
+  ]);
+  ////  get only first followup lead
+  const filteredLeads = [];
+
+  for (const singleLead of lead) {
+    const lead_id = singleLead?._id;
+    const count = await FollowupLead.countDocuments({ lead_id });
+    if (count <= 1) {
+      filteredLeads.push(singleLead);
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    lead: filteredLeads,
+  });
+});
+
+//////// get All New Lead  (For New Leads) (For Agent)
+exports.getAllNewLeadBYAgentId = catchAsyncErrors(async (req, res, next) => {
+
+  const { assign_to_agent } = req.body;
+  if (!assign_to_agent) {
+    return next(new ErrorHander("assign_to_agent is required..!", 404));
+  }
+  const matchConditions = {};
+  const agentObjectId = new ObjectId(assign_to_agent);
+  matchConditions.assign_to_agent=agentObjectId;
+
+  let lead = await Lead.aggregate([
+      {
+      $match: matchConditions,
+      },
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_product_services",
+        let: { serviceString: "$service" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              product_service_name: 1,
+            },
+          },
+        ],
+        as: "service_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_statuses",
+        let: { statusString: "$status" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$statusString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              status_name: 1,
+            },
+          },
+        ],
+        as: "status_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_lead_sources",
+        // localField:'lead_source',
+        // foreignField:'_id',
+        let: { lead_sourceString: "$lead_source" },
+       pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+                // $cond: {
+                //   if: { $ne: ["$$lead_sourceString", ""] },
+                //   then: { $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }] },
+                //   else: false,
+                // },
+              },
+            },
+          },
+          {
+            $project: {
+              lead_source_name: 1,
+            },
+          }, 
+        ],
+        as: "lead_source_details",
+      },
+     
+    },
+   
+    {
+      $sort: {
+        followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
+      },
+    },
+  ]);
+  ////  get only first followup lead
+  const filteredLeads = [];
+
+  for (const singleLead of lead) {
+    const lead_id = singleLead?._id;
+    const count = await FollowupLead.countDocuments({ lead_id });
+    if (count <= 1) {
+      filteredLeads.push(singleLead);
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    lead: filteredLeads,
+  });
+});
+
+
+
+
+
 ////// get Alll lead For Followup
 exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.aggregate([
