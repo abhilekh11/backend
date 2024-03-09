@@ -38,27 +38,21 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 // get all agent --admin
 
 exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
-  //   const mongodbUrl = req?.headers['mongodb-url']?.trim();
-
-  // if (!mongodbUrl) {
-  //   return res.status(400).send('No MongoDB URL provided in request headers');
-  // }
-  // if(mongodbUrl){
-  //     await mongoose.connect(mongodbUrl, {
-  //         useNewUrlParser: true,
-  //         useUnifiedTopology: true,
-  //     });  
-
-  // } 
   const agent = await Agent.find({ role: "user" });
-
-
   res.status(201).json({
     success: true,
     agent,
+ });
+});
 
-  });
+// get Teal --
 
+exports.getAllTeamLeader = catchAsyncErrors(async (req, res, next) => {
+  const agent = await Agent.find({ role: "TeamLeader" });
+  res.status(201).json({
+    success: true,
+    agent, 
+ });
 });
 
 

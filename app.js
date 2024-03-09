@@ -22,6 +22,7 @@ const lostreason=require('./routes/lostreasonRoute');
 const YearlySaleApi=require('./routes/genralapiRoute');
 const Updateandsavenotification=require('./routes/notificationRoute');
 const excelUplode=require('./routes/excelUplodeRoute');
+const uploadcontact=require('./routes/uplodecontactRoute');
 const LeadFileUplode=require('./routes/leadFileRoute');
 const Report=require('./routes/allReportRoute');
 const socialmedialead=require('./routes/socialmedialeadRoute');
@@ -44,7 +45,8 @@ app.use("/api/v1/",YearlySaleApi);
 app.use("/api/v1/",Updateandsavenotification);
 app.use("/api/v1/",transactional)
 app.use("/",excelUplode);  
-app.use("/",LeadFileUplode);  
+app.use("/",LeadFileUplode); 
+app.use("/",uploadcontact); 
 app.use("/api/v1/",Report); 
 app.use("/api/v1/",smsreport); 
 app.use(socialmedialead);

@@ -1,11 +1,13 @@
 const express=require('express');
 
-const { createAgent,getAllAgent,getAgentDetails,deleteAgent, loginAgent, updateClientAccess,EditAgentDetails } = require('../controllers/agentController');
+const { createAgent,getAllAgent,getAgentDetails,deleteAgent,
+     loginAgent, updateClientAccess,EditAgentDetails,getAllTeamLeader } = require('../controllers/agentController');
 
 const router=express.Router();
   
 router.route("/add_agent").post(createAgent); 
 router.route("/get_all_agent").get(getAllAgent);
+router.route("/getAllTeamLeader").get(getAllTeamLeader); 
 router.route("/get_agent_details/:id").get(getAgentDetails);
 
 router.route("/agent_delete/:id").delete(deleteAgent);
