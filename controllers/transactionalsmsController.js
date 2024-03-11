@@ -4,7 +4,8 @@ const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 
 exports.addandupdatetransactionalsms = catchAsyncErrors(async (req, res, next) => {
-    const transactionalSMSModel = await TransactionalSMSModel.find();
+    const {type}=req.body;
+    const transactionalSMSModel = await TransactionalSMSModel.find({type});
     if (transactionalSMSModel.length === 0) {
         const transactional = await TransactionalSMSModel.create(req.body);
         res.status(200).json({
@@ -13,7 +14,7 @@ exports.addandupdatetransactionalsms = catchAsyncErrors(async (req, res, next) =
             message: 'Transactional SMS Record Added Successfully',
         });
     } else {
-        const filter = {}; // Empty filter to update all records
+        const filter = {type}; // Empty filter to update all records
         const update = req.body;
         const transactional = await TransactionalSMSModel.findOneAndUpdate(filter, update);
         res.status(200).json({
@@ -46,7 +47,8 @@ exports.addandupdatewhatappsms = catchAsyncErrors(async (req, res, next) => {
 
 
 exports.getallsmsrecord=catchAsyncErrors(async (req,res,next)=>{
-    const transactional=await TransactionalSMSModel.find();
+    const {type}=req.body;
+    const transactional=await TransactionalSMSModel.find({type});
     res.status(200).json({
         success: true,
         transactional,

@@ -6,7 +6,7 @@ const transactionalsmsSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    sender: {
+    key: {
       type: String,
       trim: true,
     },
@@ -18,7 +18,11 @@ const transactionalsmsSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-   
+    type: {
+      type: String,
+      trim: true,
+    },
+
   },
   {
     timestamps: true,
