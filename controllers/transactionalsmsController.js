@@ -51,13 +51,13 @@ exports.getallsmsrecord=catchAsyncErrors(async (req,res,next)=>{
     const transactional=await TransactionalSMSModel.find({type});
     res.status(200).json({
         success: true,
-        transactional,
+        transactional, 
     });
 });
 exports.getallwhatsmsrecord=catchAsyncErrors(async (req,res,next)=>{
     const whatappSMSModel=await WhatappSMSModel.find();
     res.status(200).json({
         success: true,
-        whatappSMSModel,
+        whatappSMSModel, 
     });
 });

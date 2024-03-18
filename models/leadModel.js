@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-const leadSchema = new mongoose.Schema({  
+const leadSchema = new mongoose.Schema({
   group_id: {
     type: Number,
     default: 1,
     trim: true,
-  },  
-  full_name: { 
+  },
+  full_name: {
     type: String,
     required: true,
     trim: true,
@@ -15,7 +15,7 @@ const leadSchema = new mongoose.Schema({
     type: String,
     // required: true,
     trim: true,
-  },  
+  },
   contact_no: {
     type: Number,
     required: true,
@@ -26,7 +26,7 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   company_name: {
-    type: String, 
+    type: String,
     trim: true,
   },
   position: {
@@ -37,7 +37,7 @@ const leadSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  service: {   
+  service: {
     // type: String,
     type: mongoose.Schema.ObjectId,
     //required: true,
@@ -55,27 +55,27 @@ const leadSchema = new mongoose.Schema({
   followup_lost_reason_id: {
     type: String,
     trim: true,
-  }, 
-  add_to_calender:{
-    type: String,
-    trim: true,
-    default:'no',
   },
-  massage_of_calander:{
+  add_to_calender: {
     type: String,
     trim: true,
-   
+    default: 'no',
+  },
+  massage_of_calander: {
+    type: String,
+    trim: true,
+
   },
   lead_source: {
-   // type: String,
-   type: mongoose.Schema.ObjectId,
+    // type: String,
+    type: mongoose.Schema.ObjectId,
     //required:true,
     trim: true,
   },
   full_address: {
     type: String,
     trim: true,
-  },  
+  },
   country: {
     type: String,
     trim: true,
@@ -97,8 +97,8 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   status: {
-   //type: String,
-   type: mongoose.Schema.ObjectId,
+    //type: String,
+    type: mongoose.Schema.ObjectId,
     trim: true,
   },
   logistics_status: {
@@ -138,6 +138,42 @@ const leadSchema = new mongoose.Schema({
     type: Date,
   },
   forword_agent_id: {
+    type: String,
+    trim: true,
+  },
+  lead_date: {
+    type: String,
+    trim: true,
+  },
+  apartment_names: {
+    type: String,
+    trim: true,
+  },
+  service_type: {
+    type: String,
+    trim: true,
+  },
+  category_type: {
+    type: String,
+    trim: true,
+  },
+  max_area: {
+    type: String,
+    trim: true,
+  },
+  min_area: {
+    type: String,
+    trim: true,
+  },
+  min_price: {
+    type: String,
+    trim: true,
+  },
+  max_price: {
+    type: String,
+    trim: true,
+  },
+  flat_id: {
     type: String,
     trim: true,
   },

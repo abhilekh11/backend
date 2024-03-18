@@ -1,25 +1,25 @@
-const Lead_Source=require('../models/leadsourceModel');
-const catchAsyncErrors=require('../middleware/catchAsyncErrors');
+const Lead_Source = require('../models/leadsourceModel');
+const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const ErrorHander = require("../utils/errorhander");
-const Lead=require('../models/leadModel');
-const Product=require('../models/productserviceModel');
-const  Agent=require('../models/agentModel');
+const Lead = require('../models/leadModel');
+const Product = require('../models/productserviceModel');
+const Agent = require('../models/agentModel');
 const { ObjectId } = require('mongoose').Types;
 
 
 /////// leadsource report 
-exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
-   const { leadsource_id, start_date, end_date } = req.body;
-      if (!leadsource_id) {
-        return next(new ErrorHander("Lead source is required", 400));
-      }
-     
-      
- // Parse start_date and end_date into Date objects if provided
- const startDateObj = start_date ? new Date(start_date) : null;
- const endDateObj = end_date ? new Date(end_date) : null;
+exports.LeadSourceReport = catchAsyncErrors(async (req, res, next) => {
+  const { leadsource_id, start_date, end_date } = req.body;
+  if (!leadsource_id) {
+    return next(new ErrorHander("Lead source is required", 400));
+  }
 
- const query = {
+
+  // Parse start_date and end_date into Date objects if provided
+  const startDateObj = start_date ? new Date(start_date) : null;
+  const endDateObj = end_date ? new Date(end_date) : null;
+
+  const query = {
     lead_source: leadsource_id,
   };
 
@@ -35,29 +35,29 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
     query.created.$lte = endDateObj;
   }
 
- const leadSource = await Lead.find(query).select("full_name lead_cost").maxTimeMS(30000);
-     if (!leadSource || leadSource.length === 0) {
-        return next(new ErrorHander("No Data Found Now", 404));
-      }
- let  total=0;
-      leadSource.map((hhhhh)=>{
-        if(hhhhh?.lead_cost){
-          total+=parseInt(hhhhh.lead_cost);
-        }
-         
-      })
+  const leadSource = await Lead.find(query).select("full_name lead_cost").maxTimeMS(30000);
+  if (!leadSource || leadSource.length === 0) {
+    return next(new ErrorHander("No Data Found Now", 404));
+  }
+  let total = 0;
+  leadSource.map((hhhhh) => {
+    if (hhhhh?.lead_cost) {
+      total += parseInt(hhhhh.lead_cost);
+    }
 
-     let addd={
-      full_name: "Total",
-      lead_cost:total
-     }
-     await leadSource.push(addd)
+  })
+
+  let addd = {
+    full_name: "Total",
+    lead_cost: total
+  }
+  await leadSource.push(addd)
 
 
 
   res.status(201).json({
     success: true,
-    message:'Lead Source Get Successfully',
+    message: 'Lead Source Get Successfully',
     leadSource,
   });
 
@@ -70,7 +70,7 @@ exports.LeadSourceReport=catchAsyncErrors(async (req,res,next)=>{
 exports.LeadProductServiceOverviewApi = catchAsyncErrors(async (req, res, next) => {
   try {
     const product = await Product.find();
-    
+
     const product1_id = product.map((product1) => product1._id);
     const product_name = product.map((product2) => product2.product_service_name);
 
@@ -103,55 +103,55 @@ exports.LeadProductServiceOverviewApi = catchAsyncErrors(async (req, res, next) 
 
 //////// Product And Service Report Date Wise Filter in Table
 
-exports.GetProductReportDateWise=catchAsyncErrors(async (req,res,next)=>{
+exports.GetProductReportDateWise = catchAsyncErrors(async (req, res, next) => {
   const { product_service_id, start_date, end_date } = req.body;
   if (!product_service_id) {
     return next(new ErrorHander("Product Service is required", 400));
   }
-const startDateObj = start_date ? new Date(start_date) : null;
-const endDateObj = end_date ? new Date(end_date) : null;
+  const startDateObj = start_date ? new Date(start_date) : null;
+  const endDateObj = end_date ? new Date(end_date) : null;
 
-const query = {
-  service: product_service_id,
-};
+  const query = {
+    service: product_service_id,
+  };
 
-if (startDateObj && !isNaN(startDateObj)) {
-query.created = {
-  $gte: startDateObj,
-};
-}
+  if (startDateObj && !isNaN(startDateObj)) {
+    query.created = {
+      $gte: startDateObj,
+    };
+  }
 
-if (endDateObj && !isNaN(endDateObj)) {
-// If query.created already exists, add $lte to it, otherwise, create a new object
-query.created = query.created || {};
-query.created.$lte = endDateObj;
-}
+  if (endDateObj && !isNaN(endDateObj)) {
+    // If query.created already exists, add $lte to it, otherwise, create a new object
+    query.created = query.created || {};
+    query.created.$lte = endDateObj;
+  }
 
-const leadSource = await Lead.find(query).select("full_name followup_won_amount").maxTimeMS(30000);
- if (!leadSource || leadSource.length === 0) {
+  const leadSource = await Lead.find(query).select("full_name followup_won_amount").maxTimeMS(30000);
+  if (!leadSource || leadSource.length === 0) {
     return next(new ErrorHander("No Data Found Now", 404));
   }
-let  total=0;
-  leadSource.map((hhhhh)=>{
-    if(hhhhh?.followup_won_amount){
-      total+=parseInt(hhhhh.followup_won_amount);
+  let total = 0;
+  leadSource.map((hhhhh) => {
+    if (hhhhh?.followup_won_amount) {
+      total += parseInt(hhhhh.followup_won_amount);
     }
-     
+
   })
 
- let addd={
-  full_name: "Total",
-  followup_won_amount:total
- }
- await leadSource.push(addd)
+  let addd = {
+    full_name: "Total",
+    followup_won_amount: total
+  }
+  await leadSource.push(addd)
 
 
 
-res.status(201).json({
-success: true,
-message:'Lead Source Get Successfully',
-leadSource,
-});
+  res.status(201).json({
+    success: true,
+    message: 'Lead Source Get Successfully',
+    leadSource,
+  });
 
 
 });
@@ -161,7 +161,7 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
   try {
     let name = [];
     let value = [];
-    const agents = await Agent.find({role:'user'});
+    const agents = await Agent.find({ role: 'user' });
 
     for (const agent of agents) {
       let totalAmount = 0;
@@ -172,7 +172,7 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
       });
 
       name.push(agent.agent_name);
-       value.push(totalAmount,);
+      value.push(totalAmount,);
     }
 
     res.status(201).json({
@@ -191,29 +191,29 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
 });
 
 /////////  Employees report By Filter
-exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) => {
+exports.EmployeesReportDetailByFilter11 = catchAsyncErrors(async (req, res, next) => {
   const { agent, service, startDate, endDate } = req.body;
-  let array=[];
-  let total=0;
+  let array = [];
+  let total = 0;
   const matchConditions = {};
-  if (agent) {  
+  if (agent) {
     const agentObjectId = new ObjectId(agent);
-    matchConditions.assign_to_agent=agentObjectId;
+    matchConditions.assign_to_agent = agentObjectId;
   }
   if (service) {
-    const serviceObjectId = new ObjectId(service);   
-    matchConditions.service=serviceObjectId;
+    const serviceObjectId = new ObjectId(service);
+    matchConditions.service = serviceObjectId;
   }
-    const StatusObjectId = new ObjectId('6539fa950b9756b61601287b');   
-      matchConditions.status=StatusObjectId;
-   if (startDate && endDate) {
+  const StatusObjectId = new ObjectId('65a904e04473619190494482');
+  matchConditions.status = StatusObjectId;
+  if (startDate && endDate) {
     matchConditions.followup_date = {
       $gte: new Date(startDate),
       $lte: new Date(endDate),
     };
   }
- const lead = await Lead.aggregate([
-      {
+  const lead = await Lead.aggregate([
+    {
       $match: matchConditions,
     },
     {
@@ -226,18 +226,73 @@ exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) 
         full_name: 1,
         contact_no: 1,
         followup_won_amount: 1,
-         },
+      },
     },
   ]);
-  lead.map((lead1)=>{
-      total+=parseInt(lead1?.followup_won_amount);
-  });
-  lead.push({['full_name']:'Total Amount',['contact_no']:'Total Amount',['followup_won_amount']:total,})
+   console.log('ll',lead.length)
+
+  lead.map((lead1) => {
+    total += parseInt(lead1?.followup_won_amount);
+  }); 
+  lead.push({ ['full_name']: 'Total Amount', ['contact_no']: 'Total Amount', ['followup_won_amount']: total, })
   res.status(200).json({
     success: true,
     message: "Successfully get data",
-     lead:lead,
+    lead: lead,
   });
 });
+
+exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) => {
+  const { agent, service, status, lead_source, startDate, endDate } = req.body;
+  let total = 0;
+  const matchConditions = {};
+ if (agent) {
+    matchConditions.assign_to_agent = new ObjectId(agent);
+  }
+  if (service) {
+    matchConditions.service = new ObjectId(service);
+  }
+ if (status) {
+    matchConditions.status = new ObjectId(status);
+  }
+ if (lead_source) {
+    matchConditions.lead_source = new ObjectId(lead_source);
+  }
+  if (startDate && endDate) {
+    matchConditions.followup_date = {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    };
+  }
+ const lead = await Lead.aggregate([
+    {
+      $match: matchConditions,
+    },
+    {
+      $sort: {
+        followup_date: 1,
+      },
+    },
+    {
+      $project: {
+        full_name: 1,
+        contact_no: 1,
+        followup_won_amount: 1,
+      },
+    },
+  ]);
+  lead.forEach((lead1) => {
+    total += parseInt(lead1?.followup_won_amount) || 0; // Ensure to handle NaN values
+  });
+
+  lead.push({ full_name: 'Total Amount', contact_no: 'Total Amount', followup_won_amount: total });
+
+  res.status(200).json({
+    success: true,
+    message: "Successfully fetched data",
+    lead: lead,
+  });
+});
+
 
 

@@ -10,22 +10,24 @@ const useragent = require("express-useragent");
 const multer = require("multer");
 const upload = multer();
 const xlsx = require("xlsx");
-const FollowupLead=require('../models/followupModel');
-const LeadAttechment=require('../models/leadattechmentModel')
+const FollowupLead = require('../models/followupModel');
+const LeadAttechment = require('../models/leadattechmentModel')
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.create(req.body);
   const lead_id = lead._id;
   const assign_to_agent = lead.assign_to_agent;
-  const commented_by= req.body.commented_id;
+  const commented_by = req.body.commented_id;
   const followup_status_id = lead.status;
-  const followup_date=lead.followup_date;
-  const followup_desc=lead.description;
- 
-  const update_data = { assign_to_agent: assign_to_agent, commented_by: commented_by,lead_id:lead_id,
-    followup_status_id:followup_status_id,followup_date:followup_date,
-    followup_desc:followup_desc };   
-        const followup_lead= await FollowupLead.create(update_data);    
-        
+  const followup_date = lead.followup_date;
+  const followup_desc = lead.description;
+
+  const update_data = {
+    assign_to_agent: assign_to_agent, commented_by: commented_by, lead_id: lead_id,
+    followup_status_id: followup_status_id, followup_date: followup_date,
+    followup_desc: followup_desc
+  };
+  const followup_lead = await FollowupLead.create(update_data);
+
   res.status(201).json({
     success: true,
     message: "lead  Has Been Added Successfully",
@@ -109,7 +111,7 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
         // localField:'lead_source',
         // foreignField:'_id',
         let: { lead_sourceString: "$lead_source" },
-       pipeline: [
+        pipeline: [
           {
             $match: {
               $expr: {
@@ -126,13 +128,13 @@ exports.getAllLead = catchAsyncErrors(async (req, res, next) => {
             $project: {
               lead_source_name: 1,
             },
-          }, 
+          },
         ],
         as: "lead_source_details",
       },
-     
+
     },
-   
+
     {
       $sort: {
         followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
@@ -223,7 +225,7 @@ exports.getAllNewLead = catchAsyncErrors(async (req, res, next) => {
         // localField:'lead_source',
         // foreignField:'_id',
         let: { lead_sourceString: "$lead_source" },
-       pipeline: [
+        pipeline: [
           {
             $match: {
               $expr: {
@@ -240,13 +242,13 @@ exports.getAllNewLead = catchAsyncErrors(async (req, res, next) => {
             $project: {
               lead_source_name: 1,
             },
-          }, 
+          },
         ],
         as: "lead_source_details",
       },
-     
+
     },
-   
+
     {
       $sort: {
         followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
@@ -279,12 +281,12 @@ exports.getAllNewLeadBYAgentId = catchAsyncErrors(async (req, res, next) => {
   }
   const matchConditions = {};
   const agentObjectId = new ObjectId(assign_to_agent);
-  matchConditions.assign_to_agent=agentObjectId;
+  matchConditions.assign_to_agent = agentObjectId;
 
   let lead = await Lead.aggregate([
-      {
+    {
       $match: matchConditions,
-      },
+    },
     {
       $lookup: {
         from: "crm_agents",
@@ -357,7 +359,7 @@ exports.getAllNewLeadBYAgentId = catchAsyncErrors(async (req, res, next) => {
         // localField:'lead_source',
         // foreignField:'_id',
         let: { lead_sourceString: "$lead_source" },
-       pipeline: [
+        pipeline: [
           {
             $match: {
               $expr: {
@@ -374,13 +376,13 @@ exports.getAllNewLeadBYAgentId = catchAsyncErrors(async (req, res, next) => {
             $project: {
               lead_source_name: 1,
             },
-          }, 
+          },
         ],
         as: "lead_source_details",
       },
-     
+
     },
-   
+
     {
       $sort: {
         followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
@@ -503,8 +505,8 @@ exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
       $match: {
         status: {
           $nin: [
-           new ObjectId("65a904e04473619190494482"),
-           new ObjectId("65a904ed4473619190494484")
+            new ObjectId("65a904e04473619190494482"),
+            new ObjectId("65a904ed4473619190494484")
           ],
         },
       },
@@ -534,11 +536,11 @@ exports.getLeadbyagentidandwithoutstatus = catchAsyncErrors(
     }
     const matchConditions = {};
     const agentObjectId = new ObjectId(assign_to_agent);
-    matchConditions.assign_to_agent=agentObjectId;
+    matchConditions.assign_to_agent = agentObjectId;
     const lead = await Lead.aggregate([
-        {
+      {
         $match: matchConditions,
-        },
+      },
 
       {
         $lookup: {
@@ -633,8 +635,8 @@ exports.getLeadbyagentidandwithoutstatus = catchAsyncErrors(
           status: {
             //$nin: ["65a904e04473619190494482", "65a904ed4473619190494484"],
             $nin: [
-             new ObjectId("65a904e04473619190494482"),
-             new ObjectId("65a904ed4473619190494484")
+              new ObjectId("65a904e04473619190494482"),
+              new ObjectId("65a904ed4473619190494484")
             ],
           },
         },
@@ -669,8 +671,8 @@ exports.getLeadbyagentidandwithstatus = catchAsyncErrors(
     }
     const matchConditions = {};
     const agentObjectId = new ObjectId(assign_to_agent);
-    matchConditions.assign_to_agent=agentObjectId;
-   const lead = await Lead.aggregate([
+    matchConditions.assign_to_agent = agentObjectId;
+    const lead = await Lead.aggregate([
       {
         $match: matchConditions,
       },
@@ -933,9 +935,9 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
 /////// Lead Transfer To Other Agent 
 exports.LeadTransfer = catchAsyncErrors(async (req, res, next) => {
 
-  const {  totransfer,oftransfer } = req.body;
-   const leads= await Lead.find({assign_to_agent:oftransfer});
-   console.log(oftransfer)
+  const { totransfer, oftransfer } = req.body;
+  const leads = await Lead.find({ assign_to_agent: oftransfer });
+  console.log(oftransfer)
   if (leads.length === 0) {
     return next(new ErrorHander("Please select leads", 404));
   }
@@ -961,13 +963,17 @@ exports.LeadTransfer = catchAsyncErrors(async (req, res, next) => {
 exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
   const { agent, Status, startDate, endDate } = req.body;
   const matchConditions = {};
-  if (agent) {  
-    const agentObjectId = new ObjectId(agent);
-    matchConditions.assign_to_agent=agentObjectId;
+  if (agent) {
+    if (agent == 'Unassigne') {
+      matchConditions.assign_to_agent =null;  
+    } else {
+      const agentObjectId = new ObjectId(agent);
+      matchConditions.assign_to_agent = agentObjectId;
+    }
   }
   if (Status) {
-    const StatusObjectId = new ObjectId(Status);   
-    matchConditions.status=StatusObjectId;
+    const StatusObjectId = new ObjectId(Status);
+    matchConditions.status = StatusObjectId;
   }
 
 
@@ -1080,7 +1086,7 @@ exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-     lead,
+    lead,
   });
 });
 
@@ -1134,32 +1140,37 @@ exports.UpdateLeadByLeadId = catchAsyncErrors(async (req, res, next) => {
 
 
 ////////// Lead Attechment History
-exports.leadattechmenthistory=catchAsyncErrors(async (req, res, next)=>{
-  const lead=await LeadAttechment.find({lead_id:req.params.id});
-  if(!lead){
-      return next(new ErrorHander("lead is not found"));
-   }
+exports.leadattechmenthistory = catchAsyncErrors(async (req, res, next) => {
+  const lead = await LeadAttechment.find({ lead_id: req.params.id });
+  if (!lead) {
+    return next(new ErrorHander("lead is not found"));
+  }
   res.status(200).json({
-      success:true,
-      message:"lead  Has Been Get Successfully",
-      lead
-        })
- 
+    success: true,
+    message: "lead  Has Been Get Successfully",
+    lead
+  })
+
 })
 
 ////////// Lead Attechment History Delete
 
-exports.deleteLeadAttechmentHistory=catchAsyncErrors(async(req,res,next)=>{
-  const lead=await LeadAttechment.find({_id:req.params.id});
- if(!lead){
-     return next(new ErrorHander("lead is not found"));
+exports.deleteLeadAttechmentHistory = catchAsyncErrors(async (req, res, next) => {
+  const lead = await LeadAttechment.find({ _id: req.params.id });
+  if (!lead) {
+    return next(new ErrorHander("lead is not found"));
   }
   await LeadAttechment.deleteOne();
   res.status(200).json({
-     success:true,
-     message:"lead  Has Been Delete Successfully",
-     lead 
-       })
+    success: true,
+    message: "lead  Has Been Delete Successfully",
+    lead
+  })
+});
+
+//////////  User Wish Active Lead 
+exports.ActiveLeadUserWish=catchAsyncErrors(async (req,res,next)=>{
+
 });
 
 

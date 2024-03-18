@@ -8,6 +8,7 @@ const ErrorHander = require("../utils/errorhander");
 const { param } = require("../app");
 const leadsourceModel = require("../models/leadsourceModel");
 const Setting = require('../models/settingModel');
+const { Agent } = require("express-useragent");
 const { ObjectId } = require('mongoose').Types;
 /////// Yearly Base Sale Api
 
@@ -432,7 +433,7 @@ exports.GetCompanyDetails = catchAsyncErrors(async (req, res, next) => {
 })
 
 
-///////// dashboard data for lead type
+///////// dashboard data for lead type  In Case Of Admin
 exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
   let array = [];
   const lead = await Lead.find();
@@ -557,5 +558,183 @@ exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+
+///////// UnAssigned Lead Count In Case Of Admin
+exports.UnAssignedDashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
+  let array = [];
+  const lead = await Lead.find({ assign_to_agent:null });
+  const TotalLead = lead.length;
+
+  array.push(
+    { ['name']: 'UnAssigned Lead', ['Value']: TotalLead },
+  );
+  res.status(201).json({
+    success: true,
+    message: "Get Lead Count Successfully",
+    Count: array,
+  });
+});
+
+
+
+// Assuming 'agent' and 'Lead' are imported correctly
+
+exports.AgentWishLeadCount = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const agents = await agent.find();
+    const array = [];
+
+    for (const agent1 of agents) {
+      const leads = await Lead.find({ assign_to_agent: agent1?._id });
+      array.push({ 'name': agent1?.agent_name, 'Value': leads?.length });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Get Lead Count Successfully",
+      Count: array,
+    });
+  } catch (error) {
+    // Handle errors
+    next(error);
+  }
+});
+
+
+
+///////// dashboard data for lead type  In Case Of User
+exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
+    const {user_id}=req.body;
+    const agentObjectId = new ObjectId(user_id);
+  let array = []; 
+  const lead = await Lead.find();
+  const TotalLead = lead.length;
+  const Agent = await agent.find();
+  const TotalAgent = Agent.length;
+  const currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + 5);
+  currentDate.setMinutes(currentDate.getMinutes() + 30);
+  const formattedDate1 = currentDate.toISOString();
+  const targetDate = new Date(formattedDate1);
+  const targetDateOnly = new Date(targetDate.toISOString().split('T')[0]);
+  const nextDate = new Date(targetDate);
+  nextDate.setDate(nextDate.getDate() + 1); // Get next day from targetDate
+  ///// for Followup Lead count
+  const followuplead = await Lead.find({
+    assign_to_agent:agentObjectId,
+        status: {
+          $nin: [
+           new ObjectId("65a904e04473619190494482"),
+           new ObjectId("65a904ed4473619190494484")
+          ],
+        },
+     
+   });
+
+
+  ///// for meeting
+  const meetinglead = await Lead.find({
+    assign_to_agent:agentObjectId,
+    status: '65a904164473619190494480',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } }, // Convert followup_date to date string
+        { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } } // Convert targetDateOnly to date string
+      ]
+    }
+  });
+  const meetingleadNextDay = await Lead.find({
+    assign_to_agent:agentObjectId,
+    status: '65a904164473619190494480',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+        { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+      ]
+    }
+  });
+
+  const meetinglead_name = await Status.findOne({ _id: '65a904164473619190494480' });
+  ///// for Call Back (Visit)
+  const Visit = await Lead.find({
+    assign_to_agent:agentObjectId,
+    status: '65a903f8447361919049447c',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } }, // Convert followup_date to date string
+        { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } } // Convert targetDateOnly to date string
+      ]
+    }
+  });
+  const VisitleadNextDay = await Lead.find({
+    assign_to_agent:agentObjectId,
+    status: '65a903f8447361919049447c',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+        { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+      ]
+    }
+  });
+  const Visit_name = await Status.findOne({ _id: '65a903f8447361919049447c' });
+
+  ///// for Call Back (Re-Visit)
+  const Re_Visit = await Lead.find({
+    assign_to_agent:agentObjectId,
+    status: '65a903ca4473619190494478',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } }, // Convert followup_date to date string
+        { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } } // Convert targetDateOnly to date string
+      ]
+    }
+  });
+  const Re_VisitleadNextDay = await Lead.find({
+    assign_to_agent:agentObjectId,
+    status: '65a903ca4473619190494478',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+        { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+      ]
+    }
+  });
+  const Re_Visit_name = await Status.findOne({ _id: '65a903ca4473619190494478' });
+  ///// for Call Back (Re-Visit)
+  const Shedule_Visit = await Lead.find({
+    assign_to_agent:agentObjectId,
+    status: '65a903e9447361919049447a',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } }, // Convert followup_date to date string
+        { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } } // Convert targetDateOnly to date string
+      ]
+    }
+  });
+  const Shedule_VisitleadNextDay = await Lead.find({
+    assign_to_agent:agentObjectId,
+    status: '65a903e9447361919049447a',
+    $expr: {
+      $eq: [
+        { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+        { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+      ]
+    }
+  });
+  const Shedule_Visit_name = await Status.findOne({ _id: '65a903e9447361919049447a' });
+  array.push(
+    { ['name']: 'Followup Lead', ['Value']: followuplead.length },
+    { ['name']: 'Total Agent', ['Value']: TotalAgent },
+    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length },
+    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length },
+    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length },
+    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length },
+  );
+  res.status(201).json({
+    success: true,
+    message: "Get Lead Count Successfully",
+    Count: array,
+  });
+});
 
 

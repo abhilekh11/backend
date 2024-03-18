@@ -28,6 +28,7 @@ router.route("/BulkDeleteLead").delete(BulkDeleteLead);
 router.route("/UpdateLeadByLeadId/:id").put(UpdateLeadByLeadId);
 router.route("/leadattechmenthistory/:id").get(leadattechmenthistory); 
 router.route("/deleteLeadAttechmentHistory/:id").delete(deleteLeadAttechmentHistory);
+
  
 // router.route("/BulkLeadUplodeExcel",upload.single('file')).post(BulkLeadUplodeExcel); 
       

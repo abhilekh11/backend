@@ -37,12 +37,12 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 
 // get all agent --admin
 
-exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
-  const agent = await Agent.find({ role: "user" });
+exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {  
+  const agent = await Agent.find({ role: { $in: ["user", "TeamLeader"] } });  
   res.status(201).json({
     success: true,
     agent,
- });
+ }); 
 });
 
 // get Teal --
