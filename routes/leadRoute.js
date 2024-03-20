@@ -4,14 +4,16 @@ const { Add_Lead, getAllLead ,getLeadById, deleteAllLead,
       getLeadbyagentidandwithoutstatus,getAllLeadFollowup,getLeadbyagentidandwithstatus,
       BulkLeadUpdate, getAdvanceFillter, LeadTransfer,
       BulkDeleteLead,UpdateLeadByLeadId,
-      leadattechmenthistory,deleteLeadAttechmentHistory,getAllNewLead,getAllNewLeadBYAgentId} = require('../controllers/leadController');  
+      leadattechmenthistory,deleteLeadAttechmentHistory
+      ,getAllNewLead,getAllNewLeadBYAgentId,getAllUnassignLead} = require('../controllers/leadController');  
 
 
 const router=express.Router();
 router.route("/add_lead").post(Add_Lead);
 router.route("/get_all_lead").get(getAllLead);  
-
+router.route("/getAllUnassignLead").get(getAllUnassignLead);
 router.route("/getAllNewLead").get(getAllNewLead); 
+
 router.route("/getAllNewLeadBYAgentId").post(getAllNewLeadBYAgentId); ////////Get All New Lead For Agent (By Agent Id)
 
 router.route("/getAdvanceFillter").post(getAdvanceFillter); 

@@ -155,7 +155,7 @@ exports.GetProductReportDateWise = catchAsyncErrors(async (req, res, next) => {
 
 
 });
-
+  
 ///////  Employees Report 
 exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
   try {

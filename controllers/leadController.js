@@ -410,6 +410,7 @@ exports.getAllNewLeadBYAgentId = catchAsyncErrors(async (req, res, next) => {
 
 
 
+
 ////// get Alll lead For Followup
 exports.getAllLeadFollowup = catchAsyncErrors(async (req, res, next) => {
   const lead = await Lead.aggregate([
@@ -975,9 +976,7 @@ exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
     const StatusObjectId = new ObjectId(Status);
     matchConditions.status = StatusObjectId;
   }
-
-
-  if (startDate && endDate) {
+ if (startDate && endDate) {
     matchConditions.followup_date = {
       $gte: new Date(startDate),
       $lte: new Date(endDate),
@@ -1174,3 +1173,115 @@ exports.ActiveLeadUserWish=catchAsyncErrors(async (req,res,next)=>{
 });
 
 
+
+/////// getAllUnassignLead sarch Api
+exports.getAllUnassignLead = catchAsyncErrors(async (req, res, next) => {
+   const matchConditions = {};
+       matchConditions.assign_to_agent =null;  
+ 
+
+  const lead = await Lead.aggregate([
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_product_services",
+        let: { serviceString: "$service" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              product_service_name: 1,
+            },
+          },
+        ],
+        as: "service_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_statuses",
+        let: { statusString: "$status" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$statusString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              status_name: 1,
+            },
+          },
+        ],
+        as: "status_details",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "crm_lead_sources",
+        let: { lead_sourceString: "$lead_source" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              lead_source_name: 1,
+            },
+          },
+        ],
+        as: "lead_source_details",
+      },
+    },
+
+    {
+      $match: matchConditions,
+    },
+
+    {
+      $sort: {
+        followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    success: true,
+    lead,
+  });
+});
