@@ -11,7 +11,6 @@ const Setting = require('../models/settingModel');
 const { Agent } = require("express-useragent");
 const { ObjectId } = require('mongoose').Types;
 /////// Yearly Base Sale Api
-
 exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
   const details = [];
   let TotalAmountWon = 0;
@@ -140,7 +139,13 @@ exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-
+///////// RealestateApi
+exports.RealestateApi=catchAsyncErrors(async (req,res,next)=>{
+  res.status(200).json({
+    message: "Save Realestate Lead On This Route",
+    data:req.body
+  });
+});
 
 
 

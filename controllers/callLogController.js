@@ -238,6 +238,60 @@ exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
   }
 })
 
+/////// Get Call Details BY
+exports.GetUserCallAccordingToTeamLeader = catchAsyncErrors(async (req, res, next) => {
+  const { assign_to_agent } = req.body;
+ 
+  if (!assign_to_agent) {
+      return next(new ErrorHander("assign_to_agent is required..!", 404));
+  }
+  const allAgents = await Agent.find({ assigntl: assign_to_agent });
+  if (allAgents.length < 1) {
+      return next(new ErrorHander("No Lead..!", 404));
+  }
+  try {
+      let array = [];
+      let username = [];
+      let value = [];
+
+      await Promise.all(
+          allAgents.map(async (agent) => {
+              const user_id = agent._id; // Assuming _id is the correct property for user_id
+              let TotalTime = 0;
+              const callDetail = await CallLog.find({ user_id: user_id });
+              const HigstNoOfCall = callDetail?.length || 0;
+
+              callDetail.forEach((callDetails) => {
+                  TotalTime += parseInt(callDetails?.duration) || 0;
+              });
+
+              const AvrageTime = HigstNoOfCall > 0 ? parseInt(TotalTime / HigstNoOfCall) : 0;
+
+              array.push({
+                  user_id: agent._id,
+                  username: agent.agent_name,
+                  HigstNoOfCall: HigstNoOfCall,
+                  TotalTime: TotalTime,
+                  AvrageTime: AvrageTime,
+              });
+              username.push(agent.agent_name);
+              value.push(HigstNoOfCall);
+          })
+      );
+
+      res.status(200).json({
+          success: true,
+          array,
+          username,
+          value,
+      });
+  } catch (error) {
+      next(error); // Pass the error to the error handler
+  }
+})
+
+
+
 /////// Get Call Details BY Date Wise
 exports.GetAllUserCallLogByDateWise=catchAsyncErrors(async (req, res, next)=>{
   const  {start_date,end_date} = req.body;

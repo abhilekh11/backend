@@ -36,14 +36,53 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 });
 
 // get all agent --admin
+exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
+  // const agent = await Agent.find({ role: { $in: ["user", "TeamLeader"] } });  
+  // const agent = await Agent.find();  
 
-exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {  
-  const agent = await Agent.find({ role: { $in: ["user", "TeamLeader"] } });  
+  const agent = await Agent.aggregate([
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assigntlString: "$assigntl" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assigntlString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+  ]);
+
+
   res.status(201).json({
     success: true,
     agent,
- }); 
+  });
 });
+
+///// Gwt All Users According to Team Leader
+exports.getAllAgentByTeamLeader = catchAsyncErrors(async (req, res, next) => {
+  const { assign_to_agent } = req.body;
+   const agent = await Agent.find({ assigntl: assign_to_agent });
+  res.status(201).json({
+    success: true,
+    agent, 
+  });
+});
+
+
+
 
 // get Teal --
 
@@ -51,8 +90,8 @@ exports.getAllTeamLeader = catchAsyncErrors(async (req, res, next) => {
   const agent = await Agent.find({ role: "TeamLeader" });
   res.status(201).json({
     success: true,
-    agent, 
- });
+    agent,
+  });
 });
 
 
@@ -92,7 +131,7 @@ exports.loginAgent = catchAsyncErrors(async (req, res, next) => {
 });
 /// update Client Access
 exports.updateClientAccess = catchAsyncErrors(async (req, res, next) => {
-   const agent = await Agent.findById(req.params.id);
+  const agent = await Agent.findById(req.params.id);
   if (!agent) {
     return next(new ErrorHander("Invalid email Or password", 400));
   }

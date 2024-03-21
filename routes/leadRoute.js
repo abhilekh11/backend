@@ -5,7 +5,8 @@ const { Add_Lead, getAllLead ,getLeadById, deleteAllLead,
       BulkLeadUpdate, getAdvanceFillter, LeadTransfer,
       BulkDeleteLead,UpdateLeadByLeadId,
       leadattechmenthistory,deleteLeadAttechmentHistory
-      ,getAllNewLead,getAllNewLeadBYAgentId,getAllUnassignLead} = require('../controllers/leadController');  
+      ,getAllNewLead,getAllNewLeadBYAgentId,getAllUnassignLead
+    ,getLeadbyTeamLeaderidandwithstatus,getLeadbyTeamLeaderidandwithoutstatus} = require('../controllers/leadController');  
 
 
 const router=express.Router();
@@ -23,6 +24,8 @@ router.route("/delete_all_lead").delete(deleteAllLead);
 router.route("/get_Leadby_agentid_status").post(getLeadbyagentidandwithoutstatus); //for followuppage
 //  with loss and won status
 router.route("/get_Leadby_agentid_with_status").post(getLeadbyagentidandwithstatus);  // for all lead Page
+router.route("/getLeadbyTeamLeaderidandwithstatus").post(getLeadbyTeamLeaderidandwithstatus);  // for all lead Page By TL Id
+router.route("/getLeadbyTeamLeaderidandwithoutstatus").post(getLeadbyTeamLeaderidandwithoutstatus);  // for all lead Page By TL Id Without Win ,Loss
 router.route("/get_All_Lead_Followup").get(getAllLeadFollowup);  // for followuppage
 router.route("/BulkLeadUpdate").put(BulkLeadUpdate);
 router.route("/LeadTransfer").put(LeadTransfer);

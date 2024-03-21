@@ -1,7 +1,8 @@
 const express=require('express');
 const { YearlySaleApi, LeadSourceOverviewApi, IncomeGraphOverview,GetCalandarData
     ,CompanyDetails,GetCompanyDetails,
-    DashboardLeadCount,UnAssignedDashboardLeadCount,DashboardLeadCountOfUser,AgentWishLeadCount } = require('../controllers/genralApiController');
+    DashboardLeadCount,UnAssignedDashboardLeadCount
+    ,DashboardLeadCountOfUser,AgentWishLeadCount,RealestateApi } = require('../controllers/genralApiController');
 const {LeadProductServiceOverviewApi}  =require('../controllers/allReportController')
 
 const router=express.Router();
@@ -17,6 +18,9 @@ router.route("/DashboardLeadCount").get(DashboardLeadCount);
 router.route("/DashboardLeadCountOfUser").post(DashboardLeadCountOfUser);  
 router.route("/UnAssignedDashboardLeadCount").get(UnAssignedDashboardLeadCount);
 router.route("/AgentWishLeadCount").get(AgentWishLeadCount); 
+
+/////////////// real estate Api
+router.route("/RealestateApi").post(RealestateApi);
 
 
 module.exports=router;     
