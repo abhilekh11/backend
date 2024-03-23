@@ -140,10 +140,27 @@ exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
 });
 
 ///////// RealestateApi
-exports.RealestateApi=catchAsyncErrors(async (req,res,next)=>{
-  res.status(200).json({
+exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
+  const { email, name, mobile, inquiry_id, subject, details, property_id, recv_date, lookinf_for } = req.body;
+     console.log(req.body)
+
+  const lead = await Lead.create({  
+    full_name: name,
+    email_id: email,
+    lead_source: '65fd17a3d02e1071c601efc0',
+    contact_no: mobile,
+    service: '65f01532ca9cacbc217ccdfe',
+    status: '65a90407447361919049447e',
+    description: subject + ' ' + details + ' ' + lookinf_for,
+    apartment_names: lookinf_for,
+    service_type: inquiry_id,
+    flat_id: property_id,
+    lead_date: recv_date,
+  });
+  res.status(200).json({ 
+    success: true,
     message: "Save Realestate Lead On This Route",
-    data:req.body
+    data: lead
   });
 });
 
@@ -153,9 +170,9 @@ exports.RealestateApi=catchAsyncErrors(async (req,res,next)=>{
 
 exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
   const wonstatu = await lead_status.find({ status_name: "Won" });
-  
+
   const wonStatus_id = wonstatu["0"]._id;
- const monthlyIncom = [];
+  const monthlyIncom = [];
   ////// for jan
   let total1 = 0;
   const lead1 = await Lead.find({
@@ -354,7 +371,7 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.GetCalandarData = catchAsyncErrors(async (req, res, next) => {
- 
+
   const lead = await Lead.aggregate([
     {
       $lookup: {
@@ -455,15 +472,15 @@ exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
   nextDate.setDate(nextDate.getDate() + 1); // Get next day from targetDate
   ///// for Followup Lead count
   const followuplead = await Lead.find({
-      
-        status: {
-          $nin: [
-           new ObjectId("65a904e04473619190494482"),
-           new ObjectId("65a904ed4473619190494484")
-          ],
-        },
-     
-   });
+
+    status: {
+      $nin: [
+        new ObjectId("65a904e04473619190494482"),
+        new ObjectId("65a904ed4473619190494484")
+      ],
+    },
+
+  });
 
 
   ///// for meeting
@@ -567,7 +584,7 @@ exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
 ///////// UnAssigned Lead Count In Case Of Admin
 exports.UnAssignedDashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
   let array = [];
-  const lead = await Lead.find({ assign_to_agent:null });
+  const lead = await Lead.find({ assign_to_agent: null });
   const TotalLead = lead.length;
 
   array.push(
@@ -609,9 +626,9 @@ exports.AgentWishLeadCount = catchAsyncErrors(async (req, res, next) => {
 
 ///////// dashboard data for lead type  In Case Of User
 exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
-    const {user_id}=req.body;
-    const agentObjectId = new ObjectId(user_id);
-  let array = []; 
+  const { user_id } = req.body;
+  const agentObjectId = new ObjectId(user_id);
+  let array = [];
   const lead = await Lead.find();
   const TotalLead = lead.length;
   const Agent = await agent.find();
@@ -626,20 +643,20 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
   nextDate.setDate(nextDate.getDate() + 1); // Get next day from targetDate
   ///// for Followup Lead count
   const followuplead = await Lead.find({
-    assign_to_agent:agentObjectId,
-        status: {
-          $nin: [
-           new ObjectId("65a904e04473619190494482"),
-           new ObjectId("65a904ed4473619190494484")
-          ],
-        },
-     
-   });
+    assign_to_agent: agentObjectId,
+    status: {
+      $nin: [
+        new ObjectId("65a904e04473619190494482"),
+        new ObjectId("65a904ed4473619190494484")
+      ],
+    },
+
+  });
 
 
   ///// for meeting
   const meetinglead = await Lead.find({
-    assign_to_agent:agentObjectId,
+    assign_to_agent: agentObjectId,
     status: '65a904164473619190494480',
     $expr: {
       $eq: [
@@ -649,7 +666,7 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
     }
   });
   const meetingleadNextDay = await Lead.find({
-    assign_to_agent:agentObjectId,
+    assign_to_agent: agentObjectId,
     status: '65a904164473619190494480',
     $expr: {
       $eq: [
@@ -662,7 +679,7 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
   const meetinglead_name = await Status.findOne({ _id: '65a904164473619190494480' });
   ///// for Call Back (Visit)
   const Visit = await Lead.find({
-    assign_to_agent:agentObjectId,
+    assign_to_agent: agentObjectId,
     status: '65a903f8447361919049447c',
     $expr: {
       $eq: [
@@ -672,7 +689,7 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
     }
   });
   const VisitleadNextDay = await Lead.find({
-    assign_to_agent:agentObjectId,
+    assign_to_agent: agentObjectId,
     status: '65a903f8447361919049447c',
     $expr: {
       $eq: [
@@ -685,7 +702,7 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
 
   ///// for Call Back (Re-Visit)
   const Re_Visit = await Lead.find({
-    assign_to_agent:agentObjectId,
+    assign_to_agent: agentObjectId,
     status: '65a903ca4473619190494478',
     $expr: {
       $eq: [
@@ -695,7 +712,7 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
     }
   });
   const Re_VisitleadNextDay = await Lead.find({
-    assign_to_agent:agentObjectId,
+    assign_to_agent: agentObjectId,
     status: '65a903ca4473619190494478',
     $expr: {
       $eq: [
@@ -707,7 +724,7 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
   const Re_Visit_name = await Status.findOne({ _id: '65a903ca4473619190494478' });
   ///// for Call Back (Re-Visit)
   const Shedule_Visit = await Lead.find({
-    assign_to_agent:agentObjectId,
+    assign_to_agent: agentObjectId,
     status: '65a903e9447361919049447a',
     $expr: {
       $eq: [
@@ -717,7 +734,7 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
     }
   });
   const Shedule_VisitleadNextDay = await Lead.find({
-    assign_to_agent:agentObjectId,
+    assign_to_agent: agentObjectId,
     status: '65a903e9447361919049447a',
     $expr: {
       $eq: [

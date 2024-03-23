@@ -1,4 +1,7 @@
 const express=require('express');
+const multer = require('multer');
+const upload = multer();
+
 const { YearlySaleApi, LeadSourceOverviewApi, IncomeGraphOverview,GetCalandarData
     ,CompanyDetails,GetCompanyDetails,
     DashboardLeadCount,UnAssignedDashboardLeadCount
@@ -20,7 +23,5 @@ router.route("/UnAssignedDashboardLeadCount").get(UnAssignedDashboardLeadCount);
 router.route("/AgentWishLeadCount").get(AgentWishLeadCount); 
 
 /////////////// real estate Api
-router.route("/RealestateApi").post(RealestateApi);
-
-
+router.route('/RealestateApi').post(upload.none(), RealestateApi);
 module.exports=router;     

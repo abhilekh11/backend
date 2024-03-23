@@ -34,6 +34,7 @@ function fileFilter(req, file, cb) {
 
 var upload = multer({ storage: storage, fileFilter: fileFilter });
 const  excelController=require('../controllers/excelUplode'); 
-excel.post('/api/v1/import',upload.single('file'),excelController.ExcelUplode);     
+excel.post('/api/v1/import',upload.single('file'),excelController.ExcelUplode);  
+   
 module.exports=excel;
 
