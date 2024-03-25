@@ -11,7 +11,7 @@ const Setting = require('../models/settingModel');
 const { Agent } = require("express-useragent");
 const { ObjectId } = require('mongoose').Types;
 /////// Yearly Base Sale Api
-exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
+exports.YearlySaleApi1 = catchAsyncErrors(async (req, res, next) => {
   const details = [];
   let TotalAmountWon = 0;
   let TotalAmountLost = 0;
@@ -62,6 +62,64 @@ exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
     details,
   });
 });
+
+exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {  
+  try {
+    const details = [];
+    let TotalAmountWon = 0;
+    let TotalAmountLost = 0;
+    let TotalAmountwonmanthely = 0;
+    
+    const currentDate = new Date();
+    const ThirtyDaysAgoDate = new Date();
+    ThirtyDaysAgoDate.setDate(ThirtyDaysAgoDate.getDate() - 30);
+    const formattedThirtyDaysAgoDate = ThirtyDaysAgoDate.toISOString();
+    
+    const wonstatu = await lead_status.findOne({ status_name: "Won" });
+    const loststatu = await lead_status.findOne({ status_name: "Lost" });
+    const wonStatus_id = wonstatu._id;
+    const lostStatus_id = loststatu._id;
+    
+    const wonlead = await Lead.find({ status: wonStatus_id });
+    const lostlead = await Lead.find({ status: lostStatus_id });
+    
+    const wonleadforthirtyday = await Lead.find({
+      status: wonStatus_id,
+      followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: currentDate },
+    });
+
+    const Yearly_lead_count_won = wonlead.length;
+    const Yearly_lead_count_Lost = lostlead.length;
+    const wonleadforthirtyday_count_lead = wonleadforthirtyday.length;
+
+   
+    TotalAmountWon = wonlead.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
+    TotalAmountLost = lostlead.reduce((total, lead) => total + parseInt(lead.lead_cost), 0);
+    TotalAmountwonmanthely = wonleadforthirtyday.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
+
+    details.push({
+      Yearly_lead_count_for_won: Yearly_lead_count_won,
+      Yearly_lead_count_Lost: Yearly_lead_count_Lost,
+      TotalAmountWon: TotalAmountWon,
+      TotalAmountLost: TotalAmountLost,
+      wonleadforthirtyday_count_lead: wonleadforthirtyday_count_lead,
+      TotalAmountwonmanthely: TotalAmountwonmanthely,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Get Data",
+      details,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
 
 /////  Leads Source Overview  Api
 
