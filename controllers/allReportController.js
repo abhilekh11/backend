@@ -224,7 +224,7 @@ exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) 
     total += parseInt(lead1.followup_won_amount) || 0;
   });
 
-  lead.push({ full_name: 'Total Amount', contact_no: 'Total Amount', followup_won_amount: total });
+  // lead.push({ full_name: 'Total Amount', contact_no: 'Total Amount', followup_won_amount: total });
   data.push({ Total: lead_length, Won: wonLeadCount.length > 0 ? wonLeadCount[0].count : 0, Ratio: ratio.toFixed(2) + '%', Amount: total });
 
   res.status(200).json({
