@@ -155,7 +155,7 @@ exports.GetProductReportDateWise = catchAsyncErrors(async (req, res, next) => {
 
 
 });
-  
+
 ///////  Employees Report 
 exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
   try {
@@ -191,108 +191,51 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
 });
 
 /////////  Employees report By Filter
-exports.EmployeesReportDetailByFilter11 = catchAsyncErrors(async (req, res, next) => {
-  const { agent, service, startDate, endDate } = req.body;
-  let array = [];
-  let total = 0;
-  const matchConditions = {};
-  if (agent) {
-    const agentObjectId = new ObjectId(agent);
-    matchConditions.assign_to_agent = agentObjectId;
-  }
-  if (service) {
-    const serviceObjectId = new ObjectId(service);
-    matchConditions.service = serviceObjectId;
-  }
-  const StatusObjectId = new ObjectId('65a904e04473619190494482');
-  matchConditions.status = StatusObjectId;
-  if (startDate && endDate) {
-    matchConditions.followup_date = {
-      $gte: new Date(startDate),
-      $lte: new Date(endDate),
-    };
-  }
-  const lead = await Lead.aggregate([
-    {
-      $match: matchConditions,
-    },
-    {
-      $sort: {
-        followup_date: 1,
-      },
-    },
-    {
-      $project: {
-        full_name: 1,
-        contact_no: 1,
-        followup_won_amount: 1,
-      },
-    },
-  ]);
-   console.log('ll',lead.length)
-
-  lead.map((lead1) => {
-    total += parseInt(lead1?.followup_won_amount);
-  }); 
-  lead.push({ ['full_name']: 'Total Amount', ['contact_no']: 'Total Amount', ['followup_won_amount']: total, })
-  res.status(200).json({
-    success: true,
-    message: "Successfully get data",
-    lead: lead,
-  });
-});
-
 exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) => {
   const { agent, service, status, lead_source, startDate, endDate } = req.body;
   let total = 0;
+  let data = [];
+
   const matchConditions = {};
- if (agent) {
-    matchConditions.assign_to_agent = new ObjectId(agent);
-  }
-  if (service) {
-    matchConditions.service = new ObjectId(service);
-  }
- if (status) {
-    matchConditions.status = new ObjectId(status);
-  }
- if (lead_source) {
-    matchConditions.lead_source = new ObjectId(lead_source);
-  }
+  if (agent) matchConditions.assign_to_agent = new ObjectId(agent);
+  if (service) matchConditions.service = new ObjectId(service);
+  if (status) matchConditions.status = new ObjectId(status);
+  if (lead_source) matchConditions.lead_source = new ObjectId(lead_source);
   if (startDate && endDate) {
     matchConditions.followup_date = {
       $gte: new Date(startDate),
       $lte: new Date(endDate),
     };
   }
- const lead = await Lead.aggregate([
-    {
-      $match: matchConditions,
-    },
-    {
-      $sort: {
-        followup_date: 1,
-      },
-    },
-    {
-      $project: {
-        full_name: 1,
-        contact_no: 1,
-        followup_won_amount: 1,
-      },
-    },
+
+  const lead = await Lead.aggregate([
+    { $match: matchConditions },
+    { $sort: { followup_date: 1 } }
   ]);
+   const lead_length=await lead.length;
+  const wonLeadCount = await Lead.aggregate([
+    { $match: { status: new ObjectId('65a904e04473619190494482'), ...matchConditions } },
+    { $count: "count" } 
+  ]);
+
+  const ratio = (wonLeadCount.length > 0 ? wonLeadCount[0].count : 0) / lead.length * 100 || 0; // Handle division by zero
+
   lead.forEach((lead1) => {
-    total += parseInt(lead1?.followup_won_amount) || 0; // Ensure to handle NaN values
+    total += parseInt(lead1.followup_won_amount) || 0;
   });
 
   lead.push({ full_name: 'Total Amount', contact_no: 'Total Amount', followup_won_amount: total });
+  data.push({ Total: lead_length, Won: wonLeadCount.length > 0 ? wonLeadCount[0].count : 0, Ratio: ratio.toFixed(2) + '%', Amount: total });
 
   res.status(200).json({
     success: true,
     message: "Successfully fetched data",
     lead: lead,
+    data: data,
   });
 });
+
+
 
 
 
