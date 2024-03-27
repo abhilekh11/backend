@@ -75,6 +75,7 @@ const ExcelUplode = async (req, res) => {
       pincode: entry?.pincode,
       description: entry?.description,
       max_area: entry?.max_area,
+      type:'excel',
       lead_source,
       service,
       status,
