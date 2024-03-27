@@ -6,7 +6,7 @@ var cors = require('cors');
 const errorMiddleware=require("./middleware/error");
 const scheduleJob1=require("./controllers/sentNotificationWebController");
 // const housingapi=require("./controllers/housingapiControllers");
-
+           
 app.use(useragent.express());
 app.use(express.json());
 app.use(cookieParser());  
