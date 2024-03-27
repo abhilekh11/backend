@@ -2,23 +2,23 @@ const Lead = require("../models/leadModel");
 const csv = require("csvtojson");
 const leadattechment=require('../models/leadattechmentModel');
 
-const ExcelUplode = async (req, res) => {
+const ExcelUplode1 = async (req, res) => {
   try {
     const { lead_source, status, service, assign_to_agent, country, state } = req.body;
     const leadData = await csv().fromFile(req.file.path);
     const insertedLeads = await Lead.insertMany(leadData.map(entry => ({
-      full_name: entry.full_name,
-      email_id: entry.email_id,
-      contact_no: entry.contact_no,
-      alternative_no: entry.alternative_no,
-      company_name: entry.company_name,
-      position: entry.position, 
-      website: entry.website,
-      lead_cost: entry.lead_cost,
-      full_address: entry.full_address,
-      city: entry.city,
-      pincode: entry.pincode,
-      description: entry.description,
+      full_name: entry?.full_name,
+      email_id: entry?.email_id,
+      contact_no: entry?.contact_no,
+      alternative_no: entry?.alternative_no,
+      company_name: entry?.company_name,
+      position: entry?.position, 
+      website: entry?.website,
+      lead_cost: entry?.lead_cost,
+      full_address: entry?.full_address,
+      city: entry?.city,
+      pincode: entry?.pincode,
+      description: entry?.description,
       lead_source,
       service,
       status,
@@ -27,6 +27,8 @@ const ExcelUplode = async (req, res) => {
       state,
       followup_date: new Date(),
     })));
+
+
 
     if (insertedLeads.length > 0) {
       res.status(200).json({
@@ -46,7 +48,73 @@ const ExcelUplode = async (req, res) => {
     });
   }
 };
+  
+const ExcelUplode = async (req, res) => {
+  try {
+    const { lead_source, status, service, assign_to_agent, country, state } = req.body;
+    
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded",
+      });
+    } 
 
+    const leadData = await csv().fromFile(req.file.path);
+    const insertedLeads = await Lead.insertMany(leadData.map(entry => ({
+      full_name: entry?.full_name, 
+      email_id: entry?.email_id,
+      contact_no: entry?.contact_no,
+      alternative_no: entry?.alternative_no,
+      company_name: entry?.company_name,
+      position: entry?.position, 
+      website: entry?.website,
+      lead_cost: entry?.lead_cost,
+      full_address: entry?.full_address,
+      city: entry?.city,
+      pincode: entry?.pincode,
+      description: entry?.description,
+      lead_source,
+      service,
+      status,
+      country,
+      assign_to_agent,
+      state,
+      followup_date: new Date(),
+    })));
+
+    // Create follow-up entries for each lead
+    await Promise.all(insertedLeads.map(async (leadd) => {
+      const update_data = {
+        assign_to_agent: assign_to_agent,
+        commented_by: assign_to_agent,
+        lead_id: leadd._id,
+        followup_status_id: leadd.state,
+        followup_date: new Date(),
+        followup_desc: leadd?.description
+      };
+      await FollowupLead.create(update_data);  
+    }));
+
+    if (insertedLeads.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "Uploaded CSV File Successfully",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "CSV File is Not Uploaded Successfully",
+      });
+    }
+  } catch (error) { 
+    console.error("Error uploading CSV file:", error);
+    res.status(500).json({
+      success: false,
+      message: "File is Not Uploaded Successfully",
+    });
+  }
+};
 
 
 const FileUplode=async(req,res)=>{
