@@ -8,7 +8,7 @@ const leadSchema = new mongoose.Schema({
   },
   full_name: {
     type: String,
-    required: true,
+   // required: true,
     trim: true,
   },
   email_id: {
@@ -17,12 +17,14 @@ const leadSchema = new mongoose.Schema({
     trim: true,
   },
   contact_no: {
-    type: Number,
-    required: true,
+    // type: Number,
+    type: String,
+  //  required: true,
     trim: true,
   },
-  alternative_no: {
-    type: Number,
+  alternative_no: { 
+    // type: Number,
+    type: String,
     trim: true,
   },
   company_name: {

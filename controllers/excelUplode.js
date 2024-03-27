@@ -1,4 +1,5 @@
 const Lead = require("../models/leadModel");
+const FollowupLead=require("../models/followupModel");
 const csv = require("csvtojson");
 const leadattechment=require('../models/leadattechmentModel');
 
