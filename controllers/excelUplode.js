@@ -95,7 +95,7 @@ const ExcelUplode = async (req, res) => {
         followup_status_id: leadd.status.toString(),
         followup_date: new Date(),
         followup_desc: leadd?.description
-      };
+      }; 
       await FollowupLead.create(update_data);    
     }));
 
