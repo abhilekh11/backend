@@ -91,12 +91,12 @@ const ExcelUplode = async (req, res) => {
       const update_data = {
         assign_to_agent: assign_to_agent,
         commented_by: assign_to_agent,
-        lead_id: leadd._id,
-        followup_status_id: leadd.state,
+        lead_id: leadd._id.toString(),
+        followup_status_id: leadd.status.toString(),
         followup_date: new Date(),
         followup_desc: leadd?.description
       };
-      await FollowupLead.create(update_data);  
+      await FollowupLead.create(update_data);    
     }));
 
     if (insertedLeads.length > 0) {
@@ -105,7 +105,7 @@ const ExcelUplode = async (req, res) => {
         message: "Uploaded CSV File Successfully",
       });
     } else {
-      res.status(400).json({
+      res.status(400).json({ 
         success: false,
         message: "CSV File is Not Uploaded Successfully",
       });
