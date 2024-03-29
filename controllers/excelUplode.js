@@ -49,8 +49,8 @@ const ExcelUplode1 = async (req, res) => {
     });
   }
 };
-  
-const ExcelUplode = async (req, res) => {
+
+const ExcelUplode111 = async (req, res) => {
   try {
     const { lead_source, status, service, assign_to_agent, country, state } = req.body;
     
@@ -118,8 +118,8 @@ const ExcelUplode = async (req, res) => {
     });
   }
 };
-
-const ExcelUplode111 = async (req, res) => {
+ 
+const ExcelUplode = async (req, res) => {
   try {
     const { lead_source, status, service, assign_to_agent, country, state } = req.body;
     
@@ -131,29 +131,47 @@ const ExcelUplode111 = async (req, res) => {
     } 
 
     const leadData = await csv().fromFile(req.file.path);
-    const insertedLeads = await Lead.insertMany(leadData.map(entry => ({
-      full_name: entry?.full_name, 
-      email_id: entry?.email_id,
-      contact_no: entry?.contact_no,
-      alternative_no: entry?.alternative_no,
-      company_name: entry?.company_name,
-      position: entry?.position, 
-      website: entry?.website,
-      lead_cost: entry?.budget,
-      full_address: entry?.prefer_location,
-      city: entry?.city,
-      pincode: entry?.pincode,
-      description: entry?.discussion_with_client +' , '+entry?.IntrestedIn +' , '+entry?.intrested_not_intrested,
-      max_area: entry?.size,
-      type:'excel',
-      // lead_source,
-      // service,
-      // status,
-      // country,
-      assign_to_agent,
-      // state,
-      followup_date: new Date(),
-    })));
+    const insertedLeads = await Lead.insertMany(leadData.map(entry => {
+      // Construct the description string based on non-null and non-undefined values
+      let description = '';
+    
+      if (entry?.discussion_with_client) {
+        description += entry.discussion_with_client;
+      }
+    
+      if (entry?.InterestedIn) {
+        description += (description ? ', ' : '') + entry.InterestedIn;
+      }
+    
+      if (entry?.interested_not_intrested) {
+        description += (description ? ', ' : '') + entry.interested_not_intrested;
+      }
+    
+      return {
+        full_name: entry?.full_name, 
+        email_id: entry?.email_id,
+        contact_no: entry?.contact_no,
+        alternative_no: entry?.alternative_no,
+        company_name: entry?.company_name,
+        position: entry?.position, 
+        website: entry?.website,
+        lead_cost: entry?.budget,
+        full_address: entry?.prefer_location,
+        city: entry?.city,
+        pincode: entry?.pincode,
+        description: description || ' ', // Set to space if description is empty
+        max_area: entry?.size,
+        type: 'excel',
+        // lead_source,
+        // service,
+        // status,
+        // country,
+        assign_to_agent,
+        // state,
+        followup_date: new Date(),
+      };
+    }));
+    
 
     // Create follow-up entries for each lead
     await Promise.all(insertedLeads.map(async (leadd) => {
