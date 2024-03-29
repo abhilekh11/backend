@@ -146,12 +146,12 @@ const ExcelUplode = async (req, res) => {
       description: entry?.discussion_with_client +' , '+entry?.IntrestedIn +' , '+entry?.intrested_not_intrested,
       max_area: entry?.size,
       type:'excel',
-      lead_source,
-      service,
-      status,
-      country,
+      // lead_source,
+      // service,
+      // status,
+      // country,
       assign_to_agent,
-      state,
+      // state,
       followup_date: new Date(),
     })));
 
@@ -160,10 +160,10 @@ const ExcelUplode = async (req, res) => {
       const update_data = {
         assign_to_agent: assign_to_agent,
         commented_by: assign_to_agent,
-        lead_id: leadd._id.toString(),
-        followup_status_id: leadd.status.toString(),
+        lead_id: leadd?._id?.toString(),
+        followup_status_id: leadd?.status?.toString(),
         followup_date: new Date(),
-        followup_desc: leadd?.description
+        followup_desc: leadd?.description 
       }; 
       await FollowupLead.create(update_data);    
     }));

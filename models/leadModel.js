@@ -177,7 +177,7 @@ const leadSchema = new mongoose.Schema({
   },
   flat_id: {
     type: String,
-    trim: true,
+    trim: true, 
   },
   type: {
     type: String,
