@@ -89,7 +89,7 @@ const leadSchema = new mongoose.Schema({
   city: {
     type: String,
     trim: true,
-  },
+  }, 
   pincode: {
     type: Number,
     trim: true,
