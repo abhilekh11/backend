@@ -50,7 +50,7 @@ const ExcelUplode1 = async (req, res) => {
   }
 };
 
-const ExcelUplode111 = async (req, res) => {
+const ExcelUplode = async (req, res) => {
   try {
     const { lead_source, status, service, assign_to_agent, country, state } = req.body;
     
@@ -119,7 +119,7 @@ const ExcelUplode111 = async (req, res) => {
   }
 };
  
-const ExcelUplode = async (req, res) => {
+const ExcelUplode111 = async (req, res) => {
   try {
     const { lead_source, status, service, assign_to_agent, country, state } = req.body;
     
