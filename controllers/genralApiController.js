@@ -69,8 +69,12 @@ exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
     let TotalAmountWon = 0;
     let TotalAmountLost = 0;
     let TotalAmountwonmanthely = 0;
-    
+    const andialTimezoneOffset = 5 * 60 * 60 * 1000 // Offset in milliseconds
+    const andialTimezoneOffset1 = 30 * 60 * 1000 // Offset in milliseconds
     const currentDate = new Date();
+    const currentUTCTime = Date.now();
+    const andialTime = new Date(currentUTCTime + (andialTimezoneOffset+andialTimezoneOffset1));
+    
     const ThirtyDaysAgoDate = new Date();
     ThirtyDaysAgoDate.setDate(ThirtyDaysAgoDate.getDate() - 30);
     const formattedThirtyDaysAgoDate = ThirtyDaysAgoDate.toISOString();
@@ -85,7 +89,7 @@ exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
     
     const wonleadforthirtyday = await Lead.find({
       status: wonStatus_id,
-      followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: currentDate },
+      followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: andialTime },
     });
 
     const Yearly_lead_count_won = wonlead.length;
