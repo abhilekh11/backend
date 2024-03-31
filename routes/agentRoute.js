@@ -1,13 +1,15 @@
 const express=require('express');
 
 const { createAgent,getAllAgent,getAgentDetails,deleteAgent,
-     loginAgent, updateClientAccess,EditAgentDetails,getAllTeamLeader,getAllAgentByTeamLeader } = require('../controllers/agentController');
+     loginAgent, updateClientAccess,EditAgentDetails,
+     getAllTeamLeader,getAllAgentByTeamLeader,getAllAgentofATeamByAgent } = require('../controllers/agentController');
 
 const router=express.Router();
   
 router.route("/add_agent").post(createAgent); 
 router.route("/get_all_agent").get(getAllAgent);
 router.route("/getAllAgentByTeamLeader").post(getAllAgentByTeamLeader);  /// for get Agent According to TL
+router.route("/getAllAgentofATeamByAgent").post(getAllAgentofATeamByAgent);  ////// Get All Agent Of A Team 
 router.route("/getAllTeamLeader").get(getAllTeamLeader); 
 router.route("/get_agent_details/:id").get(getAgentDetails);
 
