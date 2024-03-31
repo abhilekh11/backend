@@ -37,9 +37,6 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 
 // get all agent --admin
 exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
-  // const agent = await Agent.find({ role: { $in: ["user", "TeamLeader"] } });  
-  // const agent = await Agent.find();  
-
   const agent = await Agent.aggregate([
     {
       $lookup: {
@@ -82,12 +79,13 @@ exports.getAllAgentByTeamLeader = catchAsyncErrors(async (req, res, next) => {
 });
 
 ////// Get All Agent Of A Team 
+
 exports.getAllAgentofATeamByAgent = catchAsyncErrors(async (req, res, next) => {
   const { assign_to_agent } = req.body;
 
   try {
     // Find the agent by ID
-    const agent = await Agent.findById({_id:assign_to_agent});
+    let agent = await Agent.findById({_id:assign_to_agent});
     
     if (!agent) {
       return res.status(404).json({
@@ -101,22 +99,16 @@ exports.getAllAgentofATeamByAgent = catchAsyncErrors(async (req, res, next) => {
     
     if (assignedTeamId) {
       // If the agent is assigned, find all agents with the same assigned team
-      const agents = await Agent.find({ assigntl: assignedTeamId });
-      
-      return res.status(200).json({
-        success: true,
-        agents,
-      });
+      agent = await Agent.find({ assigntl: assignedTeamId });
     } else {
       // If the agent is not assigned, return all agents with no assigned team
-      const unassignedAgents = await Agent.find({ assigntl: { $exists: false }, role: { $ne: 'TeamLeader' } });
-
-      
-      return res.status(200).json({
-        success: true,
-        agents: unassignedAgents,
-      });
+      agent = await Agent.find({ assigntl: { $exists: false }, role: { $ne: 'TeamLeader' } });
     }
+
+    return res.status(200).json({
+      success: true,
+      agent,
+    });
   } catch (error) {
     // Handle any errors that might occur during the process
     return res.status(500).json({
@@ -126,6 +118,7 @@ exports.getAllAgentofATeamByAgent = catchAsyncErrors(async (req, res, next) => {
     });
   }
 });
+
 
 
 

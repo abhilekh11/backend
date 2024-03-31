@@ -7,7 +7,9 @@ const { createAgent,getAllAgent,getAgentDetails,deleteAgent,
 const router=express.Router();
   
 router.route("/add_agent").post(createAgent); 
-router.route("/get_all_agent").get(getAllAgent);
+
+
+router.route("/get_all_agent").get(getAllAgent); ///  For get All Agent According to Admin
 router.route("/getAllAgentByTeamLeader").post(getAllAgentByTeamLeader);  /// for get Agent According to TL
 router.route("/getAllAgentofATeamByAgent").post(getAllAgentofATeamByAgent);  ////// Get All Agent Of A Team 
 router.route("/getAllTeamLeader").get(getAllTeamLeader); 
