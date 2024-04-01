@@ -1223,9 +1223,9 @@ exports.LeadTransfer = catchAsyncErrors(async (req, res, next) => {
 
 /////// Advance Fillter sarch Api
 exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
-  const { agent, Status, startDate, endDate } = req.body;
+  const { agent, Status, startDate, endDate, user_id, role } = req.body;
   const matchConditions = {};
-  if (agent) {
+  if (agent) { 
     if (agent == 'Unassigne') {
       matchConditions.assign_to_agent = null;
     } else {
