@@ -1,5 +1,6 @@
 const Lead = require("../models/leadModel");
 const agent = require("../models/agentModel");
+const Agentss = require("../models/agentModel");
 const { ObjectId } = require('mongoose').Types;
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHander = require("../utils/errorhander");
@@ -794,10 +795,10 @@ exports.getLeadbyTeamLeaderidandwithstatus = catchAsyncErrors(
     }
     const allAgents = await agent.find({ assigntl: assign_to_agent });
     if (allAgents.length < 1) {
-        return next(new ErrorHander("No Lead..!", 404));
+      return next(new ErrorHander("No Lead..!", 404));
     }
-    const matchConditions = { 
-        assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) }  
+    const matchConditions = {
+      assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) }
     };
     const lead = await Lead.aggregate([
       {
@@ -905,7 +906,7 @@ exports.getLeadbyTeamLeaderidandwithstatus = catchAsyncErrors(
 
     res.status(200).json({
       success: true,
-       lead,
+      lead,
     });
   }
 );
@@ -919,10 +920,10 @@ exports.getLeadbyTeamLeaderidandwithoutstatus = catchAsyncErrors(
     }
     const allAgents = await agent.find({ assigntl: assign_to_agent });
     if (allAgents.length < 1) {
-        return next(new ErrorHander("No Lead..!", 404));
+      return next(new ErrorHander("No Lead..!", 404));
     }
-    const matchConditions = { 
-        assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) }  
+    const matchConditions = {
+      assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) }
     };
     const lead = await Lead.aggregate([
       {
@@ -1016,8 +1017,8 @@ exports.getLeadbyTeamLeaderidandwithoutstatus = catchAsyncErrors(
           as: "lead_source_details",
         },
       },
-          /////for  loss and won status remove
-       {
+      /////for  loss and won status remove
+      {
         $match: {
           status: {
             //$nin: ["65a904e04473619190494482", "65a904ed4473619190494484"],
@@ -1042,7 +1043,7 @@ exports.getLeadbyTeamLeaderidandwithoutstatus = catchAsyncErrors(
 
     res.status(200).json({
       success: true,
-       lead,
+      lead,
     });
   }
 );
@@ -1224,130 +1225,387 @@ exports.LeadTransfer = catchAsyncErrors(async (req, res, next) => {
 /////// Advance Fillter sarch Api
 exports.getAdvanceFillter = catchAsyncErrors(async (req, res, next) => {
   const { agent, Status, startDate, endDate, user_id, role } = req.body;
-  const matchConditions = {};
-  if (agent) { 
-    if (agent == 'Unassigne') {
-      matchConditions.assign_to_agent = null;
-    } else {
-      const agentObjectId = new ObjectId(agent);
-      matchConditions.assign_to_agent = agentObjectId;
+
+
+  if (role === 'admin') {
+    const matchConditions = {};
+    if (agent) {
+      if (agent == 'Unassigne') {
+        matchConditions.assign_to_agent = null;
+      } else {
+        const agentObjectId = new ObjectId(agent);
+        matchConditions.assign_to_agent = agentObjectId;
+      }
     }
+    if (Status) {
+      const StatusObjectId = new ObjectId(Status);
+      matchConditions.status = StatusObjectId;
+    }
+    if (startDate && endDate) {
+      matchConditions.followup_date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+    const lead = await Lead.aggregate([
+      {
+        $lookup: {
+          from: "crm_agents",
+          let: { assign_to_agentString: "$assign_to_agent" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                agent_name: 1,
+              },
+            },
+          ],
+          as: "agent_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_product_services",
+          let: { serviceString: "$service" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                product_service_name: 1,
+              },
+            },
+          ],
+          as: "service_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_statuses",
+          let: { statusString: "$status" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$statusString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                status_name: 1,
+              },
+            },
+          ],
+          as: "status_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_lead_sources",
+          let: { lead_sourceString: "$lead_source" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                lead_source_name: 1,
+              },
+            },
+          ],
+          as: "lead_source_details",
+        },
+      },
+
+      {
+        $match: matchConditions,
+      },
+
+      {
+        $sort: {
+          followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
+        },
+      },
+    ]);
+    res.status(200).json({
+      success: true,
+      lead,
+    });
   }
-  if (Status) {
-    const StatusObjectId = new ObjectId(Status);
-    matchConditions.status = StatusObjectId;
+  if (role === 'user') {
+    const matchConditions = {};
+
+    const agentObjectId = new ObjectId(user_id);
+    matchConditions.assign_to_agent = agentObjectId;
+
+    if (Status) {
+      const StatusObjectId = new ObjectId(Status);
+      matchConditions.status = StatusObjectId;
+    }
+    if (startDate && endDate) {
+      matchConditions.followup_date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+    const lead = await Lead.aggregate([
+      {
+        $lookup: {
+          from: "crm_agents",
+          let: { assign_to_agentString: "$assign_to_agent" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                agent_name: 1,
+              },
+            },
+          ],
+          as: "agent_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_product_services",
+          let: { serviceString: "$service" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                product_service_name: 1,
+              },
+            },
+          ],
+          as: "service_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_statuses",
+          let: { statusString: "$status" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$statusString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                status_name: 1,
+              },
+            },
+          ],
+          as: "status_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_lead_sources",
+          let: { lead_sourceString: "$lead_source" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                lead_source_name: 1,
+              },
+            },
+          ],
+          as: "lead_source_details",
+        },
+      },
+
+      {
+        $match: matchConditions,
+      },
+
+      {
+        $sort: {
+          followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
+        },
+      },
+    ]);
+    res.status(200).json({
+      success: true,
+      lead,
+    });
   }
-  if (startDate && endDate) {
-    matchConditions.followup_date = {
-      $gte: new Date(startDate),
-      $lte: new Date(endDate),
-    };
+  if (role === 'TeamLeader') {
+    const matchConditions = {};
+    if (!agent) {
+      const allUsers = await Agentss.find({ assigntl: user_id });
+      const users = allUsers.map(user => user?._id); // Extracting user IDs from the fetched users
+      matchConditions.assign_to_agent = { $in: users };
+
+    } else {
+      if (agent == 'Unassigne') {
+        matchConditions.assign_to_agent = null;
+      } else {
+        const agentObjectId = new ObjectId(agent);
+        matchConditions.assign_to_agent = agentObjectId;
+      }
+    }
+
+
+
+    if (Status) {
+      const StatusObjectId = new ObjectId(Status);
+      matchConditions.status = StatusObjectId;
+    }
+    if (startDate && endDate) {
+      matchConditions.followup_date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+    const lead = await Lead.aggregate([
+      {
+        $lookup: {
+          from: "crm_agents",
+          let: { assign_to_agentString: "$assign_to_agent" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                agent_name: 1,
+              },
+            },
+          ],
+          as: "agent_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_product_services",
+          let: { serviceString: "$service" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                product_service_name: 1,
+              },
+            },
+          ],
+          as: "service_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_statuses",
+          let: { statusString: "$status" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$statusString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                status_name: 1,
+              },
+            },
+          ],
+          as: "status_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_lead_sources",
+          let: { lead_sourceString: "$lead_source" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                lead_source_name: 1,
+              },
+            },
+          ],
+          as: "lead_source_details",
+        },
+      },
+
+      {
+        $match: matchConditions,
+      },
+
+      {
+        $sort: {
+          followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
+        },
+      },
+    ]);
+    res.status(200).json({
+      success: true,
+      lead,
+    });
   }
 
-  const lead = await Lead.aggregate([
-    {
-      $lookup: {
-        from: "crm_agents",
-        let: { assign_to_agentString: "$assign_to_agent" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
-              },
-            },
-          },
-          {
-            $project: {
-              agent_name: 1,
-            },
-          },
-        ],
-        as: "agent_details",
-      },
-    },
 
-    {
-      $lookup: {
-        from: "crm_product_services",
-        let: { serviceString: "$service" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ["$_id", { $toObjectId: "$$serviceString" }],
-              },
-            },
-          },
-          {
-            $project: {
-              product_service_name: 1,
-            },
-          },
-        ],
-        as: "service_details",
-      },
-    },
 
-    {
-      $lookup: {
-        from: "crm_statuses",
-        let: { statusString: "$status" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ["$_id", { $toObjectId: "$$statusString" }],
-              },
-            },
-          },
-          {
-            $project: {
-              status_name: 1,
-            },
-          },
-        ],
-        as: "status_details",
-      },
-    },
-
-    {
-      $lookup: {
-        from: "crm_lead_sources",
-        let: { lead_sourceString: "$lead_source" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
-              },
-            },
-          },
-          {
-            $project: {
-              lead_source_name: 1,
-            },
-          },
-        ],
-        as: "lead_source_details",
-      },
-    },
-
-    {
-      $match: matchConditions,
-    },
-
-    {
-      $sort: {
-        followup_date: 1, // 1 for ascending(123) order, -1 for descending(321) order
-      },
-    },
-  ]);
-
-  res.status(200).json({
-    success: true,
-    lead,
-  });
 });
 
 //////  Bulk Excel Uplode
