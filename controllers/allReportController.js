@@ -161,7 +161,12 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
   try {
     let name = [];
     let value = [];
-    const agents = await Agent.find({ role: 'user' });
+    let agents;
+    if (req.body.assign_to_agent) {
+      agents = await Agent.find({ role: 'user', assigntl: req.body.assign_to_agent });
+    } else {
+      agents = await Agent.find({ role: 'user' });
+    }
 
     for (const agent of agents) {
       let totalAmount = 0;
@@ -172,12 +177,12 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
       });
 
       name.push(agent.agent_name);
-      value.push(totalAmount,);
+      value.push(totalAmount);
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      message: "Successfully Leads Source Overview",
+      message: "Successfully retrieved employees report details",
       name,
       value,
     });
@@ -188,7 +193,8 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
       message: "Internal Server Error",
     });
   }
-});
+}); 
+
 
 /////////  Employees report By Filter
 exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) => {
