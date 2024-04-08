@@ -5,7 +5,7 @@ const app = express();
 var cors = require('cors');
 const errorMiddleware=require("./middleware/error");
 const scheduleJob1=require("./controllers/sentNotificationWebController");
-// const housingapi=require("./controllers/housingapiControllers");
+const housingapi=require("./controllers/housingapiControllers");
            
 app.use(useragent.express());
 app.use(express.json());
@@ -32,7 +32,7 @@ const smsreport=require('./routes/smsRoute');
 // const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
 
 // scheduleJob1();
-// housingapi();
+housingapi();
 app.use(cors());
 app.use("/api/v1/",agent);
 app.use("/api/v1/",product_service); 
