@@ -31,9 +31,9 @@ const connectDatabase = require('./config/database');
 
 // this is new indexe.js 
 
-const app = require('./app'); 
+const app = require('./app');
 
-const PORT = process.env.PORT || 6001; 
+const PORT = process.env.PORT || 5001; 
 connectDatabase();
 app.listen(PORT, () => {
   console.log(`Server is working on http://localhost:${PORT}`);
