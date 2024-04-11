@@ -245,7 +245,7 @@ exports.GetUserCallAccordingToTeamLeader = catchAsyncErrors(async (req, res, nex
   if (!assign_to_agent) {
       return next(new ErrorHander("assign_to_agent is required..!", 404));
   }
-  const allAgents = await Agent.find({ assigntl: assign_to_agent });
+  const allAgents = await Agent.find({ assigntl: assign_to_agent }); 
   if (allAgents.length < 1) {
       return next(new ErrorHander("No Lead..!", 404));
   }

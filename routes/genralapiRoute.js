@@ -5,7 +5,7 @@ const upload = multer();
 const { YearlySaleApi, LeadSourceOverviewApi, IncomeGraphOverview,GetCalandarData
     ,CompanyDetails,GetCompanyDetails,
     DashboardLeadCount,UnAssignedDashboardLeadCount
-    ,DashboardLeadCountOfUser,AgentWishLeadCount,AgentWishLeadCount1,
+    ,DashboardLeadCountOfUser,AgentWishLeadCount,AgentWishLeadCount1,DashboardLeadCountOfUserByTeamLeader,
     RealestateApi } = require('../controllers/genralApiController');
 const {LeadProductServiceOverviewApi}  =require('../controllers/allReportController')
 
@@ -21,6 +21,7 @@ router.route("/GetCompanyDetails").get(GetCompanyDetails);
 
 router.route("/DashboardLeadCount").get(DashboardLeadCount);  
 router.route("/DashboardLeadCountOfUser").post(DashboardLeadCountOfUser);  
+router.route("/DashboardLeadCountOfUserByTeamLeader").post(DashboardLeadCountOfUserByTeamLeader);  
 
 
 router.route("/UnAssignedDashboardLeadCount").get(UnAssignedDashboardLeadCount);
