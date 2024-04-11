@@ -659,13 +659,14 @@ exports.UnAssignedDashboardLeadCount = catchAsyncErrors(async (req, res, next) =
   });
 });
 
-
+   
 
 // Assuming 'agent' and 'Lead' are imported correctly
 
 exports.AgentWishLeadCount = catchAsyncErrors(async (req, res, next) => {
-  try {
-    const agents = await agent.find();
+  try {   
+     
+    const agents = await agent.find({role:'user'});
     const array = [];
 
     for (const agent1 of agents) {
@@ -683,6 +684,41 @@ exports.AgentWishLeadCount = catchAsyncErrors(async (req, res, next) => {
     next(error);
   }
 });
+
+exports.AgentWishLeadCount1 = catchAsyncErrors(async (req, res, next) => {
+  try {   
+    const { role, user_id } = req.body;
+    let agents = [];
+
+    // Fetch agents based on role
+    if (role === 'user') {
+      agents = await agent.find({ role: 'user', _id: user_id });
+    } else if (role === 'admin') {
+      agents = await agent.find({ role: 'user' });
+    } else if (role === 'TeamLeader') {
+      agents = await agent.find({ role: 'user', assigntl: user_id }); 
+    }
+    
+    const array = [];
+
+    // Fetch lead counts for each agent
+    for (const agent1 of agents) {
+      const leads = await Lead.find({ assign_to_agent: agent1._id });
+      array.push({ 'name': agent1.agent_name, 'Value': leads.length });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Get Lead Count Successfully",
+      Count: array,
+    });
+  } catch (error) {
+    // Specific error handling for database queries
+    console.error("Error fetching lead count:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch lead count" });
+  }
+});
+
 
 
 

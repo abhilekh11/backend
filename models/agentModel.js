@@ -50,8 +50,7 @@ const agentSchema= new mongoose.Schema({
        },
        assigntl:{
         type: mongoose.Schema.ObjectId,
-        // type:String, 
-       },
+         },
        agent_index:{
         type:Number,
        },
