@@ -49,7 +49,8 @@ const agentSchema= new mongoose.Schema({
         type:String, 
        },
        assigntl:{
-        type:String, 
+        type: mongoose.Schema.ObjectId,
+        // type:String, 
        },
        agent_index:{
         type:Number,

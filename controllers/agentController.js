@@ -39,7 +39,7 @@ exports.deleteAgent = catchAsyncErrors(async (req, res, next) => {
 exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
   const agent = await Agent.aggregate([
     {
-      $lookup: {
+      $lookup: { 
         from: "crm_agents",
         let: { assigntlString: "$assigntl" },
         pipeline: [
