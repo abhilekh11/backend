@@ -193,7 +193,12 @@ countMap.forEach((objects, value) => {
 exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
 
   try {
-    const agents = await Agent.find({ role: 'user' });
+    let agents;
+    if (req.body.assign_to_agent) {
+      agents = await Agent.find({ role: 'user', assigntl: req.body.assign_to_agent });
+    } else {
+      agents = await Agent.find({ role: 'user' });
+    }
     let array = [];
     let username = [];
     let value = [];
@@ -237,6 +242,10 @@ exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
     next(error); // Pass the error to the error handler
   }
 })
+
+
+
+
 
 /////// Get Call Details BY
 exports.GetUserCallAccordingToTeamLeader = catchAsyncErrors(async (req, res, next) => {
