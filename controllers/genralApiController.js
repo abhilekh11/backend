@@ -230,7 +230,7 @@ exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
 
 
 
-//// Income Graph Overview
+//// Income Graph Overview For Admin
 
 exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
   const wonstatu = await lead_status.find({ status_name: "Won" });
@@ -415,6 +415,443 @@ exports.IncomeGraphOverview = catchAsyncErrors(async (req, res, next) => {
   let total1112 = 0;
   const lead1112 = await Lead.find({
     status: wonStatus_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        12, // November
+      ],
+    },
+  });
+  lead1112.map((lead11112) => {
+    total1112 += parseInt(lead11112.followup_won_amount);
+  });
+  monthlyIncom.push(total1112);
+
+  res.status(201).json({
+    success: true,
+    message: "Successfully Leads Source Overview",
+    monthlyIncom,
+  });
+});
+
+//// Income Graph Overview For User
+
+exports.IncomeGraphOverviewForUser = catchAsyncErrors(async (req, res, next) => {
+  const { user_id } = req.body;
+  const wonstatu = await lead_status.find({ status_name: "Won" });
+
+  const wonStatus_id = wonstatu["0"]._id;
+  const monthlyIncom = [];
+  ////// for jan
+  let total1 = 0;
+  const lead1 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        1, // November
+      ],
+    },
+  });
+  lead1.map((lead11) => {
+    total1 += parseInt(lead11.followup_won_amount);
+  });
+  monthlyIncom.push(total1);
+  //// for fav
+  let total12 = 0;
+  const lead2 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        2, // November
+      ],
+    },
+  });
+  lead2.map((lead22) => {
+    total12 += parseInt(lead22.followup_won_amount);
+  });
+  monthlyIncom.push(total12);
+
+  /// mar
+  let total13 = 0;
+  const lead3 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        3,
+      ],
+    },
+  });
+  lead3.map((lead33) => {
+    total13 += parseInt(lead33.followup_won_amount);
+  });
+  monthlyIncom.push(total13);
+
+  /// apirl
+  let total14 = 0;
+  const lead4 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        4, // November
+      ],
+    },
+  });
+  lead4.map((lead44) => {
+    total14 += parseInt(lead44.followup_won_amount);
+  });
+  monthlyIncom.push(total14);
+
+  ////// may
+
+  let total15 = 0;
+  const lead5 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        5, // November
+      ],
+    },
+  });
+  lead5.map((lead55) => {
+    total15 += parseInt(lead55.followup_won_amount);
+  });
+  monthlyIncom.push(total15);
+  // june
+
+  let total16 = 0;
+  const lead6 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        6, // November
+      ],
+    },
+  });
+  lead6.map((lead66) => {
+    total16 += parseInt(lead66.followup_won_amount);
+  });
+  monthlyIncom.push(total16);
+
+  //// july
+  let total17 = 0;
+  const lead7 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        7, // November
+      ],
+    },
+  });
+  lead7.map((lead77) => {
+    total17 += parseInt(lead77.followup_won_amount);
+  });
+  monthlyIncom.push(total17);
+
+  // august
+  let total18 = 0;
+  const lead8 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        8, // November
+      ],
+    },
+  });
+  lead8.map((lead88) => {
+    total18 += parseInt(lead88.followup_won_amount);
+  });
+  monthlyIncom.push(total18);
+  /// setember
+
+  let total19 = 0;
+  const lead9 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        9, // November
+      ],
+    },
+  });
+  lead9.map((lead99) => {
+    total19 += parseInt(lead99.followup_won_amount);
+  });
+  monthlyIncom.push(total19);
+  //octuber
+  let total110 = 0;
+  const lead10 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        10, // November
+      ],
+    },
+  });
+  lead10.map((lead1010) => {
+    total110 += parseInt(lead1010.followup_won_amount);
+  });
+  monthlyIncom.push(total110);
+  /// nomber
+  let total111 = 0;
+  const lead111 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        11, // November
+      ],
+    },
+  });
+  lead111.map((lead1111) => {
+    total111 += parseInt(lead1111.followup_won_amount);
+  });
+  monthlyIncom.push(total111);
+  /// december
+
+  let total1112 = 0;
+  const lead1112 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: user_id,
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        12, // November
+      ],
+    },
+  });
+  lead1112.map((lead11112) => {
+    total1112 += parseInt(lead11112.followup_won_amount);
+  });
+  monthlyIncom.push(total1112);
+
+  res.status(201).json({
+    success: true,
+    message: "Successfully Leads Source Overview",
+    monthlyIncom,
+  });
+});
+
+//// Income Graph Overview For TeamLeader
+
+exports.IncomeGraphOverviewForTeamLeader = catchAsyncErrors(async (req, res, next) => {
+  const { user_id } = req.body;
+  const agents = await agent.find({ assigntl: user_id }).select('_id');
+  const agentIds = agents.map(agent => agent._id);
+
+  const wonstatu = await lead_status.find({ status_name: "Won" });
+
+  const wonStatus_id = wonstatu["0"]._id;
+  const monthlyIncom = [];
+  ////// for jan
+  let total1 = 0;
+  const lead1 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        1, // November
+      ],
+    },
+  });
+  lead1.map((lead11) => {
+    total1 += parseInt(lead11.followup_won_amount);
+  });
+  monthlyIncom.push(total1);
+  //// for fav
+  let total12 = 0;
+  const lead2 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        2, // November
+      ],
+    },
+  });
+  lead2.map((lead22) => {
+    total12 += parseInt(lead22.followup_won_amount);
+  });
+  monthlyIncom.push(total12);
+
+  /// mar
+  let total13 = 0;
+  const lead3 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        3,
+      ],
+    },
+  });
+  lead3.map((lead33) => {
+    total13 += parseInt(lead33.followup_won_amount);
+  });
+  monthlyIncom.push(total13);
+
+  /// apirl
+  let total14 = 0;
+  const lead4 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        4, // November
+      ],
+    },
+  });
+  lead4.map((lead44) => {
+    total14 += parseInt(lead44.followup_won_amount);
+  });
+  monthlyIncom.push(total14);
+
+  ////// may
+
+  let total15 = 0;
+  const lead5 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        5, // November
+      ],
+    },
+  });
+  lead5.map((lead55) => {
+    total15 += parseInt(lead55.followup_won_amount);
+  });
+  monthlyIncom.push(total15);
+  // june
+
+  let total16 = 0;
+  const lead6 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        6, // November
+      ],
+    },
+  });
+  lead6.map((lead66) => {
+    total16 += parseInt(lead66.followup_won_amount);
+  });
+  monthlyIncom.push(total16);
+
+  //// july
+  let total17 = 0;
+  const lead7 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        7, // November
+      ],
+    },
+  });
+  lead7.map((lead77) => {
+    total17 += parseInt(lead77.followup_won_amount);
+  });
+  monthlyIncom.push(total17);
+
+  // august
+  let total18 = 0;
+  const lead8 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        8, // November
+      ],
+    },
+  });
+  lead8.map((lead88) => {
+    total18 += parseInt(lead88.followup_won_amount);
+  });
+  monthlyIncom.push(total18);
+  /// setember
+
+  let total19 = 0;
+  const lead9 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        9, // November
+      ],
+    },
+  });
+  lead9.map((lead99) => {
+    total19 += parseInt(lead99.followup_won_amount);
+  });
+  monthlyIncom.push(total19);
+  //octuber
+  let total110 = 0;
+  const lead10 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        10, // November
+      ],
+    },
+  });
+  lead10.map((lead1010) => {
+    total110 += parseInt(lead1010.followup_won_amount);
+  });
+  monthlyIncom.push(total110);
+  /// nomber
+  let total111 = 0;
+  const lead111 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
+    $expr: {
+      $eq: [
+        { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name
+        11, // November
+      ],
+    },
+  });
+  lead111.map((lead1111) => {
+    total111 += parseInt(lead1111.followup_won_amount);
+  });
+  monthlyIncom.push(total111);
+  /// december
+
+  let total1112 = 0;
+  const lead1112 = await Lead.find({
+    status: wonStatus_id,
+    assign_to_agent: { $in: agentIds },
     $expr: {
       $eq: [
         { $month: "$followup_date" }, // Replace 'yourDateField' with the actual field name

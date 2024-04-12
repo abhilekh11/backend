@@ -193,6 +193,56 @@ countMap.forEach((objects, value) => {
 exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
 
   try {
+   
+     const agents = await Agent.find({ role: 'user' });
+  
+    let array = [];
+    let username = [];
+    let value = [];
+
+    await Promise.all(
+      agents.map(async (agent) => {
+        const user_id = agent._id; // Assuming _id is the correct property for user_id
+        let TotalTime = 0; // Reset TotalTime for each user
+       
+
+        const callDetail = await CallLog.find({ user_id: user_id });
+        const HigstNoOfCall = await callDetail?.length;
+
+        callDetail.map((callDetails) => {
+          TotalTime += parseInt(callDetails?.duration) || 0; // Add the duration for each call
+        });
+
+        const AvrageTime=await parseInt(TotalTime/HigstNoOfCall);
+
+  
+
+        array.push({
+          ['user_id']: agent._id,
+          ['username']: agent.agent_name,
+          ['HigstNoOfCall']: HigstNoOfCall,
+          ['TotalTime']: TotalTime,
+          ['AvrageTime']:AvrageTime,
+        });
+        username.push(agent.agent_name);
+        value.push(HigstNoOfCall);
+      })
+    );
+ 
+    res.status(200).json({
+      success: true,
+      array,
+      username,
+      value,
+    });
+  } catch (error) {
+    next(error); // Pass the error to the error handler
+  }
+})
+
+exports.GetAllUserCallLogByIdTeam=catchAsyncErrors(async (req, res, next)=>{
+
+  try {
     let agents;
     if (req.body.assign_to_agent) {
       agents = await Agent.find({ role: 'user', assigntl: req.body.assign_to_agent });
@@ -205,7 +255,7 @@ exports.GetAllUserCallLogById=catchAsyncErrors(async (req, res, next)=>{
 
     await Promise.all(
       agents.map(async (agent) => {
-        const user_id = agent._id; // Assuming _id is the correct property for user_id
+        const user_id = agent?._id; // Assuming _id is the correct property for user_id
         let TotalTime = 0; // Reset TotalTime for each user
        
 

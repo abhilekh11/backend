@@ -793,7 +793,15 @@ exports.getLeadbyTeamLeaderidandwithstatus = catchAsyncErrors(
     if (!assign_to_agent) {
       return next(new ErrorHander("assign_to_agent is required..!", 404));
     }
-    const allAgents = await agent.find({ assigntl: assign_to_agent });
+    // const allAgents = await agent.find({ assigntl: assign_to_agent });
+    const [agentsByAssigntl, agentsById] = await Promise.all([
+      agent.find({ assigntl: assign_to_agent }),
+      agent.find({ _id: assign_to_agent })
+  ]);
+  
+  // Merge the results into a single array
+  const allAgents = [...agentsByAssigntl, ...agentsById];
+   
     if (allAgents.length < 1) {
       return next(new ErrorHander("No Lead..!", 404));
     }
@@ -918,7 +926,14 @@ exports.getLeadbyTeamLeaderidandwithoutstatus = catchAsyncErrors(
     if (!assign_to_agent) {
       return next(new ErrorHander("assign_to_agent is required..!", 404));
     }
-    const allAgents = await agent.find({ assigntl: assign_to_agent });
+    // const allAgents = await agent.find({ assigntl: assign_to_agent });
+    const [agentsByAssigntl, agentsById] = await Promise.all([
+      agent.find({ assigntl: assign_to_agent }),
+      agent.find({ _id: assign_to_agent })
+  ]);
+  
+  // Merge the results into a single array
+  const allAgents = [...agentsByAssigntl, ...agentsById];
     if (allAgents.length < 1) {
       return next(new ErrorHander("No Lead..!", 404));
     }
