@@ -1364,10 +1364,14 @@ exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
   array.push(
     { ['name']: 'Followup Lead', ['Value']: followuplead.length },
     { ['name']: 'Total Agent', ['Value']: TotalAgent },
-    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length },
-    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length },
-    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length },
-    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length },
+    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length ,
+    ['id']:'65a904164473619190494480' },
+    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length 
+  ,['id']:'65a903f8447361919049447c'},
+    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
+    ['id']:'65a903ca4473619190494478' },
+    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
+    ['id']:'65a903e9447361919049447a' },
   );
   res.status(201).json({
     success: true,
@@ -1500,10 +1504,14 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
   array.push(
     { ['name']: 'Followup Lead', ['Value']: followuplead.length },
     { ['name']: 'Total Agent', ['Value']: 1 },
-    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length },
-    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length },
-    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length },
-    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length },
+    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length ,
+    ['id']:'65a904164473619190494480' },
+    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length 
+  ,['id']:'65a903f8447361919049447c'},
+    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
+    ['id']:'65a903ca4473619190494478' },
+    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
+    ['id']:'65a903e9447361919049447a' },
   );
   res.status(201).json({
     success: true,
@@ -1640,10 +1648,14 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
   array.push(
     { ['name']: 'Followup Lead', ['Value']: followuplead.length },
     { ['name']: 'Total Agent', ['Value']: agents?.length },
-    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length },
-    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length },
-    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length },
-    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length },
+    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length ,
+    ['id']:'65a904164473619190494480' },
+    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length 
+  ,['id']:'65a903f8447361919049447c'},
+    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
+    ['id']:'65a903ca4473619190494478' },
+    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
+    ['id']:'65a903e9447361919049447a' },
   );
   res.status(201).json({
     success: true,
