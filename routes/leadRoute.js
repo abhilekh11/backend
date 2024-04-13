@@ -6,7 +6,7 @@ const { Add_Lead, getAllLead ,getLeadById, deleteAllLead,
       BulkDeleteLead,UpdateLeadByLeadId,
       leadattechmenthistory,deleteLeadAttechmentHistory
       ,getAllNewLead,getAllNewLeadBYAgentId,getAllUnassignLead
-    ,getLeadbyTeamLeaderidandwithstatus,getLeadbyTeamLeaderidandwithoutstatus} = require('../controllers/leadController');  
+    ,getLeadbyTeamLeaderidandwithstatus,getLeadbyTeamLeaderidandwithoutstatus,getLeadbyScheduleEventid} = require('../controllers/leadController');  
 
 
 const router=express.Router();
@@ -33,6 +33,8 @@ router.route("/BulkDeleteLead").delete(BulkDeleteLead);
 router.route("/UpdateLeadByLeadId/:id").put(UpdateLeadByLeadId);
 router.route("/leadattechmenthistory/:id").get(leadattechmenthistory); 
 router.route("/deleteLeadAttechmentHistory/:id").delete(deleteLeadAttechmentHistory);
+
+router.route("/getLeadbyScheduleEventid").post(getLeadbyScheduleEventid);  ///////get All ScheduleEvent Lead 
 
  
 // router.route("/BulkLeadUplodeExcel",upload.single('file')).post(BulkLeadUplodeExcel); 

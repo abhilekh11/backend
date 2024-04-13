@@ -1063,6 +1063,178 @@ exports.getLeadbyTeamLeaderidandwithoutstatus = catchAsyncErrors(
   }
 );
 
+///////get All ScheduleEvent Lead 
+exports.getLeadbyScheduleEventid = catchAsyncErrors(
+  async (req, res, next) => {
+    const { assign_to_agent, status_id, role } = req.body;
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() + 5);
+    currentDate.setMinutes(currentDate.getMinutes() + 30);
+    const formattedDate1 = currentDate.toISOString();
+    const targetDate = new Date(formattedDate1);
+    const targetDateOnly = new Date(targetDate.toISOString().split('T')[0]);
+    const nextDate = new Date(targetDate);
+    nextDate.setDate(nextDate.getDate() + 1); // Get next day from targetDate
+    let matchConditions = {};
+
+    if (role === 'TeamLeader') {
+        const [agentsByAssigntl, agentsById] = await Promise.all([
+            agent.find({ assigntl: assign_to_agent }),
+            agent.find({ _id: assign_to_agent })
+        ]);
+        const allAgents = [...agentsByAssigntl, ...agentsById];
+        matchConditions = {
+            assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) }
+        };
+    }
+
+    if (role === 'admin') {
+        // Define admin specific conditions here if needed
+    }
+
+    if (role === 'user') {
+        const agentObjectId = new ObjectId(assign_to_agent);
+        matchConditions.assign_to_agent = agentObjectId;
+    }
+
+    const lead = await Lead.aggregate([
+      {
+        $match: matchConditions,
+      },
+      {
+        $match: {
+            $expr: {
+                $or: [
+                    {
+                        $eq: [
+                            { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+                            { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } }
+                        ]
+                    },
+                    {
+                        $eq: [
+                            { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+                            { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+
+      {
+        $lookup: {
+          from: "crm_agents",
+          let: { assign_to_agentString: "$assign_to_agent" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                agent_name: 1,
+              },
+            },
+          ],
+          as: "agent_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_product_services",
+          let: { serviceString: "$service" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$serviceString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                product_service_name: 1,
+              },
+            },
+          ],
+          as: "service_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_statuses",
+          let: { statusString: "$status" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$statusString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                status_name: 1,
+              },
+            },
+          ],
+          as: "status_details",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "crm_lead_sources",
+          let: { lead_sourceString: "$lead_source" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", { $toObjectId: "$$lead_sourceString" }],
+                },
+              },
+            },
+            {
+              $project: {
+                lead_source_name: 1,
+              },
+            },
+          ],
+          as: "lead_source_details",
+        },
+      },
+      /////for  loss and won status remove
+      {
+        $match: {
+          status: new ObjectId(status_id),
+           },
+        
+      },
+
+      {
+        $sort: {
+          followup_date: 1,
+        },
+      },
+    ]);
+
+    if (lead.length == 0) {
+      return next(new ErrorHander("Lead is not Avilable of This user", 201));
+    }
+
+    res.status(200).json({
+      success: true,
+      lead,
+    });
+  }
+);
+
 
 //// get Lead By Id
 
