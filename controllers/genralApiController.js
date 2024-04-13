@@ -1525,9 +1525,16 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
 exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res, next) => {
 
   const { user_id } = req.body;
-  const agents = await agent.find({ assigntl: user_id }).select('_id');
-  const agentIds = agents.map(agent => agent._id);
-  const agentObjectId = new ObjectId(user_id);
+  // const agents = await agent.find({ assigntl: user_id }).select('_id');
+  // const agentIds = agents.map(agent => agent._id);
+  const [agentsByAssigntl, agentsById] = await Promise.all([
+    agent.find({ assigntl: user_id }),
+    agent.find({ _id: user_id })
+]);
+
+// Merge the results into a single array
+const allAgents = [...agentsByAssigntl, ...agentsById];
+ 
   let array = [];
   const lead = await Lead.find();
   const TotalLead = lead.length;
@@ -1544,8 +1551,8 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
   ///// for Followup Lead count
 
   const followuplead = await Lead.find({
-    assign_to_agent: { $in: agentIds },
-    status: {
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
+    status: { 
       $nin: [
         new ObjectId("65a904e04473619190494482"),
         new ObjectId("65a904ed4473619190494484")
@@ -1557,7 +1564,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
 
   ///// for meeting
   const meetinglead = await Lead.find({
-    assign_to_agent: { $in: agentIds },
+    assign_to_agent:{ $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a904164473619190494480',
     $expr: {
       $eq: [
@@ -1567,7 +1574,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
     }
   });
   const meetingleadNextDay = await Lead.find({
-    assign_to_agent: { $in: agentIds },
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a904164473619190494480',
     $expr: {
       $eq: [
@@ -1580,7 +1587,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
   const meetinglead_name = await Status.findOne({ _id: '65a904164473619190494480' });
   ///// for Call Back (Visit)
   const Visit = await Lead.find({
-    assign_to_agent: { $in: agentIds },
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a903f8447361919049447c',
     $expr: {
       $eq: [
@@ -1590,7 +1597,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
     }
   });
   const VisitleadNextDay = await Lead.find({
-    assign_to_agent: { $in: agentIds },
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a903f8447361919049447c',
     $expr: {
       $eq: [
@@ -1603,7 +1610,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
 
   ///// for Call Back (Re-Visit)
   const Re_Visit = await Lead.find({
-    assign_to_agent: { $in: agentIds },
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a903ca4473619190494478',
     $expr: {
       $eq: [
@@ -1613,7 +1620,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
     }
   });
   const Re_VisitleadNextDay = await Lead.find({
-    assign_to_agent: { $in: agentIds },
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a903ca4473619190494478',
     $expr: {
       $eq: [
@@ -1625,7 +1632,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
   const Re_Visit_name = await Status.findOne({ _id: '65a903ca4473619190494478' });
   ///// for Call Back (Re-Visit)
   const Shedule_Visit = await Lead.find({
-    assign_to_agent: { $in: agentIds },
+    assign_to_agent:{ $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a903e9447361919049447a',
     $expr: {
       $eq: [
@@ -1635,7 +1642,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
     }
   });
   const Shedule_VisitleadNextDay = await Lead.find({
-    assign_to_agent: { $in: agentIds },
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a903e9447361919049447a',
     $expr: {
       $eq: [
@@ -1647,7 +1654,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
   const Shedule_Visit_name = await Status.findOne({ _id: '65a903e9447361919049447a' });
   array.push(
     { ['name']: 'Followup Lead', ['Value']: followuplead.length },
-    { ['name']: 'Total Agent', ['Value']: agents?.length },
+    { ['name']: 'Total Agent', ['Value']: allAgents.map(agent => new ObjectId(agent._id))?.length },
     { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length ,
     ['id']:'65a904164473619190494480' },
     { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length 
