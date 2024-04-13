@@ -10,205 +10,14 @@ const leadsourceModel = require("../models/leadsourceModel");
 const Setting = require('../models/settingModel');
 const { Agent } = require("express-useragent");
 const { ObjectId } = require('mongoose').Types;
-/////// Yearly Base Sale Api
-exports.YearlySaleApi1 = catchAsyncErrors(async (req, res, next) => {
-  const details = [];
-  let TotalAmountWon = 0;
-  let TotalAmountLost = 0;
-  let TotalAmountwonmanthely = 0;
-  const currentDate = new Date();
-  const ThirtyDaysAgoDate = new Date();
-  ThirtyDaysAgoDate.setDate(ThirtyDaysAgoDate.getDate() - 30);
-  const formattedThirtyDaysAgoDate = ThirtyDaysAgoDate.toISOString();
-  const wonstatu = await lead_status.find({ status_name: "Won" });
-  const loststatu = await lead_status.find({ status_name: "Lost" });
-  const wonStatus_id = wonstatu["0"]._id;
-  const lostStatus_id = loststatu["0"]._id;
-  const wonlead = await Lead.find({ status: wonStatus_id });
-  const lostlead = await Lead.find({ status: lostStatus_id });
-  ///// for 30 day sale won
-  const wonleadforthirtyday = await Lead.find({
-    status: wonStatus_id,
-    followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: currentDate },
-  });
-  ///// for 30 day sale won
-  const Yearly_lead_count_won = wonlead.length;
-  const Yearly_lead_count_Lost = lostlead.length;
-  const wonleadforthirtyday_count_lead = wonleadforthirtyday.length;
-
-  wonlead.map((leads) => {
-    //TotalAmountWon += parseInt(leads.lead_cost);
-    TotalAmountWon += parseInt(leads.followup_won_amount);
-  });
-  lostlead.map((leads) => {
-    TotalAmountLost += parseInt(leads.lead_cost);
-  });
-  wonleadforthirtyday.map((leads) => {
-    TotalAmountwonmanthely += parseInt(leads.followup_won_amount);
-  });
-
-  details.push({
-    Yearly_lead_count_for_won: Yearly_lead_count_won,
-    Yearly_lead_count_Lost: Yearly_lead_count_Lost,
-    TotalAmountWon: TotalAmountWon,
-    TotalAmountLost: TotalAmountLost,
-    wonleadforthirtyday_count_lead: wonleadforthirtyday_count_lead,
-    TotalAmountwonmanthely: TotalAmountwonmanthely,
-  });
-
-  res.status(201).json({
-    success: true,
-    message: "Successfully Get Data",
-    details,
-  });
-});
-
-exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {  
-  try {
-    const details = [];
-    let TotalAmountWon = 0;
-    let TotalAmountLost = 0;
-    let TotalAmountwonmanthely = 0;
-    const andialTimezoneOffset = 5 * 60 * 60 * 1000 // Offset in milliseconds
-    const andialTimezoneOffset1 = 30 * 60 * 1000 // Offset in milliseconds
-    const currentDate = new Date();
-    const currentUTCTime = Date.now();
-    const andialTime = new Date(currentUTCTime + (andialTimezoneOffset+andialTimezoneOffset1));
-    
-    const ThirtyDaysAgoDate = new Date();
-    ThirtyDaysAgoDate.setDate(ThirtyDaysAgoDate.getDate() - 30);
-    const formattedThirtyDaysAgoDate = ThirtyDaysAgoDate.toISOString();
-    
-    const wonstatu = await lead_status.findOne({ status_name: "Won" });
-    const loststatu = await lead_status.findOne({ status_name: "Lost" });
-    const wonStatus_id = wonstatu._id;
-    const lostStatus_id = loststatu._id;
-    
-    const wonlead = await Lead.find({ status: wonStatus_id });
-    const lostlead = await Lead.find({ status: lostStatus_id });
-    
-    const wonleadforthirtyday = await Lead.find({
-      status: wonStatus_id,
-      followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: andialTime },
-    });
-
-    const Yearly_lead_count_won = wonlead.length;
-    const Yearly_lead_count_Lost = lostlead.length;
-    const wonleadforthirtyday_count_lead = wonleadforthirtyday.length;
-
-   
-    TotalAmountWon = wonlead.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
-    TotalAmountLost = lostlead.reduce((total, lead) => total + parseInt(lead.lead_cost), 0);
-    TotalAmountwonmanthely = wonleadforthirtyday.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
-
-    details.push({
-      Yearly_lead_count_for_won: Yearly_lead_count_won,
-      Yearly_lead_count_Lost: Yearly_lead_count_Lost,
-      TotalAmountWon: TotalAmountWon,
-      TotalAmountLost: TotalAmountLost,
-      wonleadforthirtyday_count_lead: wonleadforthirtyday_count_lead,
-      TotalAmountwonmanthely: TotalAmountwonmanthely,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Successfully Get Data",
-      details,
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
-});
-
-
-/////  Leads Source Overview  Api
-
-exports.LeadSourceOverviewApi1 = catchAsyncErrors(async (req, res, next) => {
-  const Lead_source_id = [];
-  const Lead_source_name = [];
-
-  const Lead_source_count = [];
-  const lead_source = await leadsourceModel.find();
-
-  lead_source.forEach((lead_source1) => {
-    Lead_source_id.push(lead_source1._id);
-    Lead_source_name.push(lead_source1.lead_source_name);
-  });
-
-  await Promise.all(
-    Lead_source_id.map(async (Lead_source_id1) => {
-      const lead = await Lead.find({ lead_source: Lead_source_id1 });
-      if (lead) {
-        const lead_length = await lead.length;
-
-        if (!lead_length) {
-          Lead_source_count.push(0);
-        } else {
-          Lead_source_count.push(lead_length);
-        }
-      }
-
-    })
-  );
-
-  res.status(201).json({
-    success: true,
-    message: "Successfully Leads Source Overview",
-    Lead_source_count,
-    Lead_source_name,
-    Lead_source_id,
-  });
-});
-
-
-
-
-////
-exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
-  try {
-    const lead_source = await leadsourceModel.find();
-
-    const Lead_source_id = lead_source.map((lead_source1) => lead_source1._id);
-    const Lead_source_name = lead_source.map((lead_source1) => lead_source1.lead_source_name);
-
-    const Lead_source_countPromises = Lead_source_id.map(async (Lead_source_id1) => {
-      const lead = await Lead.find({ lead_source: Lead_source_id1 });
-      const lead_length = lead.length;
-
-      return lead_length;
-    });
-
-    const Lead_source_count = await Promise.all(Lead_source_countPromises);
-
-    res.status(201).json({
-      success: true,
-      message: "Successfully Leads Source Overview",
-      Lead_source_count,
-      Lead_source_name,
-      Lead_source_id,
-    });
-  } catch (error) {
-    // Handle errors appropriately
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
-});
-
 
 
 ///////// RealestateApi
 exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
   const { email, name, mobile, inquiry_id, subject, details, property_id, recv_date, lookinf_for } = req.body;
-     console.log(req.body)
+  console.log(req.body)
 
-  const lead = await Lead.create({  
+  const lead = await Lead.create({
     full_name: name,
     email_id: email,
     lead_source: '65fd17a3d02e1071c601efc0',
@@ -221,7 +30,7 @@ exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
     flat_id: property_id,
     lead_date: recv_date,
   });
-  res.status(200).json({ 
+  res.status(200).json({
     success: true,
     message: "Save Realestate Lead On This Route",
     data: lead
@@ -911,6 +720,18 @@ exports.GetCalandarData = catchAsyncErrors(async (req, res, next) => {
 });
 ////for Teamleader
 exports.GetCalandarDataByTeamLeader = catchAsyncErrors(async (req, res, next) => {
+  const { user_id } = req.body;
+ 
+  // Execute both queries concurrently
+  const [agentsByAssigntl, agentsById] = await Promise.all([
+    agent.find({ assigntl: user_id }).select('_id'),
+    agent.find({ _id: user_id }).select('_id'),
+  ]);
+
+  // Merge the results into a single array
+  const allAgents = [...agentsByAssigntl, ...agentsById];
+
+  const agentIds = allAgents.map(agent => agent._id); // Use allAgents instead of agents
 
   const lead = await Lead.aggregate([
     {
@@ -936,11 +757,11 @@ exports.GetCalandarDataByTeamLeader = catchAsyncErrors(async (req, res, next) =>
     },
     {
       $match: {
-        add_to_calender: 'yes'
+        add_to_calender: 'yes',
+        assign_to_agent: { $in: agentIds }, // Use agentIds here
       },
     },
-
-  ])
+  ]);
 
   res.status(201).json({
     success: true,
@@ -948,9 +769,10 @@ exports.GetCalandarDataByTeamLeader = catchAsyncErrors(async (req, res, next) =>
     lead,
   });
 });
-////for User
+
+////for User 
 exports.GetCalandarDataByUser = catchAsyncErrors(async (req, res, next) => {
-      const {user_id}=req.body;
+  const user_id =new ObjectId(req.body.user_id);
   const lead = await Lead.aggregate([
     {
       $lookup: {
@@ -975,9 +797,9 @@ exports.GetCalandarDataByUser = catchAsyncErrors(async (req, res, next) => {
     },
     {
       $match: {
-        add_to_calender: 'yes'
+        add_to_calender: 'yes',
+        assign_to_agent: user_id
       },
-      assign_to_agent:user_id,
     },
 
   ])
@@ -988,6 +810,321 @@ exports.GetCalandarDataByUser = catchAsyncErrors(async (req, res, next) => {
     lead,
   });
 });
+
+
+
+/////// Yearly Base Sale Api For Admin
+exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const details = [];
+    let TotalAmountWon = 0;
+    let TotalAmountLost = 0;
+    let TotalAmountwonmanthely = 0;
+    const andialTimezoneOffset = 5 * 60 * 60 * 1000 // Offset in milliseconds
+    const andialTimezoneOffset1 = 30 * 60 * 1000 // Offset in milliseconds
+    const currentDate = new Date();
+    const currentUTCTime = Date.now();
+    const andialTime = new Date(currentUTCTime + (andialTimezoneOffset + andialTimezoneOffset1));
+
+    const ThirtyDaysAgoDate = new Date();
+    ThirtyDaysAgoDate.setDate(ThirtyDaysAgoDate.getDate() - 30);
+    const formattedThirtyDaysAgoDate = ThirtyDaysAgoDate.toISOString();
+
+    const wonstatu = await lead_status.findOne({ status_name: "Won" });
+    const loststatu = await lead_status.findOne({ status_name: "Lost" });
+    const wonStatus_id = wonstatu._id;
+    const lostStatus_id = loststatu._id;
+
+    const wonlead = await Lead.find({ status: wonStatus_id });
+    const lostlead = await Lead.find({ status: lostStatus_id });
+
+    const wonleadforthirtyday = await Lead.find({
+      status: wonStatus_id,
+      followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: andialTime },
+    });
+
+    const Yearly_lead_count_won = wonlead.length;
+    const Yearly_lead_count_Lost = lostlead.length;
+    const wonleadforthirtyday_count_lead = wonleadforthirtyday.length;
+
+
+    TotalAmountWon = wonlead.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
+    TotalAmountLost = lostlead.reduce((total, lead) => total + parseInt(lead.lead_cost), 0);
+    TotalAmountwonmanthely = wonleadforthirtyday.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
+
+    details.push({
+      Yearly_lead_count_for_won: Yearly_lead_count_won,
+      Yearly_lead_count_Lost: Yearly_lead_count_Lost,
+      TotalAmountWon: TotalAmountWon,
+      TotalAmountLost: TotalAmountLost,
+      wonleadforthirtyday_count_lead: wonleadforthirtyday_count_lead,
+      TotalAmountwonmanthely: TotalAmountwonmanthely,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Get Data",
+      details,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+/////// Yearly Base Sale Api For TeamLeader
+exports.YearlySaleApiForTeamLeader = catchAsyncErrors(async (req, res, next) => {
+    const {user_id} =req.body;
+    const [agentsByAssigntl, agentsById] = await Promise.all([
+      agent.find({ assigntl: user_id }).select('_id'),
+      agent.find({ _id: user_id }).select('_id'),
+    ]);
+  
+    // Merge the results into a single array
+    const allAgents = [...agentsByAssigntl, ...agentsById];
+  
+    const agentIds = allAgents.map(agent => agent._id); // Use allAgents instead of agents
+  try {
+    const details = [];
+    let TotalAmountWon = 0;
+    let TotalAmountLost = 0;
+    let TotalAmountwonmanthely = 0;
+    const andialTimezoneOffset = 5 * 60 * 60 * 1000 // Offset in milliseconds
+    const andialTimezoneOffset1 = 30 * 60 * 1000 // Offset in milliseconds
+    const currentDate = new Date();
+    const currentUTCTime = Date.now();
+    const andialTime = new Date(currentUTCTime + (andialTimezoneOffset + andialTimezoneOffset1));
+
+    const ThirtyDaysAgoDate = new Date();
+    ThirtyDaysAgoDate.setDate(ThirtyDaysAgoDate.getDate() - 30);
+    const formattedThirtyDaysAgoDate = ThirtyDaysAgoDate.toISOString();
+
+    const wonstatu = await lead_status.findOne({ status_name: "Won" });
+    const loststatu = await lead_status.findOne({ status_name: "Lost" });
+    const wonStatus_id = wonstatu._id;
+    const lostStatus_id = loststatu._id;
+
+    const wonlead = await Lead.find({ status: wonStatus_id ,assign_to_agent: { $in: agentIds }});
+    const lostlead = await Lead.find({ status: lostStatus_id ,assign_to_agent: { $in: agentIds }});
+
+    const wonleadforthirtyday = await Lead.find({
+      status: wonStatus_id,
+      assign_to_agent: { $in: agentIds },
+      followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: andialTime },
+    });
+
+    const Yearly_lead_count_won = wonlead.length;
+    const Yearly_lead_count_Lost = lostlead.length;
+    const wonleadforthirtyday_count_lead = wonleadforthirtyday.length;
+
+
+    TotalAmountWon = wonlead.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
+    TotalAmountLost = lostlead.reduce((total, lead) => total + parseInt(lead.lead_cost), 0);
+    TotalAmountwonmanthely = wonleadforthirtyday.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
+
+    details.push({
+      Yearly_lead_count_for_won: Yearly_lead_count_won,
+      Yearly_lead_count_Lost: Yearly_lead_count_Lost,
+      TotalAmountWon: TotalAmountWon,
+      TotalAmountLost: TotalAmountLost,
+      wonleadforthirtyday_count_lead: wonleadforthirtyday_count_lead,
+      TotalAmountwonmanthely: TotalAmountwonmanthely,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Get Data",
+      details,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+/////// Yearly Base Sale Api For User
+exports.YearlySaleApiForUser = catchAsyncErrors(async (req, res, next) => {
+  const user_id =new ObjectId(req.body.user_id);
+  try {
+    const details = [];
+    let TotalAmountWon = 0;
+    let TotalAmountLost = 0;
+    let TotalAmountwonmanthely = 0;
+    const andialTimezoneOffset = 5 * 60 * 60 * 1000 // Offset in milliseconds
+    const andialTimezoneOffset1 = 30 * 60 * 1000 // Offset in milliseconds
+    const currentDate = new Date();
+    const currentUTCTime = Date.now();
+    const andialTime = new Date(currentUTCTime + (andialTimezoneOffset + andialTimezoneOffset1));
+
+    const ThirtyDaysAgoDate = new Date();
+    ThirtyDaysAgoDate.setDate(ThirtyDaysAgoDate.getDate() - 30);
+    const formattedThirtyDaysAgoDate = ThirtyDaysAgoDate.toISOString();
+
+    const wonstatu = await lead_status.findOne({ status_name: "Won" });
+    const loststatu = await lead_status.findOne({ status_name: "Lost" });
+    const wonStatus_id = wonstatu._id;
+    const lostStatus_id = loststatu._id;
+
+    const wonlead = await Lead.find({ status: wonStatus_id ,assign_to_agent: user_id });
+    const lostlead = await Lead.find({ status: lostStatus_id ,assign_to_agent: user_id });
+
+    const wonleadforthirtyday = await Lead.find({
+      status: wonStatus_id,
+      assign_to_agent: user_id ,
+      followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: andialTime },
+    });
+
+    const Yearly_lead_count_won = wonlead.length;
+    const Yearly_lead_count_Lost = lostlead.length;
+    const wonleadforthirtyday_count_lead = wonleadforthirtyday.length;
+
+
+    TotalAmountWon = wonlead.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
+    TotalAmountLost = lostlead.reduce((total, lead) => total + parseInt(lead.lead_cost), 0);
+    TotalAmountwonmanthely = wonleadforthirtyday.reduce((total, lead) => total + parseInt(lead.followup_won_amount), 0);
+
+    details.push({
+      Yearly_lead_count_for_won: Yearly_lead_count_won,
+      Yearly_lead_count_Lost: Yearly_lead_count_Lost,
+      TotalAmountWon: TotalAmountWon,
+      TotalAmountLost: TotalAmountLost,
+      wonleadforthirtyday_count_lead: wonleadforthirtyday_count_lead,
+      TotalAmountwonmanthely: TotalAmountwonmanthely,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Get Data",
+      details,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+/////  Leads Source Overview  Api For Admin
+exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const lead_source = await leadsourceModel.find();
+
+    const Lead_source_id = lead_source.map((lead_source1) => lead_source1._id);
+    const Lead_source_name = lead_source.map((lead_source1) => lead_source1.lead_source_name);
+
+    const Lead_source_countPromises = Lead_source_id.map(async (Lead_source_id1) => {
+      const lead = await Lead.find({ lead_source: Lead_source_id1 });
+      const lead_length = lead.length;
+
+      return lead_length;
+    });
+
+    const Lead_source_count = await Promise.all(Lead_source_countPromises);
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Leads Source Overview",
+      Lead_source_count,
+      Lead_source_name,
+      Lead_source_id,
+    });
+  } catch (error) {
+    // Handle errors appropriately
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+/////  Leads Source Overview  Api For TeamLeader
+exports.LeadSourceOverviewApiForTeamLeader = catchAsyncErrors(async (req, res, next) => {
+  const {user_id} =req.body;
+    const [agentsByAssigntl, agentsById] = await Promise.all([
+      agent.find({ assigntl: user_id }).select('_id'),
+      agent.find({ _id: user_id }).select('_id'),
+    ]);
+  
+    // Merge the results into a single array
+    const allAgents = [...agentsByAssigntl, ...agentsById];
+  
+    const agentIds = allAgents.map(agent => agent._id); // Use allAgents instead of agents
+  try {
+    const lead_source = await leadsourceModel.find();
+
+    const Lead_source_id = lead_source.map((lead_source1) => lead_source1._id);
+    const Lead_source_name = lead_source.map((lead_source1) => lead_source1.lead_source_name);
+
+    const Lead_source_countPromises = Lead_source_id.map(async (Lead_source_id1) => {
+      const lead = await Lead.find({ lead_source: Lead_source_id1 , assign_to_agent: { $in: agentIds }});
+      const lead_length = lead.length;
+
+      return lead_length;
+    });
+
+    const Lead_source_count = await Promise.all(Lead_source_countPromises);
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Leads Source Overview",
+      Lead_source_count,
+      Lead_source_name,
+      Lead_source_id,
+    });
+  } catch (error) {
+    // Handle errors appropriately
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+/////  Leads Source Overview  Api For User
+exports.LeadSourceOverviewApiForUser = catchAsyncErrors(async (req, res, next) => {
+  const user_id =new ObjectId(req.body.user_id);
+  try {
+    const lead_source = await leadsourceModel.find();
+
+    const Lead_source_id = lead_source.map((lead_source1) => lead_source1._id);
+    const Lead_source_name = lead_source.map((lead_source1) => lead_source1.lead_source_name);
+
+    const Lead_source_countPromises = Lead_source_id.map(async (Lead_source_id1) => {
+      const lead = await Lead.find({ lead_source: Lead_source_id1,assign_to_agent: user_id  });
+      const lead_length = lead.length;
+
+      return lead_length;
+    });
+
+    const Lead_source_count = await Promise.all(Lead_source_countPromises);
+
+    res.status(201).json({
+      success: true,
+      message: "Successfully Leads Source Overview",
+      Lead_source_count,
+      Lead_source_name,
+      Lead_source_id,
+    });
+  } catch (error) {
+    // Handle errors appropriately
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
 
 
 //////// Company Information Setting
@@ -1053,14 +1190,14 @@ exports.UnAssignedDashboardLeadCount = catchAsyncErrors(async (req, res, next) =
   });
 });
 
-   
+
 
 // Assuming 'agent' and 'Lead' are imported correctly
 
 exports.AgentWishLeadCount = catchAsyncErrors(async (req, res, next) => {
-  try {   
-     
-    const agents = await agent.find({role:'user'});
+  try {
+
+    const agents = await agent.find({ role: 'user' });
     const array = [];
 
     for (const agent1 of agents) {
@@ -1080,7 +1217,7 @@ exports.AgentWishLeadCount = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.AgentWishLeadCount1 = catchAsyncErrors(async (req, res, next) => {
-  try {   
+  try {
     const { role, user_id } = req.body;
     let agents = [];
 
@@ -1090,9 +1227,9 @@ exports.AgentWishLeadCount1 = catchAsyncErrors(async (req, res, next) => {
     } else if (role === 'admin') {
       agents = await agent.find({ role: 'user' });
     } else if (role === 'TeamLeader') {
-      agents = await agent.find({ role: 'user', assigntl: user_id }); 
+      agents = await agent.find({ role: 'user', assigntl: user_id });
     }
-    
+
     const array = [];
 
     // Fetch lead counts for each agent
@@ -1378,7 +1515,7 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
 
 ///////// dashboard data for lead type  In Case Of All User By Team Leader
 exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res, next) => {
-      
+
   const { user_id } = req.body;
   const agents = await agent.find({ assigntl: user_id }).select('_id');
   const agentIds = agents.map(agent => agent._id);
@@ -1513,7 +1650,7 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
     message: "Get Lead Count Successfully",
     Count: array,
   });
-       
+
 
 });
 
