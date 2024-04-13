@@ -1076,52 +1076,43 @@ exports.getLeadbyScheduleEventid = catchAsyncErrors(
     const nextDate = new Date(targetDate);
     nextDate.setDate(nextDate.getDate() + 1); // Get next day from targetDate
     let matchConditions = {};
-
-    if (role === 'TeamLeader') {
+   
+    if (role==='TeamLeader') {
+    
         const [agentsByAssigntl, agentsById] = await Promise.all([
             agent.find({ assigntl: assign_to_agent }),
             agent.find({ _id: assign_to_agent })
         ]);
         const allAgents = [...agentsByAssigntl, ...agentsById];
-        matchConditions = {
-            assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) }
-        };
+        matchConditions.assign_to_agent = { $in: allAgents.map(agent => new ObjectId(agent._id)) };
+    } else if (role==='user') {
+        matchConditions.assign_to_agent = new ObjectId(assign_to_agent);
     }
 
-    if (role === 'admin') {
-        // Define admin specific conditions here if needed
-    }
-
-    if (role === 'user') {
-        const agentObjectId = new ObjectId(assign_to_agent);
-        matchConditions.assign_to_agent = agentObjectId;
-    }
-
+    matchConditions.$or = [
+        {
+            $expr: {
+                $eq: [
+                    { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+                    { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } }
+                ]
+            }
+        },
+        {
+            $expr: {
+                $eq: [
+                    { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
+                    { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
+                ]
+            }
+        }
+    ];
+    
     const lead = await Lead.aggregate([
       {
         $match: matchConditions,
       },
-      {
-        $match: {
-            $expr: {
-                $or: [
-                    {
-                        $eq: [
-                            { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
-                            { $dateToString: { format: "%Y-%m-%d", date: targetDateOnly } }
-                        ]
-                    },
-                    {
-                        $eq: [
-                            { $dateToString: { format: "%Y-%m-%d", date: "$followup_date" } },
-                            { $dateToString: { format: "%Y-%m-%d", date: nextDate } }
-                        ]
-                    }
-                ]
-            }
-        }
-    },
-
+     
       {
         $lookup: {
           from: "crm_agents",
@@ -1209,7 +1200,6 @@ exports.getLeadbyScheduleEventid = catchAsyncErrors(
           as: "lead_source_details",
         },
       },
-      /////for  loss and won status remove
       {
         $match: {
           status: new ObjectId(status_id),
