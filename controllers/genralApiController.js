@@ -870,7 +870,7 @@ exports.IncomeGraphOverviewForTeamLeader = catchAsyncErrors(async (req, res, nex
     monthlyIncom,
   });
 });
-
+////for Admin
 exports.GetCalandarData = catchAsyncErrors(async (req, res, next) => {
 
   const lead = await Lead.aggregate([
@@ -899,6 +899,85 @@ exports.GetCalandarData = catchAsyncErrors(async (req, res, next) => {
       $match: {
         add_to_calender: 'yes'
       },
+    },
+
+  ])
+
+  res.status(201).json({
+    success: true,
+    message: "Successfully Get Calandar Data",
+    lead,
+  });
+});
+////for Teamleader
+exports.GetCalandarDataByTeamLeader = catchAsyncErrors(async (req, res, next) => {
+
+  const lead = await Lead.aggregate([
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+    {
+      $match: {
+        add_to_calender: 'yes'
+      },
+    },
+
+  ])
+
+  res.status(201).json({
+    success: true,
+    message: "Successfully Get Calandar Data",
+    lead,
+  });
+});
+////for User
+exports.GetCalandarDataByUser = catchAsyncErrors(async (req, res, next) => {
+      const {user_id}=req.body;
+  const lead = await Lead.aggregate([
+    {
+      $lookup: {
+        from: "crm_agents",
+        let: { assign_to_agentString: "$assign_to_agent" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$_id", { $toObjectId: "$$assign_to_agentString" }],
+              },
+            },
+          },
+          {
+            $project: {
+              agent_name: 1,
+            },
+          },
+        ],
+        as: "agent_details",
+      },
+    },
+    {
+      $match: {
+        add_to_calender: 'yes'
+      },
+      assign_to_agent:user_id,
     },
 
   ])
