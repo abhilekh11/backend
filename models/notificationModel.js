@@ -3,9 +3,9 @@ const mongoose=require('mongoose');
   const notificationSchema= new mongoose.Schema({
        
     user_id:{
-        type:String,
+      type: mongoose.Schema.ObjectId,
         required:true
-    },
+    },  
     token:{
         type:String, 
         required:true 

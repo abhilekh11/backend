@@ -10,19 +10,19 @@ const SaveNotification=require("../models/websavenotification");
 exports.updateandsavenotification = catchAsyncErrors(async (req, res, next) => {
   const { user_id, token } = req.body;
   if (!user_id) {
-    return next(new ErrorHander("User is Required", 400));
+    return next(new ErrorHander("User is Required", 400)); 
   }        
   if (!token) {
     return next(new ErrorHander("Device Token is Required", 400));
   }
   const agent = await Notification.find({ user_id: user_id });
   if (agent.length==0) {
-    
     ////  then save the token in notification collection
     const notification = await Notification.create(req.body);
    return  res.status(201).json({  
       success: true,
       notification,
+      massage:'Token Added Successfully...', 
     });
   }else{
    //// update the token in notification collection

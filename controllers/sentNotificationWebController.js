@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const webNotification = require("../models/notificationForWebModel");
+const Notification=require("../models/notificationModel");
 const Lead = require("../models/leadModel");
 const schedule = require("node-schedule");
 const FCM = require("fcm-node");
@@ -30,15 +31,15 @@ async function scheduleJob() {
         const targetDate = new Date(formattedDate1);
 
         // Logging the follow-up date and agent ID for debugging
-        // console.log('Follow-up date:', targetDate);
-        // console.log('Agent ID:', agent_id);
+        console.log('Follow-up date:', targetDate);
+        console.log('Agent ID:', agent_id);
 
         // Schedule the job
         schedule.scheduleJob(targetDate, async () => {
           console.log('Notification scheduled for:', targetDate);
 
           try {
-            const tokentable = await webNotification.find({ user_id: agent_id });
+            const tokentable = await Notification.find({ user_id: agent_id });  
             const token = tokentable ? tokentable.token : 'c1JZIvWKT-qPBArK0loypj:APA91bGp5-dAl2n2lzVeGyCqOiXhOjjm5cN_ps7S0EVOwNbi07-1KtidaxT8uaLgLIhw14w0D3yHs5sHMkdUy5DCgSvtK1_Li8hz_-3jwnFmz9FUTNujIh3szdirobopwbk3Eis4WqNH';
 
             if (!message) {
@@ -75,7 +76,7 @@ async function scheduleJob() {
         });
       }
     } else {
-      // console.log("No leads found. No notifications scheduled.");
+      console.log("No leads found. No notifications scheduled.");
     }
   } catch (error) {
     console.error("Error scheduling job:", error);
