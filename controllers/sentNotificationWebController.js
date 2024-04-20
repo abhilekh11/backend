@@ -30,17 +30,16 @@ async function scheduleJob() {
         const formattedDate1 = followup_date.toISOString();
         const targetDate = new Date(formattedDate1);
 
-        // Logging the follow-up date and agent ID for debugging
-        console.log('Follow-up date:', targetDate);
-        console.log('Agent ID:', agent_id);
-
+        
         // Schedule the job
         schedule.scheduleJob(targetDate, async () => {
           console.log('Notification scheduled for:', targetDate);
 
           try {
-            const tokentable = await Notification.find({ user_id: agent_id });  
-            const token = tokentable ? tokentable.token : 'c1JZIvWKT-qPBArK0loypj:APA91bGp5-dAl2n2lzVeGyCqOiXhOjjm5cN_ps7S0EVOwNbi07-1KtidaxT8uaLgLIhw14w0D3yHs5sHMkdUy5DCgSvtK1_Li8hz_-3jwnFmz9FUTNujIh3szdirobopwbk3Eis4WqNH';
+            const tokentable = await Notification.find({ user_id: agent_id });
+            // console.log('tokentable',tokentable) 
+            //  console.log('tokentable',tokentable[0].token)
+            const token = tokentable ? tokentable[0].token : null;
 
             if (!message) {
               message = "Meeting";
@@ -80,7 +79,7 @@ async function scheduleJob() {
     }
   } catch (error) {
     console.error("Error scheduling job:", error);
-  }
+  } 
 }
 
 module.exports = scheduleJob;
