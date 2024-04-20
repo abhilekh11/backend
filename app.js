@@ -31,7 +31,7 @@ const transactional=require('./routes/transactionalsmsRoute');
 const smsreport=require('./routes/smsRoute');
 // const updateandsavenotification1=require('./routes/sentNotificationWebRoute')
 
-// scheduleJob1();
+scheduleJob1();
 // housingapi();
 app.use(cors());
 app.use("/api/v1/",agent);

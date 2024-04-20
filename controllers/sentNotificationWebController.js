@@ -3,24 +3,36 @@ const webNotification = require("../models/notificationForWebModel");
 const Lead = require("../models/leadModel");
 const schedule = require("node-schedule");
 var FCM = require("fcm-node");
-var serverKey =
-  "AAAA7j2plT4:APA91bEL_A-FJ1HkkOh4sw2sN32PptFyC4dCYG27b4Fp3FqZo1BUdFceyJpEPN9fgR80kQVaK-OjZOwxGN0CBtp6YTgJ7VNBg0U0kwQDFOiXfIvtePnpWuibq3QIKOs-NULrtMC0I-sZ"; //put your server key here
+var serverKey = "AAAAnus9Ao0:APA91bGCHcEiRwMsFRbsnN8od663jhfhdnuq10H2jMMmFzVrCVBACE4caGSZ-mAwf3VB6n_fUmrHxKPou1oyBaKXfUfcnAz6J2TTJm12woXqJVTleay2RSE0KPzuRTI2QppI3rrYY2HQ"; // Replace with your actual server key
 var fcm = new FCM(serverKey);
-
+  
 async function scheduleJob() {
-  const inputDate = new Date(); 
+  const inputDate = new Date();
   inputDate.setHours(inputDate.getHours() + 5);
   inputDate.setMinutes(inputDate.getMinutes() + 30);
   const formattedDate = inputDate.toISOString();
-     //console.log(inputDate)
+   
   const leads = await Lead.find({
-    followup_date: { $gte: formattedDate }, 
-    status: { $nin: ["6539fa950b9756b61601287b", "6561c44233093ed343745a3e"] },
+    followup_date: { $gte: '2024-04-20T12:09:00.000Z' },
+    status: { $nin: ["65a904164473619190494480", "65a903e9447361919049447a"] },
   });
 
   if (leads.length > 0) {
+    const message1 = {
+      collapse_key: "your_collapse_key",
+      notification: {  
+        title: "Title of your push notification",
+        body: 'Umesh Sir Lamchothad hai', // You can customize this
+      },
+      data: {
+        my_key: "my value",
+        my_another_key: "my another value",
+      },
+    };
+
     for (const element of leads) {
       const followup_date = new Date(element.followup_date);
+      // console.log('followup_date',followup_date)
       const agent_id = element.assign_to_agent;
       const message = element.massage_of_calander;
 
@@ -28,54 +40,44 @@ async function scheduleJob() {
       followup_date.setMinutes(followup_date.getMinutes() - 30);
       const formattedDate1 = followup_date.toISOString();
       const targetDate = new Date(formattedDate1);
-      //console.log(targetDate)
-       schedule.scheduleJob(targetDate, async () => {
+
+      schedule.scheduleJob('2024-04-20T11:29:00.000Z', async () => {
         try {
-          console.log('chala')
-         // console.log('agent_id',agent_id)
+         console.log('agent_id', agent_id)
           const tokentable = await webNotification.findOne({
             user_id: agent_id,
-          });
-     
-         // console.log('tokentable',tokentable);
+          });   
 
-          const token = await tokentable.token;
-         // console.log('token',token)
-          if (!message) {  
+          console.log('tokentable', tokentable);
+
+          const token = tokentable ? tokentable.token : 'c1JZIvWKT-qPBArK0loypj:APA91bGp5-dAl2n2lzVeGyCqOiXhOjjm5cN_ps7S0EVOwNbi07-1KtidaxT8uaLgLIhw14w0D3yHs5sHMkdUy5DCgSvtK1_Li8hz_-3jwnFmz9FUTNujIh3szdirobopwbk3Eis4WqNH';
+          console.log('token', token)
+          if (!message) {
             message = "meeting";
           }
-       //   console.log('message',message)
-          var message1 = {  
-            to: token,
-            collapse_key: "your_collapse_key",
-            notification: {   
-              title: "Title of your push notification",
-              body: message,
-            },
-            data: {
-              my_key: "my value",
-              my_another_key: "my another value",
-            },  
-          };
+          console.log('message', message)
 
-          
-
-          fcm.send(message1, function (err, response) {
-            if (err) {
-              console.log("Something has gone wrong!");
-            } else {
-              console.log("Successfully sent with response: ", response);
-            }
-          });
+          if (token) {
+            message1.to = token; // Assign the token to the 'to' property
+            fcm.send(message1, function (err, response) { 
+              if (err) {
+                console.log("Something has gone wrong!");
+              } else {
+                console.log("Successfully sent with response: ", response);
+              }
+            });
+          } else {
+            console.log('Token not found for agent:', agent_id);
+          } 
         } catch (error) {
           console.error("Error fetching webNotification:", error);
         }
       });
-    // console.log(targetDate)
+      console.log('targetDate', targetDate)
     }
   } else {
-   // console.log("No leads found. Job not scheduled.");
+    console.log("No leads found. Job not scheduled.");
   }
 }
- 
+
 module.exports = scheduleJob;
