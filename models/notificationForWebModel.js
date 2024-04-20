@@ -3,7 +3,7 @@ const mongoose=require('mongoose');
   const webnotificationSchema= new mongoose.Schema({
        
     user_id:{
-        type:String,
+       type: mongoose.Schema.ObjectId,
         required:true
     },
     token:{
