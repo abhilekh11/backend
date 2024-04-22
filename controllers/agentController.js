@@ -71,10 +71,16 @@ exports.getAllAgent = catchAsyncErrors(async (req, res, next) => {
 ///// Gwt All Users According to Team Leader
 exports.getAllAgentByTeamLeader = catchAsyncErrors(async (req, res, next) => {
   const { assign_to_agent } = req.body;
-   const agent = await Agent.find({ assigntl: assign_to_agent });
+  const [agentsByAssigntl, agentsById] = await Promise.all([
+    Agent.find({ assigntl: assign_to_agent }),
+    Agent.find({ _id: assign_to_agent })
+]);
+// Merge the results into a single array
+const allAgents = [...agentsByAssigntl, ...agentsById];
+ //  const agent = await Agent.find({ assigntl: assign_to_agent });
   res.status(201).json({
     success: true,
-    agent, 
+    agent:allAgents, 
   });
 });
 
