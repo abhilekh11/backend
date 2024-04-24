@@ -15,7 +15,7 @@ const { ObjectId } = require('mongoose').Types;
 ///////// RealestateApi
 exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
   const { email, name, mobile, inquiry_id, subject, details, property_id, recv_date, lookinf_for } = req.body;
-  console.log(req.body)
+  
 
   const lead = await Lead.create({
     full_name: name,
@@ -36,6 +36,29 @@ exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
     data: lead
   });
 });
+
+///////// wtsp notification api
+exports.bwnotification=catchAsyncErrors(async(req,res,next)=>{
+  // const { email, name, mobile, inquiry_id, subject, details, property_id, recv_date, lookinf_for } = req.body;
+  // const lead = await Lead.create({
+  //   full_name: name,
+  //   email_id: email,
+  //   lead_source: '65fd17a3d02e1071c601efc0',
+  //   contact_no: mobile,
+  //   service: '65f01532ca9cacbc217ccdfe',
+  //   status: '65a90407447361919049447e',
+  //   description: subject + ' ' + details + ' ' + lookinf_for,
+  //   apartment_names: lookinf_for,
+  //   service_type: inquiry_id,
+  //   flat_id: property_id,
+  //   lead_date: recv_date,
+  // });
+  res.status(200).json({
+    success: true,
+    message: "Get a message",
+    // data: lead
+  });
+})
 
 
 
