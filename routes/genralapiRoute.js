@@ -8,7 +8,7 @@ const { YearlySaleApi, YearlySaleApiForUser, YearlySaleApiForTeamLeader,
     ,CompanyDetails,GetCompanyDetails,
     DashboardLeadCount,UnAssignedDashboardLeadCount
     ,DashboardLeadCountOfUser,AgentWishLeadCount,AgentWishLeadCount1,DashboardLeadCountOfUserByTeamLeader,
-    RealestateApi , bwnotification,
+    RealestateApi , bwnotification, Businesswtspmessage,
     IncomeGraphOverviewForTeamLeader,IncomeGraphOverviewForUser,IncomeGraphOverview,GetCalandarDataByUser,GetCalandarDataByTeamLeader
 } = require('../controllers/genralApiController');
 const {LeadProductServiceOverviewApi}  =require('../controllers/allReportController')
@@ -51,5 +51,6 @@ router.route("/AgentWishLeadCount1").post(AgentWishLeadCount1);
 
 /////////////// real estate Api
 router.route('/RealestateApi').post(upload.none(), RealestateApi);
-router.route('/bwnotification').post(upload.none(), bwnotification);
+router.route('/bwnotification').get(bwnotification);
+router.route('/Businesswtspmessage').get(Businesswtspmessage);
 module.exports=router;     

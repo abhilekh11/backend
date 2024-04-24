@@ -9,13 +9,17 @@ const { param } = require("../app");
 const leadsourceModel = require("../models/leadsourceModel");
 const Setting = require('../models/settingModel');
 const { Agent } = require("express-useragent");
+const wtspmessageModel = require("../models/wtspmessageModel");
 const { ObjectId } = require('mongoose').Types;
-
+const Notification=require("../models/notificationModel");
+const FCM = require("fcm-node");
+const serverKey = "AAAAnus9Ao0:APA91bGCHcEiRwMsFRbsnN8od663jhfhdnuq10H2jMMmFzVrCVBACE4caGSZ-mAwf3VB6n_fUmrHxKPou1oyBaKXfUfcnAz6J2TTJm12woXqJVTleay2RSE0KPzuRTI2QppI3rrYY2HQ"; // Replace with your actual server key
+const fcm = new FCM(serverKey);
 
 ///////// RealestateApi
 exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
   const { email, name, mobile, inquiry_id, subject, details, property_id, recv_date, lookinf_for } = req.body;
-  
+
 
   const lead = await Lead.create({
     full_name: name,
@@ -38,26 +42,60 @@ exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
 });
 
 ///////// wtsp notification api
-exports.bwnotification=catchAsyncErrors(async(req,res,next)=>{
-  // const { email, name, mobile, inquiry_id, subject, details, property_id, recv_date, lookinf_for } = req.body;
-  // const lead = await Lead.create({
-  //   full_name: name,
-  //   email_id: email,
-  //   lead_source: '65fd17a3d02e1071c601efc0',
-  //   contact_no: mobile,
-  //   service: '65f01532ca9cacbc217ccdfe',
-  //   status: '65a90407447361919049447e',
-  //   description: subject + ' ' + details + ' ' + lookinf_for,
-  //   apartment_names: lookinf_for,
-  //   service_type: inquiry_id,
-  //   flat_id: property_id,
-  //   lead_date: recv_date,
-  // });
+exports.bwnotification = catchAsyncErrors(async (req, res, next) => {
+
+  const { fromphone, message, fromname } = req.query;
+  const wtspmessage = await wtspmessageModel.create({
+    fromname: fromname,
+    fromphone: fromphone,
+    message: message,
+  });
+
+  const tokentable = await Notification.find({ user_id: '65a8eee17dd25ded3ca0fb99' });
+ const token = tokentable ? tokentable[0].token : null;
+
+  if (!message) {
+    message = message;
+  }
+
+  const notificationData = {
+    collapse_key: "your_collapse_key",
+    notification: {
+      title: fromname +' '+'(Business WA)',
+      body: message,
+    },
+    data: {
+      my_key: "my value",
+      my_another_key: "my another value",
+    },
+  };
+
+  if (token) {
+    notificationData.to = token;
+    fcm.send(notificationData, function (err, response) {
+      if (err) {
+        console.error("Error sending notification:", err);
+      } else {
+        console.log("Notification sent successfully:", response);
+      }
+    });
+  } else {
+    console.log('Token not found for agent:', agent_id);
+  } 
+
   res.status(200).json({
     success: true,
     message: "Get a message",
-    // data: lead
+    data: wtspmessage,
   });
+})
+//////// get All Businesswtsp message
+exports.Businesswtspmessage = catchAsyncErrors(async (req, res, next) => {
+  const wtspmessage = await wtspmessageModel.find();
+  res.status(200).json({
+    success: true,
+    data: wtspmessage,  
+  }); 
 })
 
 
@@ -744,7 +782,7 @@ exports.GetCalandarData = catchAsyncErrors(async (req, res, next) => {
 ////for Teamleader
 exports.GetCalandarDataByTeamLeader = catchAsyncErrors(async (req, res, next) => {
   const { user_id } = req.body;
- 
+
   // Execute both queries concurrently
   const [agentsByAssigntl, agentsById] = await Promise.all([
     agent.find({ assigntl: user_id }).select('_id'),
@@ -795,7 +833,7 @@ exports.GetCalandarDataByTeamLeader = catchAsyncErrors(async (req, res, next) =>
 
 ////for User 
 exports.GetCalandarDataByUser = catchAsyncErrors(async (req, res, next) => {
-  const user_id =new ObjectId(req.body.user_id);
+  const user_id = new ObjectId(req.body.user_id);
   const lead = await Lead.aggregate([
     {
       $lookup: {
@@ -900,16 +938,16 @@ exports.YearlySaleApi = catchAsyncErrors(async (req, res, next) => {
 
 /////// Yearly Base Sale Api For TeamLeader
 exports.YearlySaleApiForTeamLeader = catchAsyncErrors(async (req, res, next) => {
-    const {user_id} =req.body;
-    const [agentsByAssigntl, agentsById] = await Promise.all([
-      agent.find({ assigntl: user_id }).select('_id'),
-      agent.find({ _id: user_id }).select('_id'),
-    ]);
-  
-    // Merge the results into a single array
-    const allAgents = [...agentsByAssigntl, ...agentsById];
-  
-    const agentIds = allAgents.map(agent => agent._id); // Use allAgents instead of agents
+  const { user_id } = req.body;
+  const [agentsByAssigntl, agentsById] = await Promise.all([
+    agent.find({ assigntl: user_id }).select('_id'),
+    agent.find({ _id: user_id }).select('_id'),
+  ]);
+
+  // Merge the results into a single array
+  const allAgents = [...agentsByAssigntl, ...agentsById];
+
+  const agentIds = allAgents.map(agent => agent._id); // Use allAgents instead of agents
   try {
     const details = [];
     let TotalAmountWon = 0;
@@ -930,8 +968,8 @@ exports.YearlySaleApiForTeamLeader = catchAsyncErrors(async (req, res, next) => 
     const wonStatus_id = wonstatu._id;
     const lostStatus_id = loststatu._id;
 
-    const wonlead = await Lead.find({ status: wonStatus_id ,assign_to_agent: { $in: agentIds }});
-    const lostlead = await Lead.find({ status: lostStatus_id ,assign_to_agent: { $in: agentIds }});
+    const wonlead = await Lead.find({ status: wonStatus_id, assign_to_agent: { $in: agentIds } });
+    const lostlead = await Lead.find({ status: lostStatus_id, assign_to_agent: { $in: agentIds } });
 
     const wonleadforthirtyday = await Lead.find({
       status: wonStatus_id,
@@ -973,7 +1011,7 @@ exports.YearlySaleApiForTeamLeader = catchAsyncErrors(async (req, res, next) => 
 
 /////// Yearly Base Sale Api For User
 exports.YearlySaleApiForUser = catchAsyncErrors(async (req, res, next) => {
-  const user_id =new ObjectId(req.body.user_id);
+  const user_id = new ObjectId(req.body.user_id);
   try {
     const details = [];
     let TotalAmountWon = 0;
@@ -994,12 +1032,12 @@ exports.YearlySaleApiForUser = catchAsyncErrors(async (req, res, next) => {
     const wonStatus_id = wonstatu._id;
     const lostStatus_id = loststatu._id;
 
-    const wonlead = await Lead.find({ status: wonStatus_id ,assign_to_agent: user_id });
-    const lostlead = await Lead.find({ status: lostStatus_id ,assign_to_agent: user_id });
+    const wonlead = await Lead.find({ status: wonStatus_id, assign_to_agent: user_id });
+    const lostlead = await Lead.find({ status: lostStatus_id, assign_to_agent: user_id });
 
     const wonleadforthirtyday = await Lead.find({
       status: wonStatus_id,
-      assign_to_agent: user_id ,
+      assign_to_agent: user_id,
       followup_date: { $gte: formattedThirtyDaysAgoDate, $lte: andialTime },
     });
 
@@ -1071,16 +1109,16 @@ exports.LeadSourceOverviewApi = catchAsyncErrors(async (req, res, next) => {
 
 /////  Leads Source Overview  Api For TeamLeader
 exports.LeadSourceOverviewApiForTeamLeader = catchAsyncErrors(async (req, res, next) => {
-  const {user_id} =req.body;
-    const [agentsByAssigntl, agentsById] = await Promise.all([
-      agent.find({ assigntl: user_id }).select('_id'),
-      agent.find({ _id: user_id }).select('_id'),
-    ]);
-  
-    // Merge the results into a single array
-    const allAgents = [...agentsByAssigntl, ...agentsById];
-  
-    const agentIds = allAgents.map(agent => agent._id); // Use allAgents instead of agents
+  const { user_id } = req.body;
+  const [agentsByAssigntl, agentsById] = await Promise.all([
+    agent.find({ assigntl: user_id }).select('_id'),
+    agent.find({ _id: user_id }).select('_id'),
+  ]);
+
+  // Merge the results into a single array
+  const allAgents = [...agentsByAssigntl, ...agentsById];
+
+  const agentIds = allAgents.map(agent => agent._id); // Use allAgents instead of agents
   try {
     const lead_source = await leadsourceModel.find();
 
@@ -1088,7 +1126,7 @@ exports.LeadSourceOverviewApiForTeamLeader = catchAsyncErrors(async (req, res, n
     const Lead_source_name = lead_source.map((lead_source1) => lead_source1.lead_source_name);
 
     const Lead_source_countPromises = Lead_source_id.map(async (Lead_source_id1) => {
-      const lead = await Lead.find({ lead_source: Lead_source_id1 , assign_to_agent: { $in: agentIds }});
+      const lead = await Lead.find({ lead_source: Lead_source_id1, assign_to_agent: { $in: agentIds } });
       const lead_length = lead.length;
 
       return lead_length;
@@ -1115,7 +1153,7 @@ exports.LeadSourceOverviewApiForTeamLeader = catchAsyncErrors(async (req, res, n
 
 /////  Leads Source Overview  Api For User
 exports.LeadSourceOverviewApiForUser = catchAsyncErrors(async (req, res, next) => {
-  const user_id =new ObjectId(req.body.user_id);
+  const user_id = new ObjectId(req.body.user_id);
   try {
     const lead_source = await leadsourceModel.find();
 
@@ -1123,7 +1161,7 @@ exports.LeadSourceOverviewApiForUser = catchAsyncErrors(async (req, res, next) =
     const Lead_source_name = lead_source.map((lead_source1) => lead_source1.lead_source_name);
 
     const Lead_source_countPromises = Lead_source_id.map(async (Lead_source_id1) => {
-      const lead = await Lead.find({ lead_source: Lead_source_id1,assign_to_agent: user_id  });
+      const lead = await Lead.find({ lead_source: Lead_source_id1, assign_to_agent: user_id });
       const lead_length = lead.length;
 
       return lead_length;
@@ -1387,14 +1425,22 @@ exports.DashboardLeadCount = catchAsyncErrors(async (req, res, next) => {
   array.push(
     { ['name']: 'Followup Lead', ['Value']: followuplead.length },
     { ['name']: 'Total Agent', ['Value']: TotalAgent },
-    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length ,
-    ['id']:'65a904164473619190494480' },
-    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length 
-  ,['id']:'65a903f8447361919049447c'},
-    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
-    ['id']:'65a903ca4473619190494478' },
-    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
-    ['id']:'65a903e9447361919049447a' },
+    {
+      ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length,
+      ['id']: '65a904164473619190494480'
+    },
+    {
+      ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length
+      , ['id']: '65a903f8447361919049447c'
+    },
+    {
+      ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
+      ['id']: '65a903ca4473619190494478'
+    },
+    {
+      ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
+      ['id']: '65a903e9447361919049447a'
+    },
   );
   res.status(201).json({
     success: true,
@@ -1527,14 +1573,22 @@ exports.DashboardLeadCountOfUser = catchAsyncErrors(async (req, res, next) => {
   array.push(
     { ['name']: 'Followup Lead', ['Value']: followuplead.length },
     { ['name']: 'Total Agent', ['Value']: 1 },
-    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length ,
-    ['id']:'65a904164473619190494480' },
-    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length 
-  ,['id']:'65a903f8447361919049447c'},
-    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
-    ['id']:'65a903ca4473619190494478' },
-    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
-    ['id']:'65a903e9447361919049447a' },
+    {
+      ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length,
+      ['id']: '65a904164473619190494480'
+    },
+    {
+      ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length
+      , ['id']: '65a903f8447361919049447c'
+    },
+    {
+      ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
+      ['id']: '65a903ca4473619190494478'
+    },
+    {
+      ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
+      ['id']: '65a903e9447361919049447a'
+    },
   );
   res.status(201).json({
     success: true,
@@ -1553,11 +1607,11 @@ exports.DashboardLeadCountOfUserByTeamLeader = catchAsyncErrors(async (req, res,
   const [agentsByAssigntl, agentsById] = await Promise.all([
     agent.find({ assigntl: user_id }),
     agent.find({ _id: user_id })
-]);
+  ]);
 
-// Merge the results into a single array
-const allAgents = [...agentsByAssigntl, ...agentsById];
- 
+  // Merge the results into a single array
+  const allAgents = [...agentsByAssigntl, ...agentsById];
+
   let array = [];
   const lead = await Lead.find();
   const TotalLead = lead.length;
@@ -1575,7 +1629,7 @@ const allAgents = [...agentsByAssigntl, ...agentsById];
 
   const followuplead = await Lead.find({
     assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
-    status: { 
+    status: {
       $nin: [
         new ObjectId("65a904e04473619190494482"),
         new ObjectId("65a904ed4473619190494484")
@@ -1587,7 +1641,7 @@ const allAgents = [...agentsByAssigntl, ...agentsById];
 
   ///// for meeting
   const meetinglead = await Lead.find({
-    assign_to_agent:{ $in: allAgents.map(agent => new ObjectId(agent._id)) },
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a904164473619190494480',
     $expr: {
       $eq: [
@@ -1655,7 +1709,7 @@ const allAgents = [...agentsByAssigntl, ...agentsById];
   const Re_Visit_name = await Status.findOne({ _id: '65a903ca4473619190494478' });
   ///// for Call Back (Re-Visit)
   const Shedule_Visit = await Lead.find({
-    assign_to_agent:{ $in: allAgents.map(agent => new ObjectId(agent._id)) },
+    assign_to_agent: { $in: allAgents.map(agent => new ObjectId(agent._id)) },
     status: '65a903e9447361919049447a',
     $expr: {
       $eq: [
@@ -1678,14 +1732,22 @@ const allAgents = [...agentsByAssigntl, ...agentsById];
   array.push(
     { ['name']: 'Followup Lead', ['Value']: followuplead.length },
     { ['name']: 'Total Agent', ['Value']: allAgents.map(agent => new ObjectId(agent._id))?.length },
-    { ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length ,
-    ['id']:'65a904164473619190494480' },
-    { ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length 
-  ,['id']:'65a903f8447361919049447c'},
-    { ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
-    ['id']:'65a903ca4473619190494478' },
-    { ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
-    ['id']:'65a903e9447361919049447a' },
+    {
+      ['name']: meetinglead_name?.status_name1, ['Value']: meetinglead.length, ['Value1']: meetingleadNextDay.length,
+      ['id']: '65a904164473619190494480'
+    },
+    {
+      ['name']: Visit_name?.status_name1, ['Value']: Visit.length, ['Value1']: VisitleadNextDay.length
+      , ['id']: '65a903f8447361919049447c'
+    },
+    {
+      ['name']: Re_Visit_name?.status_name1, ['Value']: Re_Visit.length, ['Value1']: Re_VisitleadNextDay.length,
+      ['id']: '65a903ca4473619190494478'
+    },
+    {
+      ['name']: Shedule_Visit_name?.status_name1, ['Value']: Shedule_Visit.length, ['Value1']: Shedule_VisitleadNextDay.length,
+      ['id']: '65a903e9447361919049447a'
+    },
   );
   res.status(201).json({
     success: true,
