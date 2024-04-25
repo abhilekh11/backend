@@ -51,6 +51,6 @@ router.route("/AgentWishLeadCount1").post(AgentWishLeadCount1);
 
 /////////////// real estate Api
 router.route('/RealestateApi').post(upload.none(), RealestateApi);
-router.route('/bwnotification').get(bwnotification);
+router.route('/bwnotification').get(bwnotification);  
 router.route('/Businesswtspmessage').get(Businesswtspmessage);
 module.exports=router;     

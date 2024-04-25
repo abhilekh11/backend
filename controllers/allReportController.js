@@ -197,11 +197,12 @@ exports.EmployeesReportDetail = catchAsyncErrors(async (req, res, next) => {
 
 
 /////////  Employees report By Filter
-exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) => {
-  const { agent, service, status, lead_source, startDate, endDate } = req.body;
+exports.EmployeesReportDetailByFilter1 = catchAsyncErrors(async (req, res, next) => {
+  const { agent, service, status, lead_source, startDate, endDate ,role,user_id } = req.body;
+
   let total = 0;
   let data = [];
-
+  
   const matchConditions = {};
   if (agent) matchConditions.assign_to_agent = new ObjectId(agent);
   if (service) matchConditions.service = new ObjectId(service);
@@ -229,9 +230,7 @@ exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) 
   lead.forEach((lead1) => {
     total += parseInt(lead1.followup_won_amount) || 0;
   });
-
-  // lead.push({ full_name: 'Total Amount', contact_no: 'Total Amount', followup_won_amount: total });
-  data.push({ Total: lead_length, Won: wonLeadCount.length > 0 ? wonLeadCount[0].count : 0, Ratio: ratio.toFixed(2) + '%', Amount: total });
+ data.push({ Total: lead_length, Won: wonLeadCount.length > 0 ? wonLeadCount[0].count : 0, Ratio: ratio.toFixed(2) + '%', Amount: total });
 
   res.status(200).json({
     success: true,
@@ -239,6 +238,138 @@ exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) 
     lead: lead,
     data: data,
   });
+});
+
+/////////  Employees report By Filter
+exports.EmployeesReportDetailByFilter = catchAsyncErrors(async (req, res, next) => {
+  const { agent, service, status, lead_source, startDate, endDate ,role,user_id } = req.body;
+    if(role==='admin'){
+      let total = 0;
+      let data = [];
+      
+      const matchConditions = {};
+      if (agent) matchConditions.assign_to_agent = new ObjectId(agent);
+      if (service) matchConditions.service = new ObjectId(service);
+      if (status) matchConditions.status = new ObjectId(status);
+      if (lead_source) matchConditions.lead_source = new ObjectId(lead_source);
+      if (startDate && endDate) {
+        matchConditions.followup_date = {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        };
+      }
+    
+      const lead = await Lead.aggregate([
+        { $match: matchConditions },
+        { $sort: { followup_date: 1 } }
+      ]);
+       const lead_length=await lead.length;
+      const wonLeadCount = await Lead.aggregate([
+        { $match: { status: new ObjectId('65a904e04473619190494482'), ...matchConditions } },
+        { $count: "count" } 
+      ]);
+    
+      const ratio = (wonLeadCount.length > 0 ? wonLeadCount[0].count : 0) / lead.length * 100 || 0; // Handle division by zero
+    
+      lead.forEach((lead1) => {
+        total += parseInt(lead1.followup_won_amount) || 0;
+      });
+     data.push({ Total: lead_length, Won: wonLeadCount.length > 0 ? wonLeadCount[0].count : 0, Ratio: ratio.toFixed(2) + '%', Amount: total });
+    
+      res.status(200).json({
+        success: true,
+        message: "Successfully fetched data",
+        lead: lead,
+        data: data,
+      });
+    }
+    if(role==='TeamLeader'){
+      if(agent){
+        let total = 0;
+        let data = [];
+        
+        const matchConditions = {};
+        if (agent) matchConditions.assign_to_agent = new ObjectId(agent);
+        if (service) matchConditions.service = new ObjectId(service);
+        if (status) matchConditions.status = new ObjectId(status);
+        if (lead_source) matchConditions.lead_source = new ObjectId(lead_source);
+        if (startDate && endDate) {
+          matchConditions.followup_date = {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          };
+        }
+      
+        const lead = await Lead.aggregate([
+          { $match: matchConditions },
+          { $sort: { followup_date: 1 } }
+        ]);
+         const lead_length=await lead.length;
+        const wonLeadCount = await Lead.aggregate([
+          { $match: { status: new ObjectId('65a904e04473619190494482'), ...matchConditions } },
+          { $count: "count" } 
+        ]);
+      
+        const ratio = (wonLeadCount.length > 0 ? wonLeadCount[0].count : 0) / lead.length * 100 || 0; // Handle division by zero
+      
+        lead.forEach((lead1) => {
+          total += parseInt(lead1.followup_won_amount) || 0;
+        });
+       data.push({ Total: lead_length, Won: wonLeadCount.length > 0 ? wonLeadCount[0].count : 0, Ratio: ratio.toFixed(2) + '%', Amount: total });
+      
+        res.status(200).json({
+          success: true,
+          message: "Successfully fetched data",
+          lead: lead,
+          data: data,
+        });
+      }else{
+        let total = 0;
+        let data = [];
+        const [agentsByAssigntl, agentsById] = await Promise.all([
+          Agent.find({ assigntl: user_id }),
+          Agent.find({ _id: user_id })
+      ]);
+       const allAgents = [...agentsByAssigntl, ...agentsById];
+        const matchConditions = {}; 
+        if (!agent) matchConditions.assign_to_agent = { $in: allAgents.map(agent => new ObjectId(agent._id)) }
+        if (service) matchConditions.service = new ObjectId(service);
+        if (status) matchConditions.status = new ObjectId(status);
+        if (lead_source) matchConditions.lead_source = new ObjectId(lead_source);
+        if (startDate && endDate) {
+          matchConditions.followup_date = {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          };
+        }
+      
+        const lead = await Lead.aggregate([
+          { $match: matchConditions },
+          { $sort: { followup_date: 1 } }
+        ]);
+         const lead_length=await lead.length;
+        const wonLeadCount = await Lead.aggregate([
+          { $match: { status: new ObjectId('65a904e04473619190494482'), ...matchConditions } },
+          { $count: "count" } 
+        ]);
+      
+        const ratio = (wonLeadCount.length > 0 ? wonLeadCount[0].count : 0) / lead.length * 100 || 0; // Handle division by zero
+      
+        lead.forEach((lead1) => {
+          total += parseInt(lead1.followup_won_amount) || 0;
+        });
+       data.push({ Total: lead_length, Won: wonLeadCount.length > 0 ? wonLeadCount[0].count : 0, Ratio: ratio.toFixed(2) + '%', Amount: total });
+      
+        res.status(200).json({
+          success: true,
+          message: "Successfully fetched data",
+          lead: lead,
+          data: data,
+        });
+      }
+   
+    }
+ 
 });
 
 
