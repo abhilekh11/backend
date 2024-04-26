@@ -14,6 +14,14 @@ const xlsx = require("xlsx");
 const FollowupLead = require('../models/followupModel');
 const LeadAttechment = require('../models/leadattechmentModel')
 exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
+  const { contact_no } = req.body;
+  const existingLead = await Lead.findOne({ contact_no });
+if (existingLead) { 
+    return res.status(400).json({
+      success: false,
+      message: "Contact number already exists. Please provide a unique contact number.",
+    });
+  }
   const lead = await Lead.create(req.body);
   const lead_id = lead._id;
   const assign_to_agent = lead.assign_to_agent;
@@ -27,7 +35,8 @@ exports.Add_Lead = catchAsyncErrors(async (req, res, next) => {
     followup_status_id: followup_status_id, followup_date: followup_date,
     followup_desc: followup_desc
   };
-  const followup_lead = await FollowupLead.create(update_data);
+  const followup_lead = await FollowupLead.create(update_data); 
+    console.log(followup_lead);
 
   res.status(201).json({
     success: true,
