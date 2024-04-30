@@ -215,11 +215,8 @@ const ExcelUplode111 = async (req, res) => {
         message: "No file uploaded",
       });
     } 
-    const leadData = await csv().fromFile(req.file.path);
-       console.log('leadData',leadData)
-     
-
-    // Extract unique contact_no values from the uploaded CSV data
+    const leadData = await csv().fromFile(req.file.path); 
+      // Extract unique contact_no values from the uploaded CSV data
     const uniqueContactNos = [...new Set(leadData.map(entry => entry.contact_no))];
 
     // Query the database to find existing leads with matching contact_no values
