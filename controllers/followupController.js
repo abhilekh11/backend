@@ -79,7 +79,7 @@ exports.Add_Followup_Lead = catchAsyncErrors(async (req, res, next) => {
   const update_data = { assign_to_agent: assign_to_agent, status: status_id,followup_date:followup_date,
     followup_won_amount:followup_won_amount,followup_lost_reason_id:followup_lost_reason_id,
     add_to_calender:add_to_calender,description:massage_of_calander,
-    massage_of_calander:massage_of_calander };   
+    massage_of_calander:massage_of_calander,type:'followup', };   
   const update_lead = await Lead.updateOne(condition, update_data);    
     const adddata= {user_id:assign_to_agent,title:'Notification Of Your Lead',body:massage_of_calander,datetime:followup_date}
   const SaveNotificationdata=await SaveNotification.create(adddata);

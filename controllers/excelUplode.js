@@ -23,6 +23,7 @@ const ExcelUplode1 = async (req, res) => {
       lead_source,
       service,
       status,
+      type:'excel',
       country,
       assign_to_agent,
       state,
@@ -51,7 +52,7 @@ const ExcelUplode1 = async (req, res) => {
 };
 
 const ExcelUplode = async (req, res) => {
-  try {
+  try {  
     const { lead_source, status, service, assign_to_agent, country, state } = req.body;
     
     if (!req.file) {
@@ -61,8 +62,15 @@ const ExcelUplode = async (req, res) => {
       });
     } 
 
-    const leadData = await csv().fromFile(req.file.path);
-    const insertedLeads = await Lead.insertMany(leadData.map(entry => ({
+     const leadData = await csv().fromFile(req.file.path);
+     const uniqueContactNos = [...new Set(leadData.map(entry => entry.contact_no))];
+     const existingLeads = await Lead.find({ contact_no: { $in: uniqueContactNos } });
+     const uniqueNewContactNos = uniqueContactNos.filter(contactNo => !existingLeads.some(lead => lead.contact_no === contactNo));
+     const filteredLeadData = leadData.filter(entry => uniqueNewContactNos.includes(entry?.contact_no));
+
+
+
+    const insertedLeads = await Lead.insertMany(filteredLeadData.map(entry => ({
       full_name: entry?.full_name, 
       email_id: entry?.email_id,
       contact_no: entry?.contact_no,
