@@ -83,8 +83,6 @@ exports.Add_Followup_Lead = catchAsyncErrors(async (req, res, next) => {
   const update_lead = await Lead.updateOne(condition, update_data);    
     const adddata= {user_id:assign_to_agent,title:'Notification Of Your Lead',body:massage_of_calander,datetime:followup_date}
   const SaveNotificationdata=await SaveNotification.create(adddata);
-   
-
   res.status(201).json({ 
     success: true,
     message: "Followup lead  Has Been Added Successfully",
