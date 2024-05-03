@@ -47,7 +47,7 @@ process.on('uncaughtException', (err) => {
 });
  
 // Unhandled promise rejection
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', (err) => {   
   console.error(`Unhandled Rejection: ${err.message}`);
   console.log('Shutting down the server due to unhandled promise rejection');
   process.exit(1);
