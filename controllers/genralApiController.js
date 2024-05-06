@@ -63,6 +63,7 @@ exports.bwnotification = catchAsyncErrors(async (req, res, next) => {
     notification: {
       title: fromname +' '+'(Business WA)',
       body: message,
+      icon:""
     },
     data: {
       my_key: "my value",
@@ -91,7 +92,7 @@ exports.bwnotification = catchAsyncErrors(async (req, res, next) => {
 })
 //////// get All Businesswtsp message
 exports.Businesswtspmessage = catchAsyncErrors(async (req, res, next) => {
-  const wtspmessage = await wtspmessageModel.find();
+  const wtspmessage = await wtspmessageModel.find().sort({ createdAt: -1 });
   res.status(200).json({
     success: true,
     data: wtspmessage,  
