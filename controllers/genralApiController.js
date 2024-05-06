@@ -63,7 +63,7 @@ exports.bwnotification = catchAsyncErrors(async (req, res, next) => {
     notification: {
       title: fromname +' '+'(Business WA)',
       body: message,
-      icon:""
+      icon:"https://www.clickpro.in/img/notificationicon.jpg"
     },
     data: {
       my_key: "my value",
