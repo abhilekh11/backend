@@ -271,7 +271,8 @@ exports.getAllNewLead = catchAsyncErrors(async (req, res, next) => {
   for (const singleLead of lead) {
     const lead_id = singleLead?._id;
     const leadstatusid=singleLead?.status;
-    if(leadstatusid==='65a904fc4473619190494486'){
+   
+     if(leadstatusid.toString()==='65a904fc4473619190494486'){
       filteredLeads.push(singleLead);
     }else{
       const count = await FollowupLead.countDocuments({ lead_id });
@@ -410,10 +411,16 @@ exports.getAllNewLeadBYAgentId = catchAsyncErrors(async (req, res, next) => {
 
   for (const singleLead of lead) {
     const lead_id = singleLead?._id;
-    const count = await FollowupLead.countDocuments({ lead_id });
-    if (count <= 1) {
-      filteredLeads.push(singleLead);
-    }
+    const leadstatusid=singleLead?.status;
+   
+    if(leadstatusid.toString()==='65a904fc4473619190494486'){
+     filteredLeads.push(singleLead);
+   }else{
+     const count = await FollowupLead.countDocuments({ lead_id });
+     if (count <= 1) {
+       filteredLeads.push(singleLead);
+     }
+   }
   }
 
   res.status(200).json({
