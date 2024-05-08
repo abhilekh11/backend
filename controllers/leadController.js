@@ -266,7 +266,7 @@ exports.getAllNewLead = catchAsyncErrors(async (req, res, next) => {
     },
   ]);
   ////  get only first followup lead
-  const filteredLeads = [];
+  const filteredLeads = [];     
 
   for (const singleLead of lead) {
     const lead_id = singleLead?._id;
