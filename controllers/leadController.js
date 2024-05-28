@@ -1386,6 +1386,8 @@ exports.BulkLeadUpdate = catchAsyncErrors(async (req, res, next) => {
     const update_data = {
       assign_to_agent: Leadagent?.agent,
       status: LeadStatus?.status,
+      type:'followup',
+
     };
     return Lead.updateOne(condition, update_data);
   });
