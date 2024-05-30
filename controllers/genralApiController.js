@@ -41,6 +41,56 @@ exports.RealestateApi = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+///////// MagicbricksApi
+exports.MagicbricksApi = catchAsyncErrors(async (req, res, next) => {
+  const { email, name, mobile, inquiry_id, subject, details, property_id, recv_date, lookinf_for } = req.body;
+
+
+  const lead = await Lead.create({
+    full_name: name,
+    email_id: email,
+    lead_source: '665815bd0a83c253e02177e3',
+    contact_no: mobile,
+    // service: '65f01532ca9cacbc217ccdfe',
+    status: '65a904fc4473619190494486',
+    description: subject + ' ' + details + ' ' + lookinf_for,
+    apartment_names: lookinf_for,
+    service_type: inquiry_id,
+    flat_id: property_id,
+    lead_date: recv_date,
+  });
+  res.status(200).json({
+    success: true,
+    message: "Save Realestate Lead On This Route",
+    data: lead
+  });
+});
+
+//////// 99AcresApi
+exports.AcresApi = catchAsyncErrors(async (req, res, next) => {
+  const { email, name, mobile, inquiry_id, subject, details, property_id, recv_date, lookinf_for } = req.body;
+
+
+  const lead = await Lead.create({
+    full_name: name,
+    email_id: email,
+    lead_source: '665815b20a83c253e02177e1',
+    contact_no: mobile,
+    // service: '65f01532ca9cacbc217ccdfe',
+    status: '65a904fc4473619190494486',
+    description: subject + ' ' + details + ' ' + lookinf_for,
+    apartment_names: lookinf_for,
+    service_type: inquiry_id,
+    flat_id: property_id,
+    lead_date: recv_date,
+  });
+  res.status(200).json({
+    success: true,
+    message: "Save Realestate Lead On This Route",
+    data: lead
+  });
+});  
+
 ///////// wtsp notification api
 exports.bwnotification = catchAsyncErrors(async (req, res, next) => {
 
